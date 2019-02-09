@@ -1,0 +1,77 @@
+Metadata-Version: 2.1
+Name: pandas-datapackage-reader
+Version: 0.11.0
+Summary: Pandas Data Package Reader
+Home-page: https://github.com/rgieseke/pandas-datapackage-reader
+Author: Robert Gieseke
+Author-email: robert.gieseke@pik-potsdam.de
+License: BSD
+Keywords: data-package
+Platform: any
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Description-Content-Type: text/markdown
+Requires-Dist: pandas
+Requires-Dist: requests
+
+[![PyPI](https://img.shields.io/pypi/v/pandas-datapackage-reader.svg)](https://pypi.python.org/pypi/pandas-datapackage-reader/)
+[![Travis](https://img.shields.io/travis/rgieseke/pandas-datapackage-reader.svg)](https://travis-ci.org/rgieseke/pandas-datapackage-reader)
+[![Codecov](https://img.shields.io/codecov/c/github/rgieseke/pandas-datapackage-reader.svg)](https://codecov.io/gh/rgieseke/pandas-datapackage-reader)
+
+# pandas-datapackage-reader
+
+Easy loading of tabular data from [Data Packages](http://frictionlessdata.io/data-packages/) into Pandas DataFrames.
+
+## Installation
+
+    pip install pandas-datapackage-reader
+
+## Usage
+
+```python
+from pandas_datapackage_reader import read_datapackage
+
+# From GitHub repository
+country_codes = read_datapackage("https://github.com/datasets/country-codes")
+
+# From local directory
+country_codes = read_datapackage("country-codes")
+
+# Data Package with GeoJSON
+geo_countries = read_datapackage("https://github.com/datasets/geo-countries")
+```
+
+Resource metadata from the Data Package is returned as a dictionary in the
+`_metadata` attribute.
+
+```python
+country_codes._metadata
+```
+
+contains
+
+```
+{'format': 'csv',
+  'name': 'country-codes',
+  'path': 'data/country-codes.csv',
+  'schema': {'fields': [{'description': 'Country or Area official Arabic short name from UN Statistics Divsion',
+        'name': 'official_name_ar',
+        'title': 'official name Arabic',
+        'type': 'string'},
+      {'description': 'Country or Area official Chinese short name from UN Statistics Divsion',
+        'name': 'official_name_cn',
+        'title': 'official name Chinese',
+        'type': 'string'},
+# ...
+```
+
+## License
+
+BSD-2-Clause, see [LICENSE](LICENSE)
+
+
