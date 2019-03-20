@@ -10,7 +10,7 @@ from bokeh.io import curdoc, show
 from shfe.shfe_src_code.include import DATA_PATH, TEST_DATA_PATH
 
 symbol = 'CU'
-month = u'07'
+month = u'12'
 
 df = pd.read_hdf(DATA_PATH, '/'+symbol+'/D/'+'_'+month)
 df = df.reset_index(level=['symbol'])
