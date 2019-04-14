@@ -31,22 +31,23 @@ def wavg(sub_df, avg_col, weight_col):
 
 def genMonoIdx(ex_name, symbol):
     if ex_name not in ex_config.keys() or symbol not in ex_config[ex_name]["symbols"]:
-        print "Exchange or symbol error"
+        print("Exchange or symbol error")
         exit(-1)
     else:
-        print "Processing %s\t%s" % (ex_name, symbol)
+        print("Processing %s\t%s" % (ex_name, symbol))
         next
 
     DATA_PATH = ex_config[ex_name]["DATA_PATH"]
 
     d_li=[]
-    for month in months:
-        try:
-            d_li.append(pd.read_hdf(DATA_PATH, '/'+symbol+'/D/'+'_'+month))
-        except KeyError:
-            continue
+    with pd.HDFStore(DATA_PATH) as f:
+        for month in months:
+            try:
+                d_li.append(pd.read_hdf(f, '/'+symbol+'/D/'+'_'+month))
+            except KeyError:
+                continue
 
-    df = pd.concat(d_li)
+        df = pd.concat(d_li)
 
     mono_index_df = pd.DataFrame(columns=idx_dtypes)
     line = pd.DataFrame(columns=idx_dtypes)
@@ -66,13 +67,13 @@ def genMonoIdx(ex_name, symbol):
     #print mono_index_df
     #    print mono_index_df
     #mono_index_df = mono_index_df.iloc[1:]
-    print mono_index_df
+    print(mono_index_df)
 
-    with pd.HDFStore(DATA_PATH) as f:
-        mono_index_df.to_hdf(f, '/' + symbol + '/D/' + '_00', format='table', append=True, data_columns=True, mode='a')
-        f.close()
+#    with pd.HDFStore(DATA_PATH) as f:
+#        mono_index_df.to_hdf(f, '/' + symbol + '/D/' + '_00', format='table', append=True, data_columns=True, mode='a')
+#        f.close()
 
-    print "%s%s updated." % (symbol, '00')
+    print("%s%s updated." % (symbol, '00'))
 
 ## main
 """
@@ -83,6 +84,12 @@ for ex_name in ex_config.keys():
 
 """
 
-for symbol in ex_config["SHFE"]["symbols"]:
+def main():
+    genMonoIdx("SHFE", "RB")
+
+if __name__ == "__main__":
+    main()
+
+#for symbol in ex_config["SHFE"]["symbols"]:
 #        print "Processing %s\t%s" %(ex_name, symbol)
-        genMonoIdx("SHFE", symbol)
+#        genMonoIdx("SHFE", symbol)
