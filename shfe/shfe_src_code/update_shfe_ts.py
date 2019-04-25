@@ -1,13 +1,11 @@
 # -*- coding:utf-8 -*-
 
 from __future__ import unicode_literals
-import time
 from include import DATA_PATH, TEST_DATA_PATH, shfe_headers, shfe_dtypes, months, shfe_symbols
 import pandas as pd
 import tushare as ts
 import click
 from datetime import datetime, timedelta
-import itertools
 import re
 import numpy as np
 
@@ -54,8 +52,6 @@ def get_start_end_date(df_basics, symbol, year, month):
             return (start_date, end_date)
 
 
-
-
 def remove_item(li, item):
     r = list(li)
     r.remove(item)
@@ -100,6 +96,8 @@ def normalize_ts_raw(df_ts, symbol_str, month_str):
     df_ts = df_ts[ts_headers]
 
     return df_ts
+
+
 
 
 def get_data_ts(symbol, exchange, month_str, start_date, end_date):
@@ -266,11 +264,6 @@ def delist_date(symbol, exchange, year, month, df_basics):
         return None
 
 
-
-def monthlist_till_today2(start, end, m_li):
-
-    return
-
 def first_last_trd_day(symbol, df_basics):
     pat = re.escape(symbol) + r'\d{4}'
     dfa = df_basics.loc[df_basics["symbol"].str.match(pat)].copy()
@@ -324,7 +317,18 @@ def get_last_trading_day(exchange, tm):
 def is_up_to_date(a, b):
     return a == b
 
+def get_symbol_months(symbol, f):
+    months = []
+    #find months list from local hdf5
+    for item in f.walk("/" + symbol + "/D/"):
+        months_raw = list(item[2])
+        months = [(lambda x: x.strip('_'))(x) for x in months_raw]
+
+    return months
+
+
 def update_shfe_latest(symbol, df_basics):
+    months = []
     today = datetime.today()
     last_tdate = get_last_trading_day("SHFE", datetime.now())        #last trading day
     print("last trading date", last_tdate)
@@ -333,11 +337,7 @@ def update_shfe_latest(symbol, df_basics):
 
     #find dates of latest data from local hdf5 groups
     with pd.HDFStore(DATA_PATH) as f:
-        #find months list from local hdf5
-        for item in f.walk("/" + symbol + "/D/"):
-            months_raw = list(item[2])
-            months = [(lambda x: x.strip('_'))(x) for x in months_raw]
-
+        months = get_symbol_months(symbol, f)
         for month in months:
             df = pd.read_hdf(f, '/' + symbol + "/D/_" + month)
             latest_local_date_dic[month] = df.index.get_level_values("date").max()
@@ -383,105 +383,119 @@ def update_shfe_latest(symbol, df_basics):
 
         return
 
-#        m_li = monthlist_till_today2()
 
-#            idx_latest.append(df.index.get_level_values("date").max())
+def clean_local_data(df):
+    df.fillna(0, inplace=True)
+    df.loc[df["volume"] == 0, ["open", "high", "low"]] = df.loc[df["volume"] == 0, "close"]
+    df.loc[df["pre_close"] == 0, "pre_close"] = df.loc[df["pre_close"] == 0, "pre_settlement"]
 
-#        for a, b in itertools.combinations(idx_latest, 2):
-#            # print(up_to_date(a,b))
-#            if not is_up_to_date(a, b):
-#                print("Data not up-to-date!", a, b)
-#            else:
-#                continue
+    return
 
-#    local_latest_date = min(idx_latest)
 
-#    print("Find latest local data: ", local_latest_date)
+def cleanse_shfe_data(symbol):
+    with pd.HDFStore(DATA_PATH) as f:
 
-#    last_trading_day = get_last_trading_day("SHFE", today)
-#    if local_latest_date == last_trading_day:
-#        print(symbol, "is up-to-date. Skip...")
-#        return
+        months = get_symbol_months(symbol, f)
+        if "00" in months:
+            months.remove("00")
 
-#    else:
-#        first_year = local_latest_date.year
-#        m_li = monthlist_till_today(local_latest_date, today)
-#        print(m_li)
-##        for y in range(first_year, this_year + 1):
-##            for yr in (y, y+1):
-##                print(y)
-##                for month in months:
-##                    month_str = str(yr) + month
-##                    print(symbol, month_str)
-#        for item in m_li:
-##            print(item[0], item[1])
-#            update_shfe(symbol, item[0], item[1], df_basics)
+        for month in months:
+#            print('/'+symbol+"/D/_"+month)
+            df = pd.read_hdf(f, '/'+symbol+"/D/_"+month)
+            clean_local_data(df)
+            df.to_hdf(f, '/' + symbol + '/D/_' + month, format='table', append=False,
+              data_columns=True, mode='a', endcoding="utf-8")
+
+    return
 
 
 @click.command()
 @click.option("--symbol", "-s",
               type=click.STRING,
-              help='The symbol of a trading contract')
-@click.option("--year", "-y",
-              type=click.INT,
-              help="Year")
-@click.option("--month", "-m",
-              type=click.STRING,
-              help="month")
-@click.option("--latest", "-u",
-              is_flag=True,
-              help="up-to-date")
-def main(symbol, year, month, latest):
+              help='The symbol of a trading contract, or "all" is required for command')
+@click.option("--year", "-y", type=click.INT, help="Year")
+@click.option("--month", "-m", type=click.STRING, help="month")
+@click.option("--latest", "-u", is_flag=True, help="up-to-date")
+@click.option("--clean", "-c", is_flag=True, help="Clean data")
+def main(symbol, year, month, latest, clean):
     start_date = "2008-01-01"
     df_basics = pro.fut_basic(exchange='SHFE', fut_type='1', fields='ts_code,symbol,list_date,delist_date')
 #    print(symbol, year, month)
     this_year = datetime.now().year
     this_month = datetime.now().month
     now = datetime.now()
-    if symbol.upper() in shfe_symbols:
-        symbol=symbol.upper()
+    if symbol:
+        symbol = symbol.upper()
+        if symbol in shfe_symbols:
 #        print("good symbol")
-    else:
-        print("Wrong symbol. Quit")
+            if latest:
+                print("Updating %s to latest..." % symbol)
+                update_shfe_latest(symbol, df_basics)
+                return
 
-    if latest:
-        print("Updating %s to latest..." % symbol)
-        update_shfe_latest(symbol, df_basics)
-        return
+            if clean:
+                print("Cleaning %s data..." % symbol)
+                cleanse_shfe_data(symbol)
+                print("Data cleaning finished with success! Done.")
+                return
 
-    if year and 8 <= year <= (this_year-1999):
-        year_s = str(year+2000)
-#        print("good year")
-#        print(year_s)
-        if month in months:
-            update_shfe(symbol, year_s, month, df_basics)
-        elif month is None:
-            for m in months:
-                update_shfe(symbol, year_s, m, df_basics)
-    elif year is None:
-        print("all years")
-        if month in months:
-           for y in range(2000+year, this_year+1):
-               update_shfe((symbol, str(y), month), df_basics)
-        elif month is None:     #update all data till today
-            while True:
-                answer = input("Are you sure you want to update ALL local data?('Y/yes' or 'N/no')   ").strip().lower()
-                #       print("answer is ", answer)
-                if answer in ("yes", "y"):
-                    first_list_day, last_delist_day = first_last_trd_day(symbol, df_basics)
-                    mlist = monthlist_till_today(first_list_day)
-#                    print(mlist)
-                    for ele in mlist:
-#                        print(ele[0], ele[1])
-                        update_shfe(symbol, ele[0], ele[1], df_basics)
-                    break
-                else:
-                    break
+            if year and 8 <= year <= (this_year - 1999):
+                year_s = str(year + 2000)
+                #        print("good year")
+                #        print(year_s)
+                if month in months:
+                    update_shfe(symbol, year_s, month, df_basics)
+                    return
+
+                elif month is None:
+                    for m in months:
+                        update_shfe(symbol, year_s, m, df_basics)
+                    return
+
+            elif year is None:
+                print("all years")
+                if month in months:
+                    for y in range(2000 + year, this_year + 1):
+                        update_shfe((symbol, str(y), month), df_basics)
+                    return
+
+                elif month is None:  # update all data till today
+                    while True:
+                        answer = input(
+                            "Are you sure you want to update ALL local data?('Y/yes' or 'N/no')   ").strip().lower()
+                        #       print("answer is ", answer)
+                        if answer in ("yes", "y"):
+                            first_list_day, last_delist_day = first_last_trd_day(symbol, df_basics)
+                            mlist = monthlist_till_today(first_list_day)
+                            #                    print(mlist)
+                            for ele in mlist:
+                                #                        print(ele[0], ele[1])
+                                update_shfe(symbol, ele[0], ele[1], df_basics)
+                            return
+
+                        else:
+                            return
 
 
-    #    @click.option('--symbol', '-s', type=click.STRING,
-#                  help='File in which there is the text you want to encrypt/decrypt.')
+        if symbol == "ALL":
+            if latest:
+                for smbl in shfe_symbols:
+                    update_shfe_latest(smbl, df_basics)
+                return
 
-#
+            if clean:
+                for smbl in shfe_symbols:
+                    cleanse_shfe_data(smbl)
+
+                print("Data cleaned with success.")
+                return
+
+        else:
+            print("Wrong symbol. Quit")
+            return
+
+
+
+
 if __name__ == '__main__':
     main()
