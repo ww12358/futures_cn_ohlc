@@ -11,12 +11,12 @@ def saveAsHdf(y, f):
 
     x = year_str.index(y)
     year_array = year_str[x:x+3]
-    print year_array
+    print (year_array)
 
     for i in symbols:
         for j in year_array:
             z = j[-1:]
-            print 'z = %s' % z
+            print ('z = %s' % z)
             for k in months:
                 df = rd(y)
                 dfa = df.loc[df['symbol'] == (i + z + k)]
@@ -38,7 +38,7 @@ def saveAsHdf(y, f):
                 else:
                     s = i
 
-                print 's =', s, ' j=', j, ' k=', k, '\t', i + j + k, dfa.empty
+                print('s =', s, ' j=', j, ' k=', k, '\t', i + j + k, dfa.empty)
 
                 if not dfa.empty:
                     dfa['symbol'][:] = s + y + k
@@ -50,7 +50,7 @@ def main():
     f = pd.HDFStore('../data/cze.hdf5')
 
     for y in year_str:
-        print "Year " + y + '\n'
+        print("Year " + y + '\n')
         saveAsHdf(y, f)
 
     f.flush()

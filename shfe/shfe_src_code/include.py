@@ -25,7 +25,7 @@ shfe_headers = ['symbol', 'date', 'pre_close', 'pre_settlement',  \
                'open', 'high', 'low', 'close', 'settlement', \
                'd1', 'd2', 'volume','turnover', 'oi']
 
-HOME_PATH = '/home/sean/PycharmProjects/chn_future_ex_data/shfe'
+HOME_PATH = '/home/sean/PycharmProjects/cn_ex_sync/shfe'
 SRC_PATH = os.path.join(HOME_PATH, 'shfe_src_data')
 DATA_PATH = os.path.join(HOME_PATH, 'shfe_data', 'shfe.hdf5')
 TEST_DATA_PATH = os.path.join(HOME_PATH, 'shfe_data', 'shfe_bak.hdf5')

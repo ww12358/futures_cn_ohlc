@@ -25,7 +25,7 @@ dce_headers = ['symbol', 'date', 'pre_close', 'pre_settlement',  \
                'open', 'high', 'low', 'close', 'settlement', \
                'd1', 'd2', 'volume','turnover', 'oi']
 
-HOME_PATH = '/home/sean/PycharmProjects/chn_future_ex_data/dce'
+HOME_PATH = '/home/sean/PycharmProjects/cn_ex_sync/dce'
 SRC_PATH = os.path.join(HOME_PATH, 'dce_src_data')
 DATA_PATH = os.path.join(HOME_PATH, 'dce_data', 'dce.hdf5')
 TEST_DATA_PATH = os.path.join(HOME_PATH, 'dce_data', 'dce_clean.hdf5')
