@@ -7,7 +7,7 @@
 from math import pi
 import pandas as pd
 from bokeh.plotting import figure, show, output_file
-from dce.dce_src_code.include import TEST_DATA_PATH
+from dce.include import TEST_DATA_PATH
 
 symbol = 'Y'
 month = '09'

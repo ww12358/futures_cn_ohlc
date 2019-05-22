@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 import quandl
 import pandas as pd
-from dce.dce_src_code.include import dce_headers, dce_symbols, dce_dtypes, TEST_DATA_PATH
+from dce.include import dce_headers, dce_symbols, dce_dtypes, TEST_DATA_PATH
 import numpy as np
 
 quandl.ApiConfig.api_key = 'zoFEDaUaEqsZdsajsp_o'

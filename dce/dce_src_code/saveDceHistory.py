@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import pandas as pd
-from readDceHistory import readSrcData as rd
+from .readDceHistory import readSrcData as rd
 
 def saveAsHdf(y, f):
     symbols = ['PM', 'WH', 'CF', 'SR', 'PTA', 'OI', 'RI', 'ME', 'FG', 'RS', 'RM', 'ZC', 'JR', 'LR', 'SM', 'CY', 'AP',

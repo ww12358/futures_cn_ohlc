@@ -2,7 +2,7 @@
 import os
 import pandas as pd
 import re
-from include import dce_symbols, dce_dtypes, dce_headers, months, DATA_PATH, SRC_PATH, TEST_DATA_PATH
+from dce.include import dce_symbols, dce_dtypes, dce_headers, months, DCE_DATA_PATH, SRC_PATH, TEST_DATA_PATH
 import h5py
 
 def getYear(f_name):
@@ -12,12 +12,12 @@ def getYear(f_name):
         return matchObj.group(2)
 
 def readSrcData():
-    f = pd.HDFStore(DATA_PATH)
+    f = pd.HDFStore(DCE_DATA_PATH)
 
     for item in os.listdir(SRC_PATH):
         SUB_DIR = os.path.join(SRC_PATH, item)
         symbol = os.path.basename(item).upper()
-        print symbol
+        print(symbol)
         if os.path.isdir(SUB_DIR):
             df = pd.DataFrame()
             for f_name in sorted(os.listdir(SUB_DIR)):
@@ -51,7 +51,7 @@ def readSrcData():
 #                    print df_sel.dtypes
                     df_sel.to_hdf(f, '/'+symbol+'/D/'+'_' + month, format='table', append=True, data_columns=True, mode='a')
                 else:
-                    print 'Data format not match. Abort...'
+                    print('Data format not match. Abort...')
                     return
             f.flush()
             f.close()
@@ -64,12 +64,12 @@ def cleanse_data():
 #    print info
 
     for symbol in dce_symbols:
-        with h5py.File(DATA_PATH) as f:
+        with h5py.File(DCE_DATA_PATH) as f:
             sub_grp = f["".join(["/", symbol, '/D'])]
             months_str = sub_grp.keys()
         f.close()
 #        print months_str
-        with pd.HDFStore(DATA_PATH, "r") as f_pandas:
+        with pd.HDFStore(DCE_DATA_PATH, "r") as f_pandas:
             for month_str in months_str:
                 df = pd.read_hdf(f_pandas, "".join(["/",symbol, '/D/', month_str]))
                 index_upper(df)     #refresh symbols as uppercase, eg: 'a1901' -> 'A1901'
@@ -77,7 +77,7 @@ def cleanse_data():
 #                df.fillna(0, inplace=True)
                 transit_zero_volumes(df)
 #                with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-                print "Update Symbol: %s,   subgroup: %s" % (symbol, month_str)
+                print("Update Symbol: %s,   subgroup: %s" % (symbol, month_str))
                 df.to_hdf(TEST_DATA_PATH, '/'+symbol+'/D/'+month_str, format='table', append=True, data_columns=True, mode='a')
         f_pandas.flush()
         f_pandas.close()

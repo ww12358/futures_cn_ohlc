@@ -1,12 +1,12 @@
 # -*- coding:utf-8 -*-
 from __future__ import print_function
 from __future__ import absolute_import
-from shfe.shfe_src_code.include import *
+from shfe.include import *
 import pandas as pd
 import re
 
 def readShfeSrcData():
-    f = pd.HDFStore(DATA_PATH, "w")
+    f = pd.HDFStore(SHFE_DATA_PATH, "w")
 
     for item in sorted(os.listdir(SRC_PATH)):
         FILE_PATH = os.path.join(SRC_PATH, item)

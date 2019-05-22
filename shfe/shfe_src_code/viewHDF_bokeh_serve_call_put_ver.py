@@ -1,18 +1,16 @@
 # coding: utf-8
 from __future__ import absolute_import
-from math import pi
 import pandas as pd
 import numpy as np
-from bokeh.plotting import figure, show, output_file
-from bokeh.models import ColumnDataSource, Plot, DataRange1d, LinearAxis, HoverTool
-from bokeh.models.glyphs import VBar, Segment
-from bokeh.io import curdoc, show
-from shfe.shfe_src_code.include import DATA_PATH, TEST_DATA_PATH
+from bokeh.plotting import figure
+from bokeh.models import ColumnDataSource, HoverTool
+from bokeh.io import show
+from shfe.include import SHFE_DATA_PATH
 
 symbol = 'CU'
 month = u'12'
 
-df = pd.read_hdf(DATA_PATH, '/'+symbol+'/D/'+'_'+month)
+df = pd.read_hdf(SHFE_DATA_PATH, '/' + symbol + '/D/' + '_' + month)
 df = df.reset_index(level=['symbol'])
 #print df
 

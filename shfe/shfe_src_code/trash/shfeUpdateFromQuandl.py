@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 import quandl
 import pandas as pd
-from shfe.shfe_src_code.include import shfe_headers, shfe_symbols, shfe_dtypes
+from shfe.include import shfe_headers, shfe_symbols, shfe_dtypes
 import numpy as np
 
 quandl.ApiConfig.api_key = 'zoFEDaUaEqsZdsajsp_o'

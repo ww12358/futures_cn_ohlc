@@ -2,7 +2,7 @@
 from math import pi
 import pandas as pd
 from bokeh.plotting import figure, show, output_file
-from shfe.shfe_src_code.include import TEST_DATA_PATH
+from shfe.include import TEST_DATA_PATH
 
 symbol = 'CU'
 month = '09'

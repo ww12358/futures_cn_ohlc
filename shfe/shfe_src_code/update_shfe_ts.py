@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from __future__ import unicode_literals
-from include import DATA_PATH, TEST_DATA_PATH, shfe_headers, shfe_dtypes, months, shfe_symbols
+from shfe.include import SHFE_DATA_PATH, TEST_DATA_PATH, shfe_headers, shfe_dtypes, months, shfe_symbols
 import pandas as pd
 import tushare as ts
 import click
@@ -19,7 +19,7 @@ def get_local_data(symbol, year, month):
         print(query_str)
 
     try:
-        with pd.HDFStore(DATA_PATH) as f:
+        with pd.HDFStore(SHFE_DATA_PATH) as f:
             df = pd.read_hdf(f, '/'+symbol+'/D/_'+month)
             if not year is None:
                 df = df.loc[df.index.get_level_values('symbol')==query_str]
@@ -60,12 +60,13 @@ def remove_item(li, item):
 
 
 def normalize_ts_raw(df_ts, symbol_str, month_str):
-#    with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-#        print(df_ts.head(5))
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+        print(df_ts.head(5))
     df_ts.fillna(0, inplace=True)
 #    print(df_ts['pre_settle'])
 
     df_ts.reset_index(inplace=True, drop=True)
+
     columns = {
         "ts_code": "symbol",
         "trade_date": "date",
@@ -89,11 +90,11 @@ def normalize_ts_raw(df_ts, symbol_str, month_str):
     df_ts.loc[df_ts["volume"] == 0, ["open", "high", "low"]] = df_ts.loc[df_ts["volume"] == 0, "close"]
     df_ts.loc[df_ts["pre_close"] == 0, "pre_close"] = df_ts.loc[df_ts["pre_close"] == 0, "pre_settlement"]
 
-#    with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-#        print(df_ts.head(5))
-
     ts_headers = remove_item(shfe_headers, "date")
     df_ts = df_ts[ts_headers]
+
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+        print(df_ts.head(5))
 
     return df_ts
 
@@ -155,7 +156,7 @@ def append_ts_data(df, exchange, symbol, month, start_date, end_date):
         print(df_append, "\nAbove data is going to be appended to local data.\n")
 
         if not df_append.empty:
-            with pd.HDFStore(DATA_PATH) as f:
+            with pd.HDFStore(SHFE_DATA_PATH) as f:
                 df_old = pd.read_hdf(f, '/' + symbol + '/D/' + '_' + month_short, mode='r')
                 df_new = df_old.append(df_append)
                 df_new.sort_index(inplace=True)
@@ -176,7 +177,7 @@ def append_ts_data(df, exchange, symbol, month, start_date, end_date):
 #                    df_new = df.append(df_append)
 #                    df_new.sort_index(inplace=True)
 #                    print(df_new)
-                    with pd.HDFStore(DATA_PATH) as f:
+                    with pd.HDFStore(SHFE_DATA_PATH) as f:
                         df_old = pd.read_hdf(f, '/' + symbol + '/D/' + '_' + month_short, mode='r')
                         df_new = df_old.append(df_append)
                         df_new.sort_index(inplace=True)
@@ -193,7 +194,7 @@ def append_ts_data(df, exchange, symbol, month, start_date, end_date):
             if time.time() > timeout:
                 print("Update data automatically...")
  #               print("Time out waiting for prompt. Quit...")
-                with pd.HDFStore(DATA_PATH) as f:
+                with pd.HDFStore(SHFE_DATA_PATH) as f:
                     df_old = pd.read_hdf(f, '/' + symbol + '/D/' + '_' + month_short, mode='r')
                     df_new = df_old.append(df_append)
                     df_new.to_hdf(f, '/' + symbol + '/D/' + '_' + month_short, format='table', append=False,
@@ -336,7 +337,7 @@ def update_shfe_latest(symbol, df_basics):
     this_year = today.year
 
     #find dates of latest data from local hdf5 groups
-    with pd.HDFStore(DATA_PATH) as f:
+    with pd.HDFStore(SHFE_DATA_PATH) as f:
         months = get_symbol_months(symbol, f)
         for month in months:
             df = pd.read_hdf(f, '/' + symbol + "/D/_" + month)
@@ -393,7 +394,7 @@ def clean_local_data(df):
 
 
 def cleanse_shfe_data(symbol):
-    with pd.HDFStore(DATA_PATH) as f:
+    with pd.HDFStore(SHFE_DATA_PATH) as f:
 
         months = get_symbol_months(symbol, f)
         if "00" in months:
