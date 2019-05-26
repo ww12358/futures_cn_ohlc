@@ -80,12 +80,13 @@ def delist_date(symbol, exchange, year, month, df_basics):
 
 
 def get_list_delist_dates(symbol, exchange, contracts, df_basics):
+#    print(df_basics)
     contract_delist_date = {}
     contract_list_date = {}
     for year, month in contracts:
         contract = year + month
         smbl_str = symbol + year + month + '.' + exchange
-        #        print(smbl_str)
+        print(smbl_str)
         try:
             contract_delist_date[
                 pd.to_datetime(df_basics.loc[df_basics["ts_code"] == smbl_str, "delist_date"].values[0])] = contract
@@ -116,18 +117,24 @@ def get_contract_range(contract_combs, list_dates, delist_dates, date, today):
     return contract_range
 
 def normalize_new_data(df):
-    df.set_index("symbol", append=True, inplace=True)
+#    print(df)
+    df.reset_index(inplace=True)
+    df.set_index(["date", "symbol"], inplace=True)
+#    print(df)
 #    df.loc[df["volume"] == 0, ["open", "high", "low"]] = df.loc[df["volume"] == 0, ["close"]]
 #    df.loc[df["pre_close"] == 0, "pre_close"] = df.loc[df["pre_close"] == 0, "pre_settlement"]
 #    print(df)
 
     return df
 
-def append_data(df, exchange, symbol, freq, yymm, start_date, end_date, ldata, rdata):
-    print(symbol, exchange, yymm, start_date, end_date)
-    month_short = yymm[2:]
-    df_ts = rdata.get_data(symbol, local_ts_ex_map[exchange], freq, yymm, start_date, end_date)
-    print(df_ts)
+def append_data(exchange, symbol, freq, year, month, start_date, end_date, ldata, rdata):
+    df = ldata.get_data(year, month)
+#    print(df)
+#    print(symbol, exchange, yymm, start_date, end_date)
+    ts_month_str = year + month
+#    month_short = yymm[2:]
+    df_ts = rdata.get_data(symbol, exchange, freq, ts_month_str, start_date, end_date)
+#    print(df_ts)
 
     i = df_ts.index.size - df.index.size  #
     if i == 0:  # df_open.index.size equals with df.index.size in length
@@ -148,37 +155,27 @@ def append_data(df, exchange, symbol, freq, yymm, start_date, end_date, ldata, r
 #        df.set_index("symbol", append=True, inplace=True)
         print(df_append, "\nAbove data is going to be appended to local data.\n")
         if not df_append.empty:
-            ldata.append_data(df_append, exchange, symbol, freq, month_short)
+            ldata.append_data(df_append, exchange, symbol, freq, month)
 
+    return
 
-        return
-#        if not df_append.empty:
-#            with pd.HDFStore(SHFE_DATA_PATH) as f:
-#                df_old = pd.read_hdf(f, '/' + symbol + '/D/' + '_' + month_short, mode='r')
-#                df_new = df_old.append(df_append)
-#                df_new.sort_index(inplace=True)
-#                df_new.to_hdf(f, '/' + symbol + '/D/' + '_' + month_short, format='table', append=False,
-#                              data_columns=True, mode='a', endcoding="utf-8")
-
-#            return
-
-def update_cn(exchange, symbol, freq, year, month, ldata, rdata):
+def update_cn(exchange, symbol, freq, year, month, ldata, rdata, basics_df):
 #    year = str(int(year)+2000)
 #    year_short = year[2:]
-    ts_month_str = year+month
+#    ts_month_str = year+month
 
 #    year_4d = str(int(year)+2000)
-    print(year, month)
-    df_local = ldata.get_data(year, month)
-    print(df_local)
+#    print(year, month)
+#    df_local = ldata.get_data(year, month)
+#    print(df_local)
 #    df_local = get_local_data(symbol, year, month)
 
     try:
 #        print(rdata.basics)
-        start_date ,end_date = get_start_end_date(rdata.basics, symbol, year, month)
+        start_date ,end_date = get_start_end_date(basics_df, symbol, year, month)
         print(start_date, end_date)
-        append_data(df_local, local_ts_ex_map[exchange], symbol, freq, ts_month_str, start_date, end_date, ldata, rdata)
-        print(df_local)
+        append_data(exchange, symbol, freq, year, month, start_date, end_date, ldata, rdata)
+#        print(df_local)
 
         return
 
@@ -188,7 +185,7 @@ def update_cn(exchange, symbol, freq, year, month, ldata, rdata):
 
         return
 
-def update_cn_latest(exchange, symbol, freq, ldata, rdata):
+def update_cn_latest(exchange, symbol, freq, ldata, rdata, basics_df ):
 
     last_trading_day = get_last_trading_day(exchange, datetime.now(), rdata.feed)        #last trading day
     year_2, month_2, day_2 = last_trading_day.year, last_trading_day.month, last_trading_day.day
@@ -212,7 +209,7 @@ def update_cn_latest(exchange, symbol, freq, ldata, rdata):
     print(contract_combs)
 
 
-    list_dates, delist_dates = get_list_delist_dates(symbol, exchange, contract_combs, rdata.basics)
+    list_dates, delist_dates = get_list_delist_dates(symbol, local_ts_ex_map[exchange], contract_combs, basics_df)
     print(list_dates, "\n")
     print(delist_dates)
 
@@ -225,7 +222,7 @@ def update_cn_latest(exchange, symbol, freq, ldata, rdata):
         return
     else:
         for contract in contracts:
-            update_cn(exchange, symbol, freq, contract[0], contract[1], ldata, rdata)
+            update_cn(exchange, symbol, freq, contract[0], contract[1], ldata, rdata, basics_df)
 
         return
 

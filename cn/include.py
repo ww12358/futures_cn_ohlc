@@ -11,6 +11,9 @@ DATA_PATH_DICT.update(temp_dict)
 
 all_symbols = shfe_symbols + dce_symbols + cze_symbols
 
+exchange_symbols_map = {"SHFE": shfe_symbols,
+                        "DCE": dce_symbols,
+                        "CZE": cze_symbols}
 all_exchanges = ["SHFE", "DCE", "CZE"]
 symLists = [shfe_symbols, dce_symbols, cze_symbols]
 

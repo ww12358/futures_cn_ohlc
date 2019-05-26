@@ -4,12 +4,20 @@ import pandas as pd
 from shfe.include import shfe_dtypes, shfe_headers
 from .include import local_ts_ex_map
 
+
+def remove_item(li, item):
+    r = list(li)
+    r.remove(item)
+
+    return r
+
+
 class tsData:
     def __init__(self, ts_pro, exchange, symbol, freq):
         self.name = "tushare"
         self.symbol = symbol.strip().upper()
         self.feed = ts_pro
-        self.exchange = local_ts_ex_map[exchange]
+        self.exchange = exchange
         self.freq = freq
         return
 
@@ -54,13 +62,13 @@ class tsData:
 
 
     def get_data(self, symbol, exchange, freq, month_str, start_date, end_date):
-        print(self.symbol, exchange, month_str, start_date, end_date)
+#       print(self.symbol, exchange, month_str, start_date, end_date)
         #    example of month_str: "1901"
-        ts_code = self.symbol + month_str + '.' + self.exchange
+        ts_code = self.symbol + month_str + '.' + local_ts_ex_map[self.exchange]
         print(ts_code)
         df_ts = self.feed.fut_daily(ts_code=ts_code, start_date=start_date, end_date=end_date)
 
-        print(df_ts)
+#        print(df_ts)
 
         if not df_ts.empty:
             return self.normalize_ts_raw(df_ts, self.exchange, self.symbol, month_str)

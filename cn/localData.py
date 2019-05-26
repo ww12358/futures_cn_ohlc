@@ -11,11 +11,15 @@ class localData:
         self.freq = freq
         self.exchange = exchange
 #        self.__h5key = "/" + self.symbol + "/" + self.freq + "/_" + month_seq
+        self.__df = {}
         try:
             if self.symbol in all_symbols:
                 self.__h5Store = pd.HDFStore(DATA_PATH_DICT[self.symbol])
-#                self.__df = pd.read_hdf(self.__h5Store, self.__h5key)
-                print("Data read successfully.")
+                self.months = self.get_symbol_months()
+                for month in self.months:
+                    key = ''.join(["/", self.symbol, "/", self.freq, "/_", month])
+                    self.__df[month] = pd.read_hdf(self.__h5Store, key)
+                print("Local Data loaded successfully! Continue...")
             else:
                 print(symbol, "\tNot a valid symbol. Quit")
                 return
@@ -25,25 +29,29 @@ class localData:
             return
 
     def __del__(self):
-        print("Destructor called.")
+        print("Saving data to disk drive... Please wait.")
         if self.__h5Store:
             self.__h5Store.flush()
             self.__h5Store.close()
+            print("Success! Update exit.")
             return
         else:
             return
 
     def get_data(self, year, month):
         if not year is None:
+#            print(year)
 #            year_short = year[2:]
             query_str = self.symbol + year + month
             print(query_str)
 
         try:
-            df = pd.read_hdf(self.__h5Store, '/' + self.symbol + '/' + self.freq + '/_' + month)
-            print(df)
+#            print(df)
+            df = self.__df[month]
             df = df.loc[df.index.get_level_values('symbol') == query_str]
             df.reset_index(level="symbol", inplace=True)
+        except ValueError:
+            return None
         except Exception as e:
             print(str(e))
 
@@ -70,13 +78,17 @@ class localData:
         return latest_local_date_dic
 
     def append_data(self, df_append, exchange, symbol, freq, month):
-        df_old = pd.read_hdf(self.__h5Store, '/' + symbol + '/D/' + '_' + month, mode='r')
-        df_new = df_old.append(df_append)
-        df_new.sort_index(inplace=True)
-        with pd.option_context('display.max_rows', 100, 'display.max_columns', None):
-            print(df_new)
-#        df_new.to_hdf(self.__h5Store, '/' + symbol + '/' + freq + '/_' + month, format='table', append=True,
-#                                  data_columns=True, mode='a', endcoding="utf-8")
+#        print(df_append)
+#        print(self.__df[month])
+        self.__df[month].reset_index(inplace=True)
+        self.__df[month].set_index(["date", "symbol"], inplace=True)
+        df_new = self.__df[month].append(df_append)
+        df_new.sort_index(level=["date","symbol"], ascending=True, inplace=True)
+#        with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+#            print(df_new.head(10))
+#            print(df_new.tail(10))
+        df_new.to_hdf(self.__h5Store, '/' + symbol + '/' + freq + '/_' + month, format='table', append=False,
+                                  data_columns=True, complevel=9, complib='blosc:snappy', endcoding="utf-8")
 
         return
 
