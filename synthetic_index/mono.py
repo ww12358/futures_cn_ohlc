@@ -3,7 +3,7 @@
 import pandas as pd
 from datetime import datetime
 import click
-from include import ex_config, months, shfe_headers
+from synthetic_index.include import ex_config, months, shfe_headers
 
 idx_headers = ['symbol', 'date',    \
                'open', 'high', 'low', 'close', 'settlement', \

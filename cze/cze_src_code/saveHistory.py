@@ -35,7 +35,7 @@ def saveAsHdf(y, f):
                 dfa = df.loc[df['symbol']==(i+z+k)]
 #                print 's =', s, ' j=', j, ' k=', k, '\t', i + j + k, dfa.empty
                 if not dfa.empty:
-                    print "Updating symbol %s" % (s + j + k)
+                    print("Updating symbol %s" % (s + j + k))
                     dfa['symbol'][:] = s+j+k
 
                     if df_con.empty:
@@ -54,7 +54,7 @@ def main():
     f = pd.HDFStore(DATA_PATH)
 
     for y in year_str:
-        print "Reading Year 20%s data history csv..." % y
+        print("Reading Year 20%s data history csv..." % y)
         saveAsHdf(y, f)
 
     f.flush()

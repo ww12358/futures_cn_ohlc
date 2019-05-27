@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 import os
 
-cze_symbols = ['PM', 'WH', 'CF', 'SR', 'PTA', 'OI', 'RI', 'ME', 'FG', 'RS', 'RM', 'ZC', 'JR', 'LR', 'SM', 'CY', 'AP']
+cze_symbols = ['PM', 'WH', 'CF', 'SR', 'TA', 'OI', 'RI', 'ME', 'FG', 'RS', 'RM', 'ZC', 'JR', 'LR', 'SM', 'CY', 'AP']
 
 cze_all_symbols = ['CF','PM', 'WH', 'SR', 'PTA', 'OI', 'RI', 'ME', 'FG', 'RS', 'RM', 'ZC', 'JR', 'LR', 'SM', 'CY', 'AP',
                'WT', 'WS', 'TA', 'RO', 'ER']
@@ -29,7 +29,7 @@ cze_dtypes = {'symbol' : 'object',
             'EDSP':'float64'
          }
 
-HOME_PATH = '/home/sean/PycharmProjects/chn_future_ex_data/zce'
-DATA_SRC_PATH = os.path.join(HOME_PATH,'zce_src_data')
-CZE_DATA_PATH = os.path.join(HOME_PATH, 'zce_data/zce.hdf5')
-TEST_DATA_PATH = os.path.join(HOME_PATH,'zce_data/zce_test.hdf5')
+HOME_PATH = '/home/sean/PycharmProjects/cn_ex_sync/cze'
+DATA_SRC_PATH = os.path.join(HOME_PATH,'cze_src_data')
+CZE_DATA_PATH = os.path.join(HOME_PATH, 'cze_data/cze.hdf5')
+TEST_DATA_PATH = os.path.join(HOME_PATH,'cze_data/cze_test.hdf5')

@@ -1,8 +1,8 @@
 # -*- coding:utf-8 -*-
 
 import pandas as pd
-from .include import DATA_PATH_DICT, all_symbols
-
+from .include import DATA_PATH_DICT, all_symbols, cn_headers
+import re
 
 
 class localData:
@@ -13,16 +13,26 @@ class localData:
 #        self.__h5key = "/" + self.symbol + "/" + self.freq + "/_" + month_seq
         self.__df = {}
         try:
-            if self.symbol in all_symbols:
-                self.__h5Store = pd.HDFStore(DATA_PATH_DICT[self.symbol])
-                self.months = self.get_symbol_months()
-                for month in self.months:
-                    key = ''.join(["/", self.symbol, "/", self.freq, "/_", month])
-                    self.__df[month] = pd.read_hdf(self.__h5Store, key)
-                print("Local Data loaded successfully! Continue...")
-            else:
-                print(symbol, "\tNot a valid symbol. Quit")
-                return
+            self.__h5Store = pd.HDFStore(DATA_PATH_DICT[self.symbol])
+            self.months = self.get_symbol_months()
+            for month in self.months:
+                key = ''.join(["/", self.symbol, "/", self.freq, "/_", month])
+                self.__df[month] = pd.read_hdf(self.__h5Store, key)
+#                print(self.__df[month])
+#                if self.exchange == "CZCE":
+#                    self.__df[month].drop(["d_oi", "EDSP"], axis=1, inplace=True)
+#                    self.__df[month]["pre_close"] = 0
+#                    self.__df[month] = self.__df[month][cn_headers]
+
+#                    if self.symbol == "TA":
+#                        self.__df[month].reset_index(inplace=True)
+#                        self.__df[month]["symbol"] = self.__df[month]["symbol"].str.replace("PTA", "TA")
+#                        self.__df[month].set_index(["date", "symbol"], inplace=True)
+
+#                self.__df[month].reset_index(inplace=True)
+#                self.__df[month].set_index(["date", "symbol"], inplace=True)
+ #               print(self.__df[month])
+            print("Local Data loaded successfully! Continue...")
 
         except Exception as e:
             print("Some error occured during access data file", str(e))
@@ -46,10 +56,10 @@ class localData:
             print(query_str)
 
         try:
-#            print(df)
             df = self.__df[month]
+#            print(df)
             df = df.loc[df.index.get_level_values('symbol') == query_str]
-            df.reset_index(level="symbol", inplace=True)
+#            df.reset_index(level="symbol", inplace=True)
         except ValueError:
             return None
         except Exception as e:
@@ -80,10 +90,10 @@ class localData:
     def append_data(self, df_append, exchange, symbol, freq, month):
 #        print(df_append)
 #        print(self.__df[month])
-        self.__df[month].reset_index(inplace=True)
-        self.__df[month].set_index(["date", "symbol"], inplace=True)
-        df_new = self.__df[month].append(df_append)
-        df_new.sort_index(level=["date","symbol"], ascending=True, inplace=True)
+#        self.__df[month].reset_index(inplace=True)
+#        self.__df[month].set_index(["date", "symbol"], inplace=True)
+        df_new = self.__df[month].append(df_append, sort=True)
+#        df_new.sort_index(level=["date","symbol"], ascending=True, inplace=True)
 #        with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 #            print(df_new.head(10))
 #            print(df_new.tail(10))
@@ -91,59 +101,6 @@ class localData:
                                   data_columns=True, complevel=9, complib='blosc:snappy', endcoding="utf-8")
 
         return
-
-"""
-    def append_ts_data(df, exchange, symbol, month, start_date, end_date):
-        #    print(symbol, exchange, month, start_date, end_date)
-        month_short = month[2:]
-        df_ts = get_data_ts(symbol, exchange, month, start_date, end_date)
-        #    print(df_ts)
-
-        i = df_ts.index.size - df.index.size  #
-        if i == 0:  # df_open.index.size equals with df.index.size in length
-            idx = df_ts.index.difference(df.index)
-            if not idx.empty:
-                print(idx.values)
-                # print(df_open[idx])
-            else:
-                print("data correct!")
-        elif i < 0:  # df.index.size > df_open.size:
-            idx = df.index.difference(df_ts.index)
-            print("%d row(s) of redundant data found." % abs(i))
-        #       print(idx.values)
-
-        else:  # df.index.size < df_open.size
-            print("%d row(s) of data missing." % i)
-            #       idx = df_ts.index.difference(df.index)
-            #       print(idx.values)
-
-            #        df_append = df_ts[~df_ts.index.isin(df.index)]
-            df_append = normalize_new_data(df_ts[~df_ts.index.isin(df.index)])
-            #        df.set_index("symbol", append=True, inplace=True)
-            print(df_append, "\nAbove data is going to be appended to local data.\n")
-
-            if not df_append.empty:
-                with pd.HDFStore(SHFE_DATA_PATH) as f:
-                    df_old = pd.read_hdf(f, '/' + symbol + '/D/' + '_' + month_short, mode='r')
-                    df_new = df_old.append(df_append)
-                    df_new.sort_index(inplace=True)
-                    df_new.to_hdf(f, '/' + symbol + '/D/' + '_' + month_short, format='table', append=False,
-                                  data_columns=True, mode='a', endcoding="utf-8")
-
-                return
-
-    def get_symbol_months(self):
-        months = []
-        # find months list from local hdf5
-        for item in self.__h5Store.walk("/" + self.symbol + "/D/"):
-            months_raw = list(item[2])
-            months = [(lambda x: x.strip('_'))(x) for x in months_raw]
-
-        return months
-
-class scrnOutput(localData):
-
-"""
 
 
 

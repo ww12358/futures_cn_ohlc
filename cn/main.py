@@ -84,7 +84,6 @@ def main(symbol, exchange, year, month, latest, clean, source="T"):
 
     if symbol:
         symbol = symbol.strip().upper()
-        exchange = symbol_exchange_map[symbol]
 
 
     if symbol == "ALL":         #update all symbols
@@ -110,7 +109,6 @@ def main(symbol, exchange, year, month, latest, clean, source="T"):
         exchange = symbol_exchange_map[symbol]
         print("Exchange:{ex}, Symbol:{smbl}".format(ex=exchange, smbl=symbol))
         basics_df = pro.fut_basic(exchange=exchange, fut_type='1', fields='ts_code,symbol,list_date,delist_date')
-#        if symbol in all_symbols:
         local_data = localData(exchange, symbol, "D")
         remote_data = tsData(pro, exchange, symbol, "D")
         if latest:

@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 import os
 
-HOME_PATH = '/home/sean/PycharmProjects/chn_future_ex_data'
+HOME_PATH = '/home/sean/PycharmProjects/cn_ex_sync'
 months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
 
 ##configuration for shfe

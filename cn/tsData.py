@@ -22,9 +22,9 @@ class tsData:
         return
 
     def normalize_ts_raw(self, df_ts, exchange, symbol_str, month_str):
-        #    with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-        #        print(df_ts.head(5))
-        if exchange in ["SHFE", "DCE"]:
+#        with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+#            print(df_ts.head(5))
+        if exchange in ["SHFE", "DCE", "CZCE"]:
             df_ts.fillna(0, inplace=True)
             #    print(df_ts['pre_settle'])
 
@@ -42,21 +42,22 @@ class tsData:
 
             df_ts.rename(columns=columns, inplace=True)
             df_ts.date = pd.to_datetime(df_ts.date, format="%Y%m%d")
+            df_ts = df_ts[shfe_headers]
             df_ts = df_ts.astype(shfe_dtypes)
             #    df_ts.drop("symbol", axis=1, inplace=True)
             df_ts.symbol = symbol_str + month_str
-            #    print(df_ts.symbol.dtype)
-            df_ts.set_index("date", drop=True, inplace=True)
+#            print(df_ts.symbol)
+            df_ts.set_index(["date", "symbol"], drop=True, inplace=True)
             df_ts.sort_index(ascending=True, inplace=True)
 
+            df_ts.loc[df_ts["close"] == 0, "close"] = df_ts.loc[df_ts["close"] == 0, "pre_settlement"]
             df_ts.loc[df_ts["volume"] == 0, ["open", "high", "low"]] = df_ts.loc[df_ts["volume"] == 0, "close"]
             df_ts.loc[df_ts["pre_close"] == 0, "pre_close"] = df_ts.loc[df_ts["pre_close"] == 0, "pre_settlement"]
 
-            #    with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-            #        print(df_ts.head(5))
+#            with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+#                print(df_ts.head(5))
 
-            ts_headers = remove_item(shfe_headers, "date")
-            df_ts = df_ts[ts_headers]
+#            ts_headers = remove_item(shfe_headers, "date")
 
         return df_ts
 
@@ -65,7 +66,7 @@ class tsData:
 #       print(self.symbol, exchange, month_str, start_date, end_date)
         #    example of month_str: "1901"
         ts_code = self.symbol + month_str + '.' + local_ts_ex_map[self.exchange]
-        print(ts_code)
+#        print(ts_code)
         df_ts = self.feed.fut_daily(ts_code=ts_code, start_date=start_date, end_date=end_date)
 
 #        print(df_ts)
