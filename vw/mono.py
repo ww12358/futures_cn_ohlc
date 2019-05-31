@@ -3,23 +3,10 @@
 import pandas as pd
 from datetime import datetime
 import click
-from synthetic_index.include import ex_config, months, shfe_headers
+from vw.include import ex_config, idx_headers, idx_dtypes
+from cn.include import all_symbols, all_exchanges, symbol_exchange_map, exchange_symbols_map
 
-idx_headers = ['symbol', 'date',    \
-               'open', 'high', 'low', 'close', 'settlement', \
-               'volume','turnover', 'oi']
 
-idx_dtypes = {'symbol' : 'object',
-            'date': 'datetime64[ns]',
-            'open':'float64',
-            'high':'float64',
-            'low':'float64',
-            'close':'float64',
-            'settlement':'float64',
-            'volume':'int64',
-            'turnover':'float64',
-            'oi':'int64',
-         }
 
 def wavg(sub_df, avg_col, weight_col):
     d = sub_df[avg_col]
@@ -28,6 +15,9 @@ def wavg(sub_df, avg_col, weight_col):
         return (d * w).sum() / w.sum()
     except ZeroDivisionError:
         return d.mean()
+    except Exception as e:
+        print(str(e))
+        return None
 
 
 def agregate_month_data(symbol, df_all, start_date):
@@ -79,7 +69,7 @@ def genMonoIdx(ex_name, symbol):
 
         if "00" in months:
             months.remove("00")
-            print("Months after index removed", months)
+#            print("Months after index removed", months)
             try:
                 mono_idx_df = pd.read_hdf(f, '/'+symbol+"/D/_00")
                 latest_idx_date = mono_idx_df.index.get_level_values("date").max()
@@ -145,7 +135,8 @@ def genMonoIdx(ex_name, symbol):
     print(mono_index_df)
 
     with pd.HDFStore(DATA_PATH) as f:
-        mono_index_df.to_hdf(f, '/' + symbol + '/D/' + '_00', format='table', append=True, data_columns=True, mode='a')
+        mono_index_df.to_hdf(f, '/' + symbol + '/D/' + '_00', mode='a', format='table', append=True,
+                                data_columns=True, complevel=9, complib='blosc:snappy')
         f.close()
 
     print("%s%s updated." % (symbol, '00'))
@@ -173,8 +164,18 @@ def main(symbol, exchange):
     if symbol:
         symbol = symbol.strip().upper()
         if symbol == "ALL":
-            for smbl in shfe_symbols:
-                genMonoIdx("SHFE", smbl)
+            for ex in all_exchanges:
+                for smbl in exchange_symbols_map[ex]:
+                    genMonoIdx(ex, smbl)
+
+        elif symbol in all_symbols:
+            exchange = symbol_exchange_map[symbol]
+            genMonoIdx(exchange, symbol)
+            return
+
+        else:
+            print("not a valid symbol")
+            return
 
     if exchange:
         exchange = exchange.strip().upper()
@@ -186,6 +187,3 @@ def main(symbol, exchange):
 if __name__ == "__main__":
     main()
 
-#for symbol in ex_config["SHFE"]["symbols"]:
-#        print "Processing %s\t%s" %(ex_name, symbol)
-#        genMonoIdx("SHFE", symbol)

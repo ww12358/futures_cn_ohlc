@@ -10,7 +10,6 @@ class localData:
         self.symbol = symbol
         self.freq = freq
         self.exchange = exchange
-#        self.__h5key = "/" + self.symbol + "/" + self.freq + "/_" + month_seq
         self.__df = {}
         try:
             self.__h5Store = pd.HDFStore(DATA_PATH_DICT[self.symbol])
@@ -18,20 +17,19 @@ class localData:
             for month in self.months:
                 key = ''.join(["/", self.symbol, "/", self.freq, "/_", month])
                 self.__df[month] = pd.read_hdf(self.__h5Store, key)
-#                print(self.__df[month])
-#                if self.exchange == "CZCE":
-#                    self.__df[month].drop(["d_oi", "EDSP"], axis=1, inplace=True)
+#                if self.exchange == "DCE":
+#                    self.__df[month].reset_index(inplace=True)
+#                    self.__df[month].set_index(["date", "symbol"], inplace=True)
+                if self.exchange == "CZCE":
+                    if "d_oi" in self.__df[month].columns:
+                        self.__df[month].drop(["d_oi", "EDSP"], axis=1, inplace=True)
 #                    self.__df[month]["pre_close"] = 0
-#                    self.__df[month] = self.__df[month][cn_headers]
-
+#                    self.__df[month].reset_index(inplace=True)
+#                    self.__df[month].set_index(["date", "symbol"], inplace=True)
 #                    if self.symbol == "TA":
 #                        self.__df[month].reset_index(inplace=True)
 #                        self.__df[month]["symbol"] = self.__df[month]["symbol"].str.replace("PTA", "TA")
 #                        self.__df[month].set_index(["date", "symbol"], inplace=True)
-
-#                self.__df[month].reset_index(inplace=True)
-#                self.__df[month].set_index(["date", "symbol"], inplace=True)
- #               print(self.__df[month])
             print("Local Data loaded successfully! Continue...")
 
         except Exception as e:
@@ -73,7 +71,7 @@ class localData:
         for item in self.__h5Store.walk("/" + self.symbol + "/" + self.freq + "/"):
             months_raw = list(item[2])
             months = [(lambda x: x.strip('_'))(x) for x in months_raw]
-            if("00" in months):
+            if("00" in months):     #do not update vw_idx
                 months.remove("00")
 
         return months
@@ -96,9 +94,12 @@ class localData:
 #        df_new.sort_index(level=["date","symbol"], ascending=True, inplace=True)
 #        with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 #            print(df_new.head(10))
-#            print(df_new.tail(10))
-        df_new.to_hdf(self.__h5Store, '/' + symbol + '/' + freq + '/_' + month, format='table', append=False,
+#            print(df_new.tail(50))
+        df_new.to_hdf(self.__h5Store, '/' + symbol + '/' + freq + '/_' + month, mode='a', format='table', append=False,
                                   data_columns=True, complevel=9, complib='blosc:snappy', endcoding="utf-8")
+
+        self.__df[month] = df_new
+#        self.__h5Store.flush()
 
         return
 

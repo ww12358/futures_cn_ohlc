@@ -92,8 +92,8 @@ def main(symbol, exchange, year, month, latest, clean, source="T"):
                 basics_df = pro.fut_basic(exchange=exchange, fut_type='1', fields='ts_code,symbol,list_date,delist_date')
                 for smbl in exchange_symbols_map[exchange]:
                     print("Exchange:{ex}, Symbol:{smbl}".format(ex=exchange, smbl=smbl))
-                    local_data = localData(exchange, symbol, "D")
-                    remote_data = tsData(pro, exchange, symbol, "D")
+                    local_data = localData(exchange, smbl, "D")
+                    remote_data = tsData(pro, exchange, smbl, "D")
                     update_cn_latest(exchange, smbl, "D", local_data, remote_data, basics_df)
             return
 

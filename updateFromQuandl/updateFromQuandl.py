@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 import quandl
 import pandas as pd
-from include import ex_config
+from .include import ex_config
 import numpy as np
 import datetime
 quandl.ApiConfig.api_key = 'zoFEDaUaEqsZdsajsp_o'

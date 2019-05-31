@@ -63,17 +63,17 @@ DCE_DATA_PATH = os.path.join(HOME_PATH, 'dce', 'dce_data', 'dce.hdf5')
 DCE_TEST_DATA_PATH = os.path.join(HOME_PATH, 'dce', 'dce_data', 'dce_clean.hdf5')
 
 
-
+from cze.include import cze_symbols, cze_headers, cze_dtypes
 ##configuration for zce
-zce_symbols = ['PM', 'WH', 'CF', 'SR', 'PTA', 'OI', 'RI', 'ME', 'FG', 'RS', 'RM', 'ZC', 'JR', 'LR', 'SM', 'CY', 'AP']
+#zce_symbols = ['PM', 'WH', 'CF', 'SR', 'PTA', 'OI', 'RI', 'ME', 'FG', 'RS', 'RM', 'ZC', 'JR', 'LR', 'SM', 'CY', 'AP']
 
-zce_all_symbols = ['CF','PM', 'WH', 'SR', 'PTA', 'OI', 'RI', 'ME', 'FG', 'RS', 'RM', 'ZC', 'JR', 'LR', 'SM', 'CY', 'AP',
-               'WT', 'WS', 'TA', 'RO', 'ER']
+#zce_all_symbols = ['CF','PM', 'WH', 'SR', 'PTA', 'OI', 'RI', 'ME', 'FG', 'RS', 'RM', 'ZC', 'JR', 'LR', 'SM', 'CY', 'AP',
+#               'WT', 'WS', 'TA', 'RO', 'ER']
 
-zce_headers = ['date', 'symbol', 'pre_settlement', 'open', 'high', 'low', 'close', 'settlement', 'd1', 'd2', 'volume',
+cze_headers = ['date', 'symbol', 'pre_settlement', 'open', 'high', 'low', 'close', 'settlement', 'd1', 'd2', 'volume',
                'oi', 'd_oi', 'turnover', 'EDSP']
-
-zce_dtypes = {'symbol' : 'object',
+"""
+cze_dtypes = {'symbol' : 'object',
             'pre_settlement': 'float64',
             'open':'float64',
             'high':'float64',
@@ -88,12 +88,29 @@ zce_dtypes = {'symbol' : 'object',
             'turnover':'float64',
             'EDSP':'float64'
          }
+"""
 
-ZCE_DATA_PATH = os.path.join(HOME_PATH, "zce", 'zce_data/zce.hdf5')
-ZCE_SRC_DATA_PATH = os.path.join(HOME_PATH, "zce", 'zce_src_data')
-ZCE_TEST_DATA_PATH = os.path.join(HOME_PATH, "zce", 'zce_data/zce_test.hdf5')
+CZCE_DATA_PATH = os.path.join(HOME_PATH, "cze", 'cze_data/cze.hdf5')
+CZCE_SRC_DATA_PATH = os.path.join(HOME_PATH, "cze", 'cze_src_data')
+CZCE_TEST_DATA_PATH = os.path.join(HOME_PATH, "cze", 'cze_data/cze_test.hdf5')
 
 ex_config = {"SHFE":{"symbols":shfe_symbols, "headers":shfe_headers,"dtypes":shfe_dtypes, "SRC_DATA_PATH":SHFE_SRC_DATA_PATH, "DATA_PATH":SHFE_DATA_PATH, "TEST_DATA_PATH":SHFE_TEST_DATA_PATH },
             "DCE":{"symbols":dce_symbols, "headers":dce_headers, "dtypes":dce_dtypes, "SRC_DATA_PATH":DCE_SRC_DATA_PATH, "DATA_PATH":DCE_DATA_PATH, "TEST_DATA_PATH":DCE_TEST_DATA_PATH},
-            "ZCE":{"symbols":zce_symbols, "headers":zce_headers, "dtypes":zce_dtypes, "SRC_DATA_PATH":ZCE_DATA_PATH, "DATA_PATH":ZCE_DATA_PATH, "TEST_DATA_PATH":ZCE_TEST_DATA_PATH}
+            "CZCE":{"symbols":cze_symbols, "headers":cze_headers, "dtypes":cze_dtypes, "SRC_DATA_PATH":CZCE_DATA_PATH, "DATA_PATH":CZCE_DATA_PATH, "TEST_DATA_PATH":CZCE_TEST_DATA_PATH}
             }
+
+idx_headers = ['symbol', 'date',    \
+               'open', 'high', 'low', 'close', 'settlement', \
+               'volume','turnover', 'oi']
+
+idx_dtypes = {'symbol' : 'object',
+            'date': 'datetime64[ns]',
+            'open':'float64',
+            'high':'float64',
+            'low':'float64',
+            'close':'float64',
+            'settlement':'float64',
+            'volume':'int64',
+            'turnover':'float64',
+            'oi':'int64',
+         }
