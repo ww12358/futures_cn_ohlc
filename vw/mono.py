@@ -94,7 +94,7 @@ def genMonoIdx(ex_name, symbol):
 #                local_data_length_dic[month] = len(df_month.index)
             except KeyError:
                 continue
-        df = pd.concat(d_li)
+        df = pd.concat(d_li, sort=True)
 
     dates = list(latest_local_date_dic.values())
 #    data_length = local_data_length_dic
@@ -106,16 +106,17 @@ def genMonoIdx(ex_name, symbol):
     dates_set = set(dates)
     if len(dates_set) == 1:
         latest_date = dates_set.pop()
-        print("All dates are same.")
+        print("Finished checking contracts. All dates are same. Continue...")
     else:
-        print("Dates not equal. Please update contract data with 'update_shfe_ts.py' first. Excecution quit")
-        return
+        print("Warning!!! Last dates not equal. \nPlease update contract data with 'update_shfe_ts.py' first. Ignore if this is special contracts like \'AU\'")
+        latest_date = max(dates)
+#        return
 
-    print("latest_date")
+#    print("latest_date\t", latest_date)
 #    latest_date = dates[0]
 
     if latest_date == latest_idx_date:
-        print(symbol, "price index is up-to-date. Skip.")
+        print(symbol, "Price index \'00\' is Up-to-date. Skip!")
         return
     else:
         mono_index_df = agregate_month_data(symbol, df, latest_idx_date)
@@ -132,7 +133,7 @@ def genMonoIdx(ex_name, symbol):
     #print mono_index_df
     #    print mono_index_df
     #mono_index_df = mono_index_df.iloc[1:]
-    print(mono_index_df)
+#    print(mono_index_df)
 
     with pd.HDFStore(DATA_PATH) as f:
         mono_index_df.to_hdf(f, '/' + symbol + '/D/' + '_00', mode='a', format='table', append=True,

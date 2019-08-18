@@ -1,9 +1,11 @@
 # -*- coding:utf-8 -*-
 import os
 
-shfe_symbols = ["CU", "AL", "ZN", "PB", "NI", "SN", "AU", "AG", "RB", "WR", "HC",  \
+shfe_symbols = ["CU", "AL", "ZN", "PB", "NI", "SN",     \
+                "AU", "AG",     \
+                "RB", "WR", "HC",  \
                "FU", "BU", \
-               "RU"]    #'SC' removed
+               "RU", "NR"]    #'SC' removed
 
 
 shfe_dtypes = {'symbol' : 'object',

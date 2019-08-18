@@ -1,9 +1,9 @@
 # -*- coding:utf-8 -*-
 import os
 
-cze_symbols = ['PM', 'WH', 'CF', 'SR', 'TA', 'OI', 'RI', 'ME', 'FG', 'RS', 'RM', 'ZC', 'JR', 'LR', 'SM', 'CY', 'AP']
+cze_symbols = ['PM', 'WH', 'CF', 'SR', 'TA', 'OI', 'RI', 'MA', 'FG', 'RS', 'RM', 'ZC', 'JR', 'LR', 'SM', 'CY', 'AP']
 
-cze_all_symbols = ['CF','PM', 'WH', 'SR', 'PTA', 'OI', 'RI', 'ME', 'FG', 'RS', 'RM', 'ZC', 'JR', 'LR', 'SM', 'CY', 'AP',
+cze_all_symbols = ['CF','PM', 'WH', 'SR', 'PTA', 'OI', 'RI', 'MA', 'FG', 'RS', 'RM', 'ZC', 'JR', 'LR', 'SM', 'CY', 'AP',
                'WT', 'WS', 'TA', 'RO', 'ER']
 
 months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']

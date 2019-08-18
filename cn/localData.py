@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import pandas as pd
+import tables as tb
 from .include import DATA_PATH_DICT, all_symbols, cn_headers
 import re
 
@@ -12,10 +13,12 @@ class localData:
         self.exchange = exchange
         self.__df = {}
         try:
+#            print(DATA_PATH_DICT[self.symbol])
             self.__h5Store = pd.HDFStore(DATA_PATH_DICT[self.symbol])
             self.months = self.get_symbol_months()
             for month in self.months:
                 key = ''.join(["/", self.symbol, "/", self.freq, "/_", month])
+#                print(key)
                 self.__df[month] = pd.read_hdf(self.__h5Store, key)
 #                if self.exchange == "DCE":
 #                    self.__df[month].reset_index(inplace=True)
@@ -23,17 +26,24 @@ class localData:
                 if self.exchange == "CZCE":
                     if "d_oi" in self.__df[month].columns:
                         self.__df[month].drop(["d_oi", "EDSP"], axis=1, inplace=True)
-#                    self.__df[month]["pre_close"] = 0
-#                    self.__df[month].reset_index(inplace=True)
-#                    self.__df[month].set_index(["date", "symbol"], inplace=True)
+                        self.__df[month]["pre_close"] = 0
+                        self.__df[month].reset_index(inplace=True)
+                        self.__df[month].set_index(["date", "symbol"], inplace=True)
 #                    if self.symbol == "TA":
 #                        self.__df[month].reset_index(inplace=True)
 #                        self.__df[month]["symbol"] = self.__df[month]["symbol"].str.replace("PTA", "TA")
 #                        self.__df[month].set_index(["date", "symbol"], inplace=True)
             print("Local Data loaded successfully! Continue...")
-
+        #
+        # except TypeError as e:
+        #     print(str(e))
+        #     return None
+        #
+        # except KeyError as e:
+        #     raise KeyError
+        #     return
         except Exception as e:
-            print("Some error occured during access data file", str(e))
+            print("Some error occured during access data file:\t", str(e))
             return
 
     def __del__(self):
@@ -51,7 +61,7 @@ class localData:
 #            print(year)
 #            year_short = year[2:]
             query_str = self.symbol + year + month
-            print(query_str)
+#            print(query_str)
 
         try:
             df = self.__df[month]
@@ -66,13 +76,39 @@ class localData:
         return df
 
     def get_symbol_months(self):
-        months = []
-        # find months list from local hdf5
-        for item in self.__h5Store.walk("/" + self.symbol + "/" + self.freq + "/"):
-            months_raw = list(item[2])
-            months = [(lambda x: x.strip('_'))(x) for x in months_raw]
-            if("00" in months):     #do not update vw_idx
-                months.remove("00")
+        try:
+            months = []
+            # find months list from local hdf5
+            for item in self.__h5Store.walk("/" + self.symbol + "/" + self.freq + "/"):
+#               print(item)
+                months_raw = list(item[2])
+                months = [(lambda x: x.strip('_'))(x) for x in months_raw]
+                if("00" in months):     #do not update vw_idx
+                    months.remove("00")
+
+        # except ValueError as e:
+        #     print(str(e))
+        #
+        # except TypeError as e:
+        #     print(str(e))
+        #     return None
+        #
+        # except KeyError as e:
+        #     print(str(e))
+        #
+        # except IOError as e:
+        #     print(str(e))
+        #
+        # except NotImplementedError as e:
+        #     print(str(e))
+        #     return None
+        # #node does not exist, new contracts
+        # except tb.NoSuchNodeError as e:
+        #     print(str(e))
+        #     return None
+
+        except Exception as e:
+            print(str(e))
 
         return months
 

@@ -104,12 +104,12 @@ def get_list_delist_dates(symbol, exchange, contracts, df_basics):
     return contract_list_date, contract_delist_date
 
 def first_last_contract(list_dates, delist_dates, date, today):
-    print(list_dates, "\n", delist_dates)
+#    print(list_dates, "\n", delist_dates)
     first_delist_date= min(i for i in delist_dates.keys() if (i - date) > pd.to_timedelta(0))   #find the first delist date
     last_list_date=max(i for i in list_dates.keys() if (i - today) < pd.to_timedelta(0))
     first_contract = delist_dates[first_delist_date]
     last_contract = list_dates[last_list_date]
-    print(first_contract, "\t", last_contract)
+#    print(first_contract, "\t", last_contract)
     return [first_contract[0:2], first_contract[2:]], [last_contract[0:2], last_contract[2:]]
 
 def get_contract_range(contract_combs, list_dates, delist_dates, date, today):
@@ -179,7 +179,7 @@ def update_cn(exchange, symbol, freq, year, month, ldata, rdata, basics_df):
     try:
 #        print(rdata.basics)
         start_date ,end_date = get_start_end_date(basics_df, exchange, symbol, year, month)
-        print(start_date, end_date)
+#        print(start_date, end_date)
         append_data(exchange, symbol, freq, year, month, start_date, end_date, ldata, rdata)
 #        print(df_local)
 
@@ -214,13 +214,12 @@ def update_cn_latest(exchange, symbol, freq, ldata, rdata, basics_df ):
     contract_combs = list(map(list, combs))
 #    print(contract_combs)
 
-
     list_dates, delist_dates = get_list_delist_dates(symbol, local_ts_ex_map[exchange], contract_combs, basics_df)
 #    print(list_dates, "\n")
 #    print(delist_dates)
 
     contracts = get_contract_range(contract_combs, list_dates, delist_dates, last_row_date, last_trading_day)
-    print(contracts)
+#    print(contracts)
 
     if not contracts:
         #emtpy list, no job
@@ -232,3 +231,6 @@ def update_cn_latest(exchange, symbol, freq, ldata, rdata, basics_df ):
 
         return
 
+def newContracts(exchange, symbol, freq, ldata, rdata, basics_df ):
+    print("New Contracts")
+    return

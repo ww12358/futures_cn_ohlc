@@ -2,7 +2,7 @@
 from cn.localData import localData
 from cn.qlData import qlData
 from cn.tsData import tsData
-from cn.updateCN import update_cn_latest, update_cn
+from cn.updateCN import update_cn_latest, update_cn, newContracts
 from cn.include import symbol_exchange_map, ex_symList_map, all_exchanges, all_symbols, exchange_symbols_map
 import click
 import tushare as ts
@@ -162,72 +162,6 @@ def main(symbol, exchange, year, month, latest, clean, source="T"):
                         return
     else:
         print("Not a valid symbol was specified. Please check. Aborting...")
-#
-#    print(symbol, year, month)
-"""
-    
-    if symbol:
-        symbol = symbol.upper()
-        if symbol in shfe_symbols:
-#        print("good symbol")
-            if latest:
-                print("Updating %s to latest..." % symbol)
-                update_shfe_latest(symbol, df_basics)
-                return
-
-            if clean:
-                print("Cleaning %s data..." % symbol)
-                cleanse_shfe_data(symbol)
-                print("Data cleaning finished with success! Done.")
-                return
-
-            if year and 8 <= year <= (this_year - 1999):
-                year_s = str(year + 2000)
-                #        print("good year")
-                #        print(year_s)
-                if month in months:
-                    update_shfe(symbol, year_s, month, df_basics)
-                    return
-
-                elif month is None:
-                    for m in months:
-                        update_shfe(symbol, year_s, m, df_basics)
-                    return
-
-            elif year is None:
-                print("all years")
-                if month in months:
-                    for y in range(2000 + year, this_year + 1):
-                        update_shfe((symbol, str(y), month), df_basics)
-                    return
-
-                elif month is None:  # update all data till today
-                    while True:
-                        answer = input(
-                            "Are you sure you want to update ALL local data?('Y/yes' or 'N/no')   ").strip().lower()
-                        #       print("answer is ", answer)
-                        if answer in ("yes", "y"):
-                            first_list_day, last_delist_day = first_last_trd_day(symbol, df_basics)
-                            mlist = monthlist_till_today(first_list_day)
-                            #                    print(mlist)
-                            for ele in mlist:
-                                #                        print(ele[0], ele[1])
-                                update_shfe(symbol, ele[0], ele[1], df_basics)
-                            return
-
-                        else:
-                            return
-
-
-        
-
-        else:
-            print("Wrong symbol. Quit")
-            return
-"""
-
-#    data = localData("cu", "D", "11")
-
 
 if __name__ == "__main__":
     main()
