@@ -24,7 +24,7 @@ class tsData:
     def normalize_ts_raw(self, df_ts, exchange, symbol_str, month_str):
 #        with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
 #            print(df_ts.head(5))
-        if exchange in ["SHFE", "DCE", "CZCE"]:
+        if exchange in ["SHFE", "DCE", "CZCE", "INE", "CFFEX"]:
             df_ts.fillna(0, inplace=True)
             #    print(df_ts['pre_settle'])
 
@@ -71,6 +71,15 @@ class tsData:
 
 #        print(df_ts)
 
+        if not df_ts.empty:
+            return self.normalize_ts_raw(df_ts, self.exchange, self.symbol, month_str)
+        else:
+            print("No data from remote")
+            return None
+
+    def get_all_data(self, ts_code, start_date, end_date, month_str):
+
+        df_ts = self.feed.fut_daily(ts_code=ts_code,  start_date=start_date, end_date=end_date)
         if not df_ts.empty:
             return self.normalize_ts_raw(df_ts, self.exchange, self.symbol, month_str)
         else:

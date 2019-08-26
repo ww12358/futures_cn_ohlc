@@ -49,9 +49,10 @@ def first_last_trd_day(symbol, df_basics):
 @click.option("--year", "-y", type=click.INT, help="Year")
 @click.option("--month", "-m", type=click.STRING, help="month")
 @click.option("--latest", "-u", is_flag=True, help="up-to-date")
+@click.option("--new", "-n", is_flag=True, help="to import new contract")
 @click.option("--clean", "-c", is_flag=True, help="Clean data")
 @click.option("--source", "-r", type=click.STRING)
-def main(symbol, exchange, year, month, latest, clean, source="T"):
+def main(symbol, exchange, year, month, latest, new, clean, source="T"):
     #configure data source
     if source in ["quandl", "Q"]:
         print("Using quandl as data source. Continue...")
@@ -109,12 +110,17 @@ def main(symbol, exchange, year, month, latest, clean, source="T"):
         exchange = symbol_exchange_map[symbol]
         print("Exchange:{ex}, Symbol:{smbl}".format(ex=exchange, smbl=symbol))
         basics_df = pro.fut_basic(exchange=exchange, fut_type='1', fields='ts_code,symbol,list_date,delist_date')
-        local_data = localData(exchange, symbol, "D")
         remote_data = tsData(pro, exchange, symbol, "D")
+        local_data = localData(exchange, symbol, "D")
         if latest:
             print("Updating %s to latest..." % symbol)
             update_cn_latest(exchange, symbol, "D", local_data, remote_data, basics_df)
             del local_data
+            return
+
+        if new:
+            print("Import %s as new contract" % symbol)
+            newContracts(exchange, symbol, "D", local_data, remote_data, basics_df)
             return
 
         if clean:
@@ -126,6 +132,7 @@ def main(symbol, exchange, year, month, latest, clean, source="T"):
         if year and 8 <= year <= (datetime.now().year - 1999):
             #        print("good year")
             #        print(year_s)
+            local_data = localData(exchange, symbol, "D")
             months = local_data.get_symbol_months()
             if month in months:
                 update_cn(exchange, symbol, "D", str(year), month, local_data, remote_data)
@@ -138,6 +145,7 @@ def main(symbol, exchange, year, month, latest, clean, source="T"):
 
         elif year is None:
             print("all years")
+            local_data = localData(exchange, symbol, "D")
             months = local_data.get_symbol_months()
             if month in months:
                 for y in range(2000 + year, datetime.now().year + 1):

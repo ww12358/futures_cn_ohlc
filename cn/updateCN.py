@@ -104,7 +104,7 @@ def get_list_delist_dates(symbol, exchange, contracts, df_basics):
     return contract_list_date, contract_delist_date
 
 def first_last_contract(list_dates, delist_dates, date, today):
-#    print(list_dates, "\n", delist_dates)
+    print(list_dates, "\n", delist_dates)
     first_delist_date= min(i for i in delist_dates.keys() if (i - date) > pd.to_timedelta(0))   #find the first delist date
     last_list_date=max(i for i in list_dates.keys() if (i - today) < pd.to_timedelta(0))
     first_contract = delist_dates[first_delist_date]
@@ -134,9 +134,10 @@ def normalize_new_data(df):
 
 def append_data(exchange, symbol, freq, year, month, start_date, end_date, ldata, rdata):
     df = ldata.get_data(year, month)
+    ts_month_str = year + month
 #    print("local data", df)
 #    print(symbol, exchange, yymm, start_date, end_date)
-    ts_month_str = year + month
+
 #    month_short = yymm[2:]
     df_ts = rdata.get_data(symbol, exchange, freq, ts_month_str, start_date, end_date)
 #    print("df_ts", df_ts)
@@ -149,7 +150,7 @@ def append_data(exchange, symbol, freq, year, month, start_date, end_date, ldata
             print(idx.values)
             # print(df_open[idx])
         else:
-            print("data correct!")
+            print("Local data is same with remote, correct!")
     elif i < 0:  # df.index.size > df_open.size:
         idx = df.index.difference(df_ts.index)
         print("%d row(s) of redundant data found." % abs(i))
@@ -162,6 +163,18 @@ def append_data(exchange, symbol, freq, year, month, start_date, end_date, ldata
         print(df_append, "\nAbove data is going to be appended to local data.\n")
         if not df_append.empty:
             ldata.append_data(df_append, exchange, symbol, freq, month)
+
+    return
+
+def new_data(exchange, symbol, freq, ts_code, start_date, end_date, ldata, rdata):
+#    month_short = yymm[2:]
+    df_ts = rdata.get_all_data(symbol, exchange, freq, ts_code, start_date, end_date)
+#    print(df_ts)
+
+    print(df_ts, "\nAbove data is going to be save to local file.\n")
+    # if not df_ts.empty:
+    # df_ts.to_hdf(self.__h5Store, '/' + symbol + '/' + freq + '/_' + month, mode='a', format='table', append=False,
+    #               data_columns=True, complevel=9, complib='blosc:snappy', endcoding="utf-8")
 
     return
 
@@ -232,5 +245,20 @@ def update_cn_latest(exchange, symbol, freq, ldata, rdata, basics_df ):
         return
 
 def newContracts(exchange, symbol, freq, ldata, rdata, basics_df ):
-    print("New Contracts")
+#    print("New Contracts")
+#    print(basics_df)
+    df_info = basics_df.loc[basics_df['symbol'].str.contains(symbol)]
+#    print(df_info)
+    for index, row in df_info.iterrows():
+#        print(row["ts_code"], row['symbol'], row['list_date'], row['delist_date'])
+        ym = row['symbol'][2:]
+        month = ym[2:]
+#        print("contract {}, month {}".format(ym, month))
+        df_new = rdata.get_all_data(row["ts_code"], row['list_date'], row['delist_date'], ym)
+        print("Below data is going to save to local file...")
+        print(df_new)
+        ldata.save_contract(df_new, exchange, symbol, freq, month)
+
+#    ldata.print_all()
+
     return

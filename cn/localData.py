@@ -3,6 +3,7 @@
 import pandas as pd
 import tables as tb
 from .include import DATA_PATH_DICT, all_symbols, cn_headers
+import os
 import re
 
 
@@ -13,27 +14,35 @@ class localData:
         self.exchange = exchange
         self.__df = {}
         try:
-#            print(DATA_PATH_DICT[self.symbol])
+            print(DATA_PATH_DICT[self.symbol])
             self.__h5Store = pd.HDFStore(DATA_PATH_DICT[self.symbol])
-            self.months = self.get_symbol_months()
-            for month in self.months:
-                key = ''.join(["/", self.symbol, "/", self.freq, "/_", month])
-#                print(key)
-                self.__df[month] = pd.read_hdf(self.__h5Store, key)
-#                if self.exchange == "DCE":
-#                    self.__df[month].reset_index(inplace=True)
-#                    self.__df[month].set_index(["date", "symbol"], inplace=True)
-                if self.exchange == "CZCE":
-                    if "d_oi" in self.__df[month].columns:
-                        self.__df[month].drop(["d_oi", "EDSP"], axis=1, inplace=True)
-                        self.__df[month]["pre_close"] = 0
-                        self.__df[month].reset_index(inplace=True)
-                        self.__df[month].set_index(["date", "symbol"], inplace=True)
-#                    if self.symbol == "TA":
-#                        self.__df[month].reset_index(inplace=True)
-#                        self.__df[month]["symbol"] = self.__df[month]["symbol"].str.replace("PTA", "TA")
-#                        self.__df[month].set_index(["date", "symbol"], inplace=True)
-            print("Local Data loaded successfully! Continue...")
+#            print(DATA_PATH_DICT[self.symbol])
+            if not os.path.exists(DATA_PATH_DICT[self.symbol]):
+                print("file not exists, will create new file")
+
+            if not symbol in self.__h5Store:
+                print("symbol not found in local file, will save new contracts to local")
+                return
+            else:
+                self.months = self.get_symbol_months()
+                for month in self.months:
+                    key = ''.join(["/", self.symbol, "/", self.freq, "/_", month])
+    #                print(key)
+                    self.__df[month] = pd.read_hdf(self.__h5Store, key)
+    #                if self.exchange == "DCE":
+    #                    self.__df[month].reset_index(inplace=True)
+    #                    self.__df[month].set_index(["date", "symbol"], inplace=True)
+                    if self.exchange == "CZCE":
+                        if "d_oi" in self.__df[month].columns:
+                            self.__df[month].drop(["d_oi", "EDSP"], axis=1, inplace=True)
+                            self.__df[month]["pre_close"] = 0
+                            self.__df[month].reset_index(inplace=True)
+                            self.__df[month].set_index(["date", "symbol"], inplace=True)
+    #                    if self.symbol == "TA":
+    #                        self.__df[month].reset_index(inplace=True)
+    #                        self.__df[month]["symbol"] = self.__df[month]["symbol"].str.replace("PTA", "TA")
+    #                        self.__df[month].set_index(["date", "symbol"], inplace=True)
+                print("Local Data loaded successfully! Continue...")
         #
         # except TypeError as e:
         #     print(str(e))
@@ -139,7 +148,32 @@ class localData:
 
         return
 
+    def save_contract(self, df_new, exchange, symbol, freq, month):
+        try:
+            self.__df[month]
+            df_append = self.__df[month].append(df_new, sort=False)
+            df_append.sort_index(ascending=True, inplace=True)
+            df_append.to_hdf(self.__h5Store, '/' + symbol + '/' + freq + '/_' + month, mode='a', format='table', append=False, data_columns=True, complevel=9, complib='blosc:snappy', endcoding="utf-8")
+            self.__df[month] = df_append
+        except KeyError:
+            df_new.sort_index(ascending=True, inplace=True)
+            df_new.to_hdf(self.__h5Store, '/' + symbol + '/' + freq + '/_' + month, mode='a', format='table', append=False, data_columns=True, complevel=9, complib='blosc:snappy', endcoding="utf-8")
+            self.__df[month] = df_new
+        except Exception as e:
+            print(str(e))
 
+
+#        self.__h5Store.flush()
+
+        return
+
+    def print_all(self):
+        months = self.get_symbol_months()
+        for month in months:
+            print(month)
+            print(self.__df[month])
+
+        return
 
 
 

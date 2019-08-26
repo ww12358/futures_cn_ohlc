@@ -62,7 +62,7 @@ DCE_SRC_DATA_PATH = os.path.join(HOME_PATH, 'dce', 'dce_src_data')
 DCE_DATA_PATH = os.path.join(HOME_PATH, 'dce', 'dce_data', 'dce.hdf5')
 DCE_TEST_DATA_PATH = os.path.join(HOME_PATH, 'dce', 'dce_data', 'dce_clean.hdf5')
 
-
+###  CZE  ###
 from cze.include import cze_symbols, cze_headers, cze_dtypes
 ##configuration for zce
 #zce_symbols = ['PM', 'WH', 'CF', 'SR', 'PTA', 'OI', 'RI', 'ME', 'FG', 'RS', 'RM', 'ZC', 'JR', 'LR', 'SM', 'CY', 'AP']
@@ -94,9 +94,20 @@ CZCE_DATA_PATH = os.path.join(HOME_PATH, "cze", 'cze_data/cze.hdf5')
 CZCE_SRC_DATA_PATH = os.path.join(HOME_PATH, "cze", 'cze_src_data')
 CZCE_TEST_DATA_PATH = os.path.join(HOME_PATH, "cze", 'cze_data/cze_test.hdf5')
 
+
+# INE #
+from ine.include import ine_symbols, ine_headers, INE_DATA_PATH
+ine_dtypes = shfe_dtypes
+
+# CFFEX  #
+from cffex.include import cffex_symbols, cffex_headers, CFFEX_DATA_PATH
+cffex_dtypes = shfe_symbols
+
 ex_config = {"SHFE":{"symbols":shfe_symbols, "headers":shfe_headers,"dtypes":shfe_dtypes, "SRC_DATA_PATH":SHFE_SRC_DATA_PATH, "DATA_PATH":SHFE_DATA_PATH, "TEST_DATA_PATH":SHFE_TEST_DATA_PATH },
             "DCE":{"symbols":dce_symbols, "headers":dce_headers, "dtypes":dce_dtypes, "SRC_DATA_PATH":DCE_SRC_DATA_PATH, "DATA_PATH":DCE_DATA_PATH, "TEST_DATA_PATH":DCE_TEST_DATA_PATH},
-            "CZCE":{"symbols":cze_symbols, "headers":cze_headers, "dtypes":cze_dtypes, "SRC_DATA_PATH":CZCE_DATA_PATH, "DATA_PATH":CZCE_DATA_PATH, "TEST_DATA_PATH":CZCE_TEST_DATA_PATH}
+            "CZCE":{"symbols":cze_symbols, "headers":cze_headers, "dtypes":cze_dtypes, "SRC_DATA_PATH":CZCE_DATA_PATH, "DATA_PATH":CZCE_DATA_PATH, "TEST_DATA_PATH":CZCE_TEST_DATA_PATH},
+            "INE":{"symbols":ine_symbols, "headers":ine_headers, "dtypes":ine_dtypes, "SRC_DATA_PATH":INE_DATA_PATH, "DATA_PATH":INE_DATA_PATH},
+            "CFFEX":{"symbols":cffex_symbols, "headers":cffex_headers, "dtypes":cffex_dtypes, "DATA_PATH":CFFEX_DATA_PATH},
             }
 
 idx_headers = ['symbol', 'date',    \

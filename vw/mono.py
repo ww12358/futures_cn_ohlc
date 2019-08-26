@@ -160,7 +160,7 @@ for ex_name in ex_config.keys():
               )
 def main(symbol, exchange):
 
-    shfe_symbols = ex_config["SHFE"]["symbols"]
+#    shfe_symbols = ex_config["SHFE"]["symbols"]
 
     if symbol:
         symbol = symbol.strip().upper()
