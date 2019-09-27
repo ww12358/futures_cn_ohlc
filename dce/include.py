@@ -4,7 +4,7 @@ import os
 dce_symbols = ["A", "B", "M", "Y", "P", "C", "CS", "JD",   \
                "BB", "FB",  \
                "JM", "J", "I",  \
-               "PP", "L", "V" ]
+               "PP", "L", "V", "EG" ]
 
 dce_dtypes = {'symbol' : 'object',
             'pre_close': 'float64',

@@ -3,7 +3,7 @@ import os
 
 shfe_symbols = ["CU", "AL", "ZN", "PB", "NI", "SN",     \
                 "AU", "AG",     \
-                "RB", "WR", "HC",  \
+                "RB", "WR", "HC", "SS",     \
                "FU", "BU", \
                "RU"]    #'SC' removed
 

@@ -14,7 +14,7 @@ class localData:
         self.exchange = exchange
         self.__df = {}
         try:
-            print(DATA_PATH_DICT[self.symbol])
+#            print(DATA_PATH_DICT[self.symbol])
             self.__h5Store = pd.HDFStore(DATA_PATH_DICT[self.symbol])
 #            print(DATA_PATH_DICT[self.symbol])
             if not os.path.exists(DATA_PATH_DICT[self.symbol]):
@@ -56,10 +56,10 @@ class localData:
             return
 
     def __del__(self):
-        print("Saving data to disk drive... Please wait.")
         if self.__h5Store:
-            self.__h5Store.flush()
+#            self.__h5Store.flush()
             self.__h5Store.close()
+            print("Saving data to disk drive... Please wait.")
             print("Success! Update exit.")
             return
         else:
@@ -121,6 +121,20 @@ class localData:
 
         return months
 
+    def get_symbol_months_with_idx(self):
+        try:
+            months = []
+            # find months list from local hdf5
+            for item in self.__h5Store.walk("/" + self.symbol + "/" + self.freq + "/"):
+                #               print(item)
+                months_raw = list(item[2])
+                months = [(lambda x: x.strip('_'))(x) for x in months_raw]
+
+        except Exception as e:
+            print(str(e))
+
+        return months
+
     def get_latest_date(self):
         latest_local_date_dic = {}
         months = self.get_symbol_months()
@@ -172,8 +186,27 @@ class localData:
         for month in months:
             print(month)
             print(self.__df[month])
-
         return
+
+
+    def get_contract_by_month(self, month):
+        if self.months is None:
+            print("Data not loaded. Check data file.")
+            return
+
+        if month in self.months:
+            return self.__df[month]
+
+    def get_all_data(self):
+        if not self.__df is None:
+            return self.__df
+        else:
+            print("Data not loaded correctly, abort!")
+            return
+
+    def get_idx_data(self):
+        key = ''.join(["/", self.symbol, "/", self.freq, "/_", "00"])
+        return pd.read_hdf(self.__h5Store, key)
 
 
 
