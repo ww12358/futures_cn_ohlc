@@ -155,7 +155,7 @@ class localData:
 #            print(df_new.head(10))
 #            print(df_new.tail(50))
         df_new.to_hdf(self.__h5Store, '/' + symbol + '/' + freq + '/_' + month, mode='a', format='table', append=False,
-                                  data_columns=True, complevel=9, complib='blosc:snappy', endcoding="utf-8")
+                                  data_columns=True, complevel=9, complib='blosc:snappy')
 
         self.__df[month] = df_new
 #        self.__h5Store.flush()

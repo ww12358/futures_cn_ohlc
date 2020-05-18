@@ -1,8 +1,10 @@
 # -*- coding:utf-8 -*-
 import tushare as ts
 import pandas as pd
+import time
 from shfe.include import shfe_dtypes, shfe_headers
 from .include import local_ts_ex_map
+
 
 
 def remove_item(li, item):
@@ -69,6 +71,7 @@ class tsData:
 #        print(ts_code)
         df_ts = self.feed.fut_daily(ts_code=ts_code, start_date=start_date, end_date=end_date)
 
+        time.sleep(0.5)
 #        print(df_ts)
 
         if not df_ts.empty:

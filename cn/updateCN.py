@@ -199,7 +199,7 @@ def update_cn(exchange, symbol, freq, year, month, ldata, rdata, basics_df):
         return
 
     except Exception as e:
-        print("Date not exsist. Quit.")
+#        print("Date not exist. Quit.")
         print(str(e))
 
         return
