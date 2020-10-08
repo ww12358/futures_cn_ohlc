@@ -10,6 +10,7 @@ import quandl
 from datetime import datetime
 import re
 import pandas as pd
+import time
 
 def monthlist_till_today(start, end):
 #    start = datetime.strptime(start_date, "%Y-%m-%d")
@@ -77,6 +78,7 @@ def main(symbol, exchange, year, month, latest, new, clean, source="T"):
                     local_data = localData(exchange, smbl, "D")
                     remote_data = tsData(pro, exchange, smbl, "D")
                     update_cn_latest(exchange, smbl, "D", local_data, remote_data, basics_df)
+                    time.sleep(30)
                 print("Exchange {ex_name} updated. Quit with success.")
                 return
         else:
@@ -96,6 +98,7 @@ def main(symbol, exchange, year, month, latest, new, clean, source="T"):
                     local_data = localData(exchange, smbl, "D")
                     remote_data = tsData(pro, exchange, smbl, "D")
                     update_cn_latest(exchange, smbl, "D", local_data, remote_data, basics_df)
+                    time.sleep(30)
             return
 
         if clean:

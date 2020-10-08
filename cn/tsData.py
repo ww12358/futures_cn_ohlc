@@ -71,7 +71,7 @@ class tsData:
 #        print(ts_code)
         df_ts = self.feed.fut_daily(ts_code=ts_code, start_date=start_date, end_date=end_date)
 
-        time.sleep(0.5)
+        time.sleep(1)
 #        print(df_ts)
 
         if not df_ts.empty:
