@@ -104,7 +104,7 @@ def get_list_delist_dates(symbol, exchange, contracts, df_basics):
     return contract_list_date, contract_delist_date
 
 def first_last_contract(list_dates, delist_dates, date, today):
-    print(list_dates, "\n", delist_dates)
+    # print(list_dates, "\n", delist_dates)
     first_delist_date= min(i for i in delist_dates.keys() if (i - date) > pd.to_timedelta(0))   #find the first delist date
     last_list_date=max(i for i in list_dates.keys() if (i - today) < pd.to_timedelta(0))
     first_contract = delist_dates[first_delist_date]
@@ -211,7 +211,7 @@ def update_cn_latest(exchange, symbol, freq, ldata, rdata, basics_df ):
     print("last trading date", last_trading_day)
 
     months_str = ldata.get_symbol_months()
-    print(months_str)
+    # print(months_str)
     latest_local_date_dic = ldata.get_latest_date()
 #    print(latest_local_date_dic)
     last_row_date = latest_local_date_dic[min(latest_local_date_dic, key=latest_local_date_dic.get)]

@@ -129,7 +129,8 @@ def genMonoIdx(ex_name, symbol):
         df_concat = pd.concat(dfs, axis=0)
         df_concat = df_concat[df_concat["volume"] > 0]
         g = df_concat.groupby(level='date', sort=True)
-        df_append = pd.concat([g.apply(lambda x: np.average(x['open'], weights=x['volume'])),
+        df_append = pd.concat([
+                            g.apply(lambda x: np.average(x['open'], weights=x['volume'])),
                             g.apply(lambda x: np.average(x['high'], weights=x['volume'])),
                             g.apply(lambda x: np.average(x['low'], weights=x['volume'])),
                             g.apply(lambda x: np.average(x['close'], weights=x['volume'])),
@@ -138,7 +139,10 @@ def genMonoIdx(ex_name, symbol):
                             g.apply(lambda x: np.sum(x['turnover'])),
                             g.apply(lambda x: np.sum(x['oi'])),
                             ],
-                           axis=1, keys=['open', 'high', 'low', 'close', 'settlement' 'volume', 'turnover', 'oi'])
+                           axis=1, keys=['open', 'high', 'low', 'close', 'settlement', 'volume', 'turnover', 'oi'])
+        df_append['symbol'] = ''.join([symbol, "0000"])
+        df_append = df_append[['symbol', 'open', 'high', 'low', 'close', 'settlement', 'volume', 'turnover', 'oi' ]]
+        print(df_append)
         # mono_index_df = agregate_month_data(symbol, dfs, latest_idx_date)
  #       for a, b in itertools.combinations(idx_latest, 2):
         # # print(up_to_date(a,b))

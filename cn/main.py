@@ -74,7 +74,7 @@ def main(symbol, exchange, year, month, latest, new, clean, source="T"):
             basics_df = pro.fut_basic(exchange=exchange, fut_type='1', fields='ts_code,symbol,list_date,delist_date')
             if latest:
                 for smbl in ex_symList_map[exchange]:
-                    print(exchange, smbl)
+                    # print(exchange, smbl)
                     with localData(exchange, smbl, "D") as local_data:
                         print(local_data.symbol)
                         remote_data = tsData(pro, exchange, smbl, "D")
@@ -119,7 +119,7 @@ def main(symbol, exchange, year, month, latest, new, clean, source="T"):
             if latest:
                 print("Updating %s to latest..." % symbol)
                 update_cn_latest(exchange, symbol, "D", local_data, remote_data, basics_df)
-                del local_data
+                # del local_data
                 return
 
             if new:
