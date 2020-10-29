@@ -75,10 +75,11 @@ def main(symbol, exchange, year, month, latest, new, clean, source="T"):
             if latest:
                 for smbl in ex_symList_map[exchange]:
                     print(exchange, smbl)
-                    local_data = localData(exchange, smbl, "D")
-                    remote_data = tsData(pro, exchange, smbl, "D")
-                    update_cn_latest(exchange, smbl, "D", local_data, remote_data, basics_df)
-                    time.sleep(30)
+                    with localData(exchange, smbl, "D") as local_data:
+                        print(local_data.symbol)
+                        remote_data = tsData(pro, exchange, smbl, "D")
+                        update_cn_latest(exchange, smbl, "D", local_data, remote_data, basics_df)
+                        # time.sleep(60)
                 print("Exchange {ex_name} updated. Quit with success.")
                 return
         else:
@@ -95,9 +96,9 @@ def main(symbol, exchange, year, month, latest, new, clean, source="T"):
                 basics_df = pro.fut_basic(exchange=exchange, fut_type='1', fields='ts_code,symbol,list_date,delist_date')
                 for smbl in exchange_symbols_map[exchange]:
                     print("Exchange:{ex}, Symbol:{smbl}".format(ex=exchange, smbl=smbl))
-                    local_data = localData(exchange, smbl, "D")
-                    remote_data = tsData(pro, exchange, smbl, "D")
-                    update_cn_latest(exchange, smbl, "D", local_data, remote_data, basics_df)
+                    with localData(exchange, smbl, "D") as local_data:
+                        remote_data = tsData(pro, exchange, smbl, "D")
+                        update_cn_latest(exchange, smbl, "D", local_data, remote_data, basics_df)
                     time.sleep(30)
             return
 
@@ -114,63 +115,63 @@ def main(symbol, exchange, year, month, latest, new, clean, source="T"):
         print("Exchange:{ex}, Symbol:{smbl}".format(ex=exchange, smbl=symbol))
         basics_df = pro.fut_basic(exchange=exchange, fut_type='1', fields='ts_code,symbol,list_date,delist_date')
         remote_data = tsData(pro, exchange, symbol, "D")
-        local_data = localData(exchange, symbol, "D")
-        if latest:
-            print("Updating %s to latest..." % symbol)
-            update_cn_latest(exchange, symbol, "D", local_data, remote_data, basics_df)
-            del local_data
-            return
-
-        if new:
-            print("Import %s as new contract" % symbol)
-            newContracts(exchange, symbol, "D", local_data, remote_data, basics_df)
-            return
-
-        if clean:
-            print("Cleaning %s data..." % symbol)
-#                cleanse_shfe_data(symbol)
-            print("Data cleaning finished with success! Done.")
-            return
-
-        if year and 8 <= year <= (datetime.now().year - 1999):
-            #        print("good year")
-            #        print(year_s)
-            local_data = localData(exchange, symbol, "D")
-            months = local_data.get_symbol_months()
-            if month in months:
-                update_cn(exchange, symbol, "D", str(year), month, local_data, remote_data)
+        with localData(exchange, symbol, "D") as local_data:
+            if latest:
+                print("Updating %s to latest..." % symbol)
+                update_cn_latest(exchange, symbol, "D", local_data, remote_data, basics_df)
+                del local_data
                 return
 
-            elif month is None:
-                for month in months:
-                    update_cn(exchange, symbol, "D", str(year), month, local_data, remote_data)
+            if new:
+                print("Import %s as new contract" % symbol)
+                newContracts(exchange, symbol, "D", local_data, remote_data, basics_df)
                 return
 
-        elif year is None:
-            print("all years")
-            local_data = localData(exchange, symbol, "D")
-            months = local_data.get_symbol_months()
-            if month in months:
-                for y in range(2000 + year, datetime.now().year + 1):
-                    update_cn(exchange, symbol, str(y), "D", month, local_data, remote_data)
+            if clean:
+                print("Cleaning %s data..." % symbol)
+                #                cleanse_shfe_data(symbol)
+                print("Data cleaning finished with success! Done.")
                 return
 
-            elif month is None:  # update all data till today
-                while True:
-                    answer = input(
-                        "Are you sure you want to update ALL local data?('Y/yes' or 'N/no')   ").strip().lower()
-                    #       print("answer is ", answer)
-                    if answer in ("yes", "y"):
-                        first_list_day, last_delist_day = first_last_trd_day(symbol, basics_df)
-                        mlist = monthlist_till_today(first_list_day)
-                        #                    print(mlist)
-                        for ele in mlist:
-                            #                        print(ele[0], ele[1])
-                            update_cn(exchange, symbol, "D", ele[0], ele[1], local_data, remote_data)
+            if year and 8 <= year <= (datetime.now().year - 1999):
+                #        print("good year")
+                #        print(year_s)
+                with localData(exchange, symbol, "D") as local_data:
+                    months = local_data.get_symbol_months()
+                    if month in months:
+                        update_cn(exchange, symbol, "D", str(year), month, local_data, remote_data)
                         return
 
-                    else:
+                    elif month is None:
+                        for month in months:
+                            update_cn(exchange, symbol, "D", str(year), month, local_data, remote_data)
                         return
+
+            elif year is None:
+                print("all years")
+                with localData(exchange, symbol, "D") as local_data:
+                    months = local_data.get_symbol_months()
+                    if month in months:
+                        for y in range(2000 + year, datetime.now().year + 1):
+                            update_cn(exchange, symbol, str(y), "D", month, local_data, remote_data)
+                        return
+
+                    elif month is None:  # update all data till today
+                        while True:
+                            answer = input(
+                                "Are you sure you want to update ALL local data?('Y/yes' or 'N/no')   ").strip().lower()
+                            #       print("answer is ", answer)
+                            if answer in ("yes", "y"):
+                                first_list_day, last_delist_day = first_last_trd_day(symbol, basics_df)
+                                mlist = monthlist_till_today(first_list_day)
+                                #                    print(mlist)
+                                for ele in mlist:
+                                    #                        print(ele[0], ele[1])
+                                    update_cn(exchange, symbol, "D", ele[0], ele[1], local_data, remote_data)
+                                return
+
+                            else:
+                                return
     else:
         print("Not a valid symbol was specified. Please check. Aborting...")
 

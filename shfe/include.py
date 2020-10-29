@@ -5,7 +5,8 @@ shfe_symbols = ["CU", "AL", "ZN", "PB", "NI", "SN",     \
                 "AU", "AG",     \
                 "RB", "WR", "HC", "SS",     \
                "FU", "BU", \
-               "RU"]    #'SC' removed
+               "RU",
+                "SP"]    # 纸浆
 
 
 shfe_dtypes = {'symbol' : 'object',

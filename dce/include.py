@@ -2,9 +2,9 @@
 import os
 
 dce_symbols = ["A", "B", "M", "Y", "P", "C", "CS", "JD",   \
-               "BB", "FB",  \
+               "BB", "FB",  #胶合板， 纤维板
                "JM", "J", "I",  \
-               "PP", "L", "V", "EG" ]
+               "PP", "L", "V", "EG", "EB", "PG" ]   #聚丙烯， 聚乙烯， 聚氯乙烯， 乙二醇， 苯乙烯， 液化石油气
 
 dce_dtypes = {'symbol' : 'object',
             'pre_close': 'float64',

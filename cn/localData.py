@@ -55,15 +55,22 @@ class localData:
             print("Some error occured during access data file:\t", str(e))
             return
 
-    def __del__(self):
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
         if self.__h5Store:
-#            self.__h5Store.flush()
+            #            self.__h5St`   ore.flush()
             self.__h5Store.close()
-            print("Saving data to disk drive... Please wait.")
-            print("Success! Update exit.")
-            return
-        else:
-            return
+#     def __del__(self):
+#         if self.__h5Store:
+# #            self.__h5Store.flush()
+#             self.__h5Store.close()
+#             print("Saving data to disk drive... Please wait.")
+#             print("Success! Update exit.")
+#             return
+#         else:
+#             return
 
     def get_data(self, year, month):
         if not year is None:
@@ -167,11 +174,11 @@ class localData:
             self.__df[month]
             df_append = self.__df[month].append(df_new, sort=False)
             df_append.sort_index(ascending=True, inplace=True)
-            df_append.to_hdf(self.__h5Store, '/' + symbol + '/' + freq + '/_' + month, mode='a', format='table', append=False, data_columns=True, complevel=9, complib='blosc:snappy', endcoding="utf-8")
+            df_append.to_hdf(self.__h5Store, '/' + symbol + '/' + freq + '/_' + month, mode='a', format='table', append=False, data_columns=True, complevel=9, complib='blosc:snappy')
             self.__df[month] = df_append
         except KeyError:
             df_new.sort_index(ascending=True, inplace=True)
-            df_new.to_hdf(self.__h5Store, '/' + symbol + '/' + freq + '/_' + month, mode='a', format='table', append=False, data_columns=True, complevel=9, complib='blosc:snappy', endcoding="utf-8")
+            df_new.to_hdf(self.__h5Store, '/' + symbol + '/' + freq + '/_' + month, mode='a', format='table', append=False, data_columns=True, complevel=9, complib='blosc:snappy')
             self.__df[month] = df_new
         except Exception as e:
             print(str(e))
@@ -204,9 +211,14 @@ class localData:
             print("Data not loaded correctly, abort!")
             return
 
+    def get_last_trade_data(self):
+        if not self.__df is None:
+            for key in self.__df.keys():
+                self.__df[key] = self.__df[key].iloc[-1]
+            return self.__df
+
     def get_idx_data(self):
         key = ''.join(["/", self.symbol, "/", self.freq, "/_", "00"])
         return pd.read_hdf(self.__h5Store, key)
-
 
 

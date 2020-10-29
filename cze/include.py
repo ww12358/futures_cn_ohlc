@@ -1,7 +1,15 @@
 # -*- coding:utf-8 -*-
 import os
 
-cze_symbols = ['PM', 'WH', 'CF', 'SR', 'TA', 'OI', 'RI', 'MA', 'FG', 'RS', 'RM', 'ZC', 'JR', 'LR', 'SM', 'CY', 'AP']
+cze_symbols = ['PM', 'WH', 'CF', 'SR', 'AP', 'CJ', # 红枣
+               'RI', 'LR', "JR",  #早籼稻， 晚籼稻, 粳稻
+                'CY', 'TA', 'PF',     #棉纱，PTA， 短纤
+                'OI', 'RS', 'RM',
+                'SF', 'SM',  #硅铁， 锰硅
+                'MA', 'FG', 'ZC',
+                'UR',    #尿素
+                'SA',   #纯碱
+               ]
 
 cze_all_symbols = ['CF','PM', 'WH', 'SR', 'PTA', 'OI', 'RI', 'MA', 'FG', 'RS', 'RM', 'ZC', 'JR', 'LR', 'SM', 'CY', 'AP',
                'WT', 'WS', 'TA', 'RO', 'ER']

@@ -2,7 +2,7 @@
 import os
 
 cffex_symbols = ["IF", "IH", "IC",  \
-                 "TF", "T"]
+                 "TF", "T", "TS"]   # 五债， 十债， 二债
 
 cffex_headers = ['symbol', 'date', 'pre_close', 'pre_settlement',  \
                'open', 'high', 'low', 'close', 'settlement', \

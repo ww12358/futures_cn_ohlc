@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 import os
 
-ine_symbols = ["SC", "NR"]
+ine_symbols = ["SC", "NR", "LU"]
 
 ine_headers = ['symbol', 'date', 'pre_close', 'pre_settlement',  \
                'open', 'high', 'low', 'close', 'settlement', \

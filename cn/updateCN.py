@@ -211,7 +211,7 @@ def update_cn_latest(exchange, symbol, freq, ldata, rdata, basics_df ):
     print("last trading date", last_trading_day)
 
     months_str = ldata.get_symbol_months()
-#    print(months_str)
+    print(months_str)
     latest_local_date_dic = ldata.get_latest_date()
 #    print(latest_local_date_dic)
     last_row_date = latest_local_date_dic[min(latest_local_date_dic, key=latest_local_date_dic.get)]
