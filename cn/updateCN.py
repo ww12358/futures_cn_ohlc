@@ -248,17 +248,19 @@ def newContracts(exchange, symbol, freq, ldata, rdata, basics_df ):
 #    print("New Contracts")
 #    print(basics_df)
     df_info = basics_df.loc[basics_df['symbol'].str.contains(symbol)]
-#    print(df_info)
+    # print(df_info)
     for index, row in df_info.iterrows():
 #        print(row["ts_code"], row['symbol'], row['list_date'], row['delist_date'])
-        ym = row['symbol'][2:]
+#         ym = row['symbol'][2:]
+        ym = row['ts_code'][2:6]
+        # print(ym)
         month = ym[2:]
-#        print("contract {}, month {}".format(ym, month))
+        # print("contract {}, month {}".format(ym, month))
         df_new = rdata.get_all_data(row["ts_code"], row['list_date'], row['delist_date'], ym)
         print("Below data is going to save to local file...")
         print(df_new)
         ldata.save_contract(df_new, exchange, symbol, freq, month)
 
-#    ldata.print_all()
+    # ldata.print_all()
 
     return
