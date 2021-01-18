@@ -1,7 +1,8 @@
 # -*- coding:utf-8 -*-
 import os
 
-dce_symbols = ["A", "B", "M", "Y", "P", "C", "CS", "JD",   \
+dce_symbols = ["A", "B", "M", "Y", "P", "C", "CS",
+               "JD", "LH",   \
                "BB", "FB",  #胶合板， 纤维板
                "JM", "J", "I",  \
                "PP", "L", "V", "EG", "EB", "PG" ]   #聚丙烯， 聚乙烯， 聚氯乙烯， 乙二醇， 苯乙烯， 液化石油气
@@ -27,7 +28,8 @@ dce_headers = ['symbol', 'date', 'pre_close', 'pre_settlement',  \
 
 HOME_PATH = '/home/sean/PycharmProjects/cn_ex_sync/dce'
 SRC_PATH = os.path.join(HOME_PATH, 'dce_src_data')
-DCE_DATA_PATH = os.path.join(HOME_PATH, 'dce_data', 'dce.hdf5')
+# DCE_DATA_PATH = os.path.join(HOME_PATH, 'dce_data', 'dce.hdf5')
+DCE_DATA_PATH = '/home/sean/sync/creek/dce.hdf5'
 TEST_DATA_PATH = os.path.join(HOME_PATH, 'dce_data', 'dce_clean.hdf5')
 
 months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']

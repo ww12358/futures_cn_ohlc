@@ -39,5 +39,6 @@ cze_dtypes = {'symbol' : 'object',
 
 HOME_PATH = '/home/sean/PycharmProjects/cn_ex_sync/cze'
 DATA_SRC_PATH = os.path.join(HOME_PATH,'cze_src_data')
-CZE_DATA_PATH = os.path.join(HOME_PATH, 'cze_data/cze.hdf5')
+# CZE_DATA_PATH = os.path.join(HOME_PATH, 'cze_data/cze.hdf5')
+CZE_DATA_PATH = '/home/sean/sync/creek/cze.hdf5'
 TEST_DATA_PATH = os.path.join(HOME_PATH,'cze_data/cze_test.hdf5')

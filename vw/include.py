@@ -6,6 +6,7 @@ from shfe.include import shfe_symbols, shfe_dtypes, shfe_headers
 
 HOME_PATH = '/home/sean/PycharmProjects/cn_ex_sync'
 months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
+from shfe.include import SHFE_DATA_PATH
 
 ##configuration for shfe
 # shfe_symbols = ["CU", "AL", "ZN", "PB", "NI", "SN", "AU", "AG", "RB", "WR", "HC",  \
@@ -32,7 +33,7 @@ months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'
 #                'd1', 'd2', 'volume','turnover', 'oi']
 
 SHFE_SRC_DATA_PATH = os.path.join(HOME_PATH, 'shfe','shfe_src_data')
-SHFE_DATA_PATH = os.path.join(HOME_PATH, 'shfe','shfe_data', 'shfe.hdf5')
+# SHFE_DATA_PATH = os.path.join(HOME_PATH, 'shfe','shfe_data', 'shfe.hdf5')
 SHFE_TEST_DATA_PATH = os.path.join(HOME_PATH, 'shfe', 'shfe_data', 'shfe_bak.hdf5')
 
 
@@ -60,13 +61,13 @@ SHFE_TEST_DATA_PATH = os.path.join(HOME_PATH, 'shfe', 'shfe_data', 'shfe_bak.hdf
 # dce_headers = ['symbol', 'date', 'pre_close', 'pre_settlement',  \
 #                'open', 'high', 'low', 'close', 'settlement', \
 #                'd1', 'd2', 'volume','turnover', 'oi']
-
+from dce.include import DCE_DATA_PATH
 DCE_SRC_DATA_PATH = os.path.join(HOME_PATH, 'dce', 'dce_src_data')
-DCE_DATA_PATH = os.path.join(HOME_PATH, 'dce', 'dce_data', 'dce.hdf5')
+# DCE_DATA_PATH = os.path.join(HOME_PATH, 'dce', 'dce_data', 'dce.hdf5')
 DCE_TEST_DATA_PATH = os.path.join(HOME_PATH, 'dce', 'dce_data', 'dce_clean.hdf5')
 
 ###  CZE  ###
-from cze.include import cze_symbols, cze_headers, cze_dtypes
+from cze.include import cze_symbols, cze_headers, cze_dtypes, CZE_DATA_PATH
 ##configuration for zce
 #zce_symbols = ['PM', 'WH', 'CF', 'SR', 'PTA', 'OI', 'RI', 'ME', 'FG', 'RS', 'RM', 'ZC', 'JR', 'LR', 'SM', 'CY', 'AP']
 
@@ -93,8 +94,10 @@ cze_dtypes = {'symbol' : 'object',
          }
 """
 
-CZCE_DATA_PATH = os.path.join(HOME_PATH, "cze", 'cze_data/cze.hdf5')
+# CZCE_DATA_PATH = os.path.join(HOME_PATH, "cze", 'cze_data/cze.hdf5')
+CZCE_DATA_PATH = CZE_DATA_PATH
 CZCE_SRC_DATA_PATH = os.path.join(HOME_PATH, "cze", 'cze_src_data')
+# from cze.include import CZE_DATA_PATH
 CZCE_TEST_DATA_PATH = os.path.join(HOME_PATH, "cze", 'cze_data/cze_test.hdf5')
 
 

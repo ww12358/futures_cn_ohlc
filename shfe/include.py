@@ -30,7 +30,8 @@ shfe_headers = ['symbol', 'date', 'pre_close', 'pre_settlement',  \
 
 HOME_PATH = '/home/sean/PycharmProjects/cn_ex_sync/shfe'
 SRC_PATH = os.path.join(HOME_PATH, 'shfe_src_data')
-SHFE_DATA_PATH = os.path.join(HOME_PATH, 'shfe_data', 'shfe.hdf5')
+# SHFE_DATA_PATH = os.path.join(HOME_PATH, 'shfe_data', 'shfe.hdf5')
+SHFE_DATA_PATH = '/home/sean/sync/creek/shfe.hdf5'
 TEST_DATA_PATH = os.path.join(HOME_PATH, 'shfe_data', 'shfe_bak.hdf5')
 
 months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
