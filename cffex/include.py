@@ -4,6 +4,9 @@ import os
 cffex_symbols = ["IF", "IH", "IC",  \
                  "TF", "T", "TS"]   # 五债， 十债， 二债
 
+cffex_symbols_equity = ['IF', 'IC', 'IH']
+cffex_symbols_bond = ['T', 'TF', 'TS']
+
 cffex_headers = ['symbol', 'date', 'pre_close', 'pre_settlement',  \
                'open', 'high', 'low', 'close', 'settlement', \
                'd1', 'd2', 'volume','turnover', 'oi']

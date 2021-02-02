@@ -8,6 +8,12 @@ shfe_symbols = ["CU", "AL", "ZN", "PB", "NI", "SN",     \
                "RU",
                 "SP"]    # 纸浆
 
+shfe_symbols_0100am = ['CU', 'PB', 'AL', 'ZN', 'SN', 'NI', 'SS']
+
+shfe_symbols_2300pm = ['FU', 'RU', 'BU', 'SP', 'RB', 'HC']
+
+shfe_symbols_0230am = ['AU', 'AG']
+
 
 shfe_dtypes = {'symbol' : 'object',
             'pre_close': 'float64',

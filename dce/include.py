@@ -1,11 +1,13 @@
 # -*- coding:utf-8 -*-
 import os
 
-dce_symbols = ["A", "B", "M", "Y", "P", "C", "CS",
+dce_symbols = ["A", "B", "M", "Y", "P", "C", "CS", "RR",
                "JD", "LH",   \
                "BB", "FB",  #胶合板， 纤维板
                "JM", "J", "I",  \
                "PP", "L", "V", "EG", "EB", "PG" ]   #聚丙烯， 聚乙烯， 聚氯乙烯， 乙二醇， 苯乙烯， 液化石油气
+
+dce_symbols_2300pm = ['I', 'J', 'JM', 'A', 'B', 'M', 'P', 'Y', 'C', 'CS', 'PP', 'V', 'EB', 'EG', 'PG', 'RR', 'L']
 
 dce_dtypes = {'symbol' : 'object',
             'pre_close': 'float64',

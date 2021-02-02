@@ -16,6 +16,7 @@ from sina.getContractDict import getContractDict, getAllContractDict
 from sina.redis import store_redis
 import nest_asyncio
 import numpy as np
+from .include import trading_symbols
 import sys
 
 import urllib
@@ -69,7 +70,7 @@ def download_sina_data_hq(contract):
         if len(data) > 1:
             data_l = [
                 #                 datetime.strptime(data[17], "%Y-%m-%d"),    #date
-                datetime.now(),
+                datetime.now().replace(second=0, microsecond=0),        #round instantaneous time to minute
                 pd.to_numeric(data[2]),  # open
                 pd.to_numeric(data[3]),  # high
                 pd.to_numeric(data[4]),  # low
@@ -80,6 +81,7 @@ def download_sina_data_hq(contract):
             #         data_flist = list(map(float, data_list))     # 字符串转换成浮点数据
             df = pd.DataFrame([data_l], columns=['date', 'open', 'high', 'low', 'close', 'oi', 'volume'])
             df.set_index("date", inplace=True)
+            # print(df)
     except Exception as e:
         print("error", str(e))
 
@@ -147,6 +149,7 @@ async def get_sina5m(contract_dict):
             #     print(df_concat)
 
             df_concat = df_concat[df_concat["volume"] > 12]
+            # print(df_concat)
             # g = df_concat.groupby(df_concat.index.minute, sort=True)
             g = df_concat.groupby(df_concat.index, sort=True)
             # for date, group in g:
@@ -160,16 +163,16 @@ async def get_sina5m(contract_dict):
                                 g.apply(lambda x: np.sum(x['volume']))],
                                axis=1, keys=['open', 'high', 'low', 'close', 'volume'])
 
-            df_00["pct"] = df_00["close"].pct_change(axis='rows')
-            df_00 = df_00.loc[(df_00.pct < 0.09) & (df_00.pct > -0.09)]
+            # df_00["pct"] = df_00["close"].pct_change(axis='rows')
+            # df_00 = df_00.loc[(df_00.pct < 0.09) & (df_00.pct > -0.09)]
             with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-                print(df_00.tail(1))
+                print(df_00)
 
             print(results)
             results.append(tuple(((symbol + '00'), df_00)))
-            print(results)
+            # print(results)
             res = loop.run_until_complete(store_redis(loop, results))
-            print(res)
+            # print(res)
             loop.close
         # except ValueError as e:
         #     if str(e) == "F!!!":
@@ -189,7 +192,7 @@ def main():
     sched_main = BackgroundScheduler()
 
     # # Runs from Monday to Friday at 5:30 (am) until
-    sched_main.add_job(job_function, 'cron', day_of_week='mon-sun', hour=9, minute=21, second=10)
+    sched_main.add_job(job_function, 'cron', day_of_week='mon-sun', hour=16, minute=14, second=10)
     sched_main.start()
 
     while True:

@@ -11,6 +11,8 @@ cze_symbols = ['PM', 'WH', 'CF', 'SR', 'AP', 'CJ', # 红枣
                 'SA',   #纯碱
                ]
 
+cze_symbols_2300pm = ['FG', 'SA', 'MA', 'SR', 'TA', 'RM', 'OI', 'CF', 'CY', 'PF', 'ZC']
+
 cze_all_symbols = ['CF','PM', 'WH', 'SR', 'PTA', 'OI', 'RI', 'MA', 'FG', 'RS', 'RM', 'ZC', 'JR', 'LR', 'SM', 'CY', 'AP',
                'WT', 'WS', 'TA', 'RO', 'ER']
 

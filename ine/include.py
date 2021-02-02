@@ -1,7 +1,11 @@
 # -*- coding:utf-8 -*-
 import os
 
-ine_symbols = ["SC", "NR", "LU"]
+ine_symbols = ["SC", "NR", "LU", "BC"]
+
+ine_symbols_0230am = ['SC']
+ine_symbols_0100am = ['BC']
+ine_symbols_2300pm = ['LU', 'NR']
 
 ine_headers = ['symbol', 'date', 'pre_close', 'pre_settlement',  \
                'open', 'high', 'low', 'close', 'settlement', \
