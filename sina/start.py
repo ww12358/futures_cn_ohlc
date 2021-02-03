@@ -16,7 +16,7 @@ from sina.getContractDict import getContractDict, getAllContractDict
 from sina.redis import store_redis
 import nest_asyncio
 import numpy as np
-from .include import trading_symbols
+from sina.include import trading_symbols
 import sys
 
 import urllib
@@ -192,7 +192,7 @@ def main():
     sched_main = BackgroundScheduler()
 
     # # Runs from Monday to Friday at 5:30 (am) until
-    sched_main.add_job(job_function, 'cron', day_of_week='mon-sun', hour=16, minute=14, second=10)
+    sched_main.add_job(job_function, 'cron', day_of_week='mon-sun', hour=20, minute=2, second=10)
     sched_main.start()
 
     while True:
