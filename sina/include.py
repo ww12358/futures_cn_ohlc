@@ -6,6 +6,7 @@ from shfe.include import shfe_symbols, shfe_symbols_2300pm, shfe_symbols_0100am,
 from ine.include import  ine_symbols, ine_symbols_2300pm, ine_symbols_0100am, ine_symbols_0230am
 from cffex.include import cffex_symbols, cffex_symbols_equity, cffex_symbols_bond
 
+SINA_5M_PATH = '/home/sean/sync/cn_ex_sync/sina/'
 all_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols + cffex_symbols
 com_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols
 
@@ -33,5 +34,5 @@ def time_in_range(start, end, x):
 def trading_symbols(t):
     for tm_rng in t_range:
         if time_in_range(tm_rng[0], tm_rng[1], t):
-            # print(tm_rng[0], tm_rng[1], t_range[tm_rng])
+            print(tm_rng[0], tm_rng[1], t_range[tm_rng])
             return t_range[tm_rng]

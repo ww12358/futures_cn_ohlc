@@ -93,6 +93,8 @@ def job_function():
     print("Hello World")
     print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
 
+    # date = datetime.now()
+    # t = date.time()
     contract_dict = getAllContractDict()
     # print(contract_dict)
     # Execution will block here until Ctrl+C (Ctrl+Break on Windows) is pressed.
@@ -101,7 +103,7 @@ def job_function():
         new_loop = asyncio.new_event_loop()
         asyncio.set_event_loop(new_loop)
         sched_background = AsyncIOScheduler()
-        sched_background.add_job(get_sina5m, "interval", minutes=5, next_run_time=datetime.now(), args=[contract_dict])
+        sched_background.add_job(get_sina5m, "interval", minutes=5, next_run_time=datetime.now(), args=[contract_dict, datetime.now().time()])
         sched_background.start()
         asyncio.get_event_loop().run_forever()
     except (KeyboardInterrupt, SystemExit):
@@ -131,11 +133,14 @@ async def get_sina_contracts(contract):
         #     print(df)
         return contract, df
 
-async def get_sina5m(contract_dict):
+async def get_sina5m(contract_dict, t):
     print("sina!" + datetime.now().strftime("%H:%M:%S"))
-
-    for symbol, contract_d in contract_dict.items():
+    t_symbols = trading_symbols(t)
+    # print(t_symbols)
+    # for symbol, contract_d in contract_dict.items():
+    for symbol in t_symbols:
         try:
+            contract_d = contract_dict[symbol]
             # print(symbol)
             loop = asyncio.get_event_loop()
             group = asyncio.gather(*[get_sina_contracts(contract) for contract in contract_d.values()])
@@ -192,7 +197,7 @@ def main():
     sched_main = BackgroundScheduler()
 
     # # Runs from Monday to Friday at 5:30 (am) until
-    sched_main.add_job(job_function, 'cron', day_of_week='mon-sun', hour=20, minute=2, second=10)
+    sched_main.add_job(job_function, 'cron', day_of_week='mon-sun', hour=1, minute=43, second=0)
     sched_main.start()
 
     while True:
