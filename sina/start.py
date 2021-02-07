@@ -13,7 +13,7 @@ from concurrent.futures import ThreadPoolExecutor
 import concurrent
 from datetime import datetime
 from sina.getContractDict import getContractDict, getAllContractDict
-from sina.redis import store_redis
+from sina.redis_buffer import store_redis
 import nest_asyncio
 import numpy as np
 from sina.include import trading_symbols
@@ -134,7 +134,7 @@ async def get_sina_contracts(contract):
         return contract, df
 
 async def get_sina5m(contract_dict, t):
-    print("sina!" + datetime.now().strftime("%H:%M:%S"))
+    # print("sina!" + datetime.now().strftime("%H:%M:%S"))
     t_symbols = trading_symbols(t)
     # print(t_symbols)
     # for symbol, contract_d in contract_dict.items():

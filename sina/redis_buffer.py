@@ -13,18 +13,10 @@ from sina.include import SINA_5M_PATH
 #     size = len(ser)
 #     r.set(contract, comp)
 #     r.set(contract + "size", size)
-def get_redis_buff(r, contract):
-    bytes_origin = r.get(contract)
-    print(bytes_origin)
-    size_origin = int(r.get(contract + "size"))
-    dec = pyarrow.decompress(bytes_origin, size_origin)
-
-    return pyarrow.deserialize((dec))
 
 async def update_redis(r, contract, df):
     # try:
     #     print(contract)
-    #
     #     df_origin = get_redis_buff(r, contract)
     #     print(df_origin)
     #     df_latest = df_origin.append(df)
