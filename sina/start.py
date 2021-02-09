@@ -11,12 +11,13 @@ import json
 import functools
 from concurrent.futures import ThreadPoolExecutor
 import concurrent
-from datetime import datetime
+import datetime
 from sina.getContractDict import getContractDict, getAllContractDict
 from sina.redis_buffer import store_redis
 import nest_asyncio
 import numpy as np
 from sina.include import trading_symbols
+from sina.sina_5m_archive import archive_sina_5m
 import sys
 
 import urllib
@@ -70,7 +71,7 @@ def download_sina_data_hq(contract):
         if len(data) > 1:
             data_l = [
                 #                 datetime.strptime(data[17], "%Y-%m-%d"),    #date
-                datetime.now().replace(second=0, microsecond=0),        #round instantaneous time to minute
+                datetime.datetime.now().replace(second=0, microsecond=0),        #round instantaneous time to minute
                 pd.to_numeric(data[2]),  # open
                 pd.to_numeric(data[3]),  # high
                 pd.to_numeric(data[4]),  # low
@@ -82,15 +83,14 @@ def download_sina_data_hq(contract):
             df = pd.DataFrame([data_l], columns=['date', 'open', 'high', 'low', 'close', 'oi', 'volume'])
             df.set_index("date", inplace=True)
             # print(df)
+            return df
+
     except Exception as e:
         print("error", str(e))
-
-    return df
-
-
+        return None
 
 def job_function():
-    print("Hello World")
+    # print("Hello World")
     print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
 
     # date = datetime.now()
@@ -103,11 +103,18 @@ def job_function():
         new_loop = asyncio.new_event_loop()
         asyncio.set_event_loop(new_loop)
         sched_background = AsyncIOScheduler()
-        sched_background.add_job(get_sina5m, "interval", minutes=5, next_run_time=datetime.now(), args=[contract_dict, datetime.now().time()])
+        sched_background.add_job(get_sina5m, "interval", minutes=5, next_run_time=datetime.datetime.now(), args=[contract_dict, datetime.datetime.now().time()])
+        sched_background.add_job(archive_sina_5m, "cron", hour='0-1, 8-10, 12-14, 20-23', minute="2, 17, 32, 47", args=[contract_dict])
+        # sched_background.add_job(get_sina5m, "interval", minutes=5,
+                                 # args=[contract_dict, datetime.datetime.now().time()])
         sched_background.start()
         asyncio.get_event_loop().run_forever()
     except (KeyboardInterrupt, SystemExit):
         pass
+
+def remove_job():
+    return
+
 
 # asyncio def interval_function():
 async def get_sina_contracts(contract):
@@ -135,61 +142,69 @@ async def get_sina_contracts(contract):
 
 async def get_sina5m(contract_dict, t):
     # print("sina!" + datetime.now().strftime("%H:%M:%S"))
-    t_symbols = trading_symbols(t)
-    # print(t_symbols)
-    # for symbol, contract_d in contract_dict.items():
-    for symbol in t_symbols:
-        try:
-            contract_d = contract_dict[symbol]
-            # print(symbol)
-            loop = asyncio.get_event_loop()
-            group = asyncio.gather(*[get_sina_contracts(contract) for contract in contract_d.values()])
-            results = loop.run_until_complete(group)
-            # print(results)
+    # print(t)
+    with trading_symbols(t) as ts:
+        t_symbols = ts.get_t_range()
+        print(t_symbols)
 
+        if t_symbols is None:
+            return
+        # for symbol, contract_d in contract_dict.items():
+        for symbol in t_symbols:
+            try:
+                contract_d = contract_dict[symbol]
+                # print(symbol)
+                loop = asyncio.get_event_loop()
+                group = asyncio.gather(*[get_sina_contracts(contract) for contract in contract_d.values()])
+                results = loop.run_until_complete(group)
+                # print(results)
+                _, dfs = map(list, zip(*results))
 
-            _, dfs = map(list, zip(*results))
-            df_concat = pd.concat(dfs, axis=0)
-            # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-            #     print(df_concat)
+                if all(item is None for item in dfs):    #if all dfs items are None
+                    continue
 
-            df_concat = df_concat[df_concat["volume"] > 12]
-            # print(df_concat)
-            # g = df_concat.groupby(df_concat.index.minute, sort=True)
-            g = df_concat.groupby(df_concat.index, sort=True)
-            # for date, group in g:
-            #     print(date)
-            #     print(group)
+                df_concat = pd.concat(dfs, axis=0)
+                # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+                #     print(df_concat)
 
-            df_00 = pd.concat([g.apply(lambda x: np.average(x['open'], weights=x['volume'])),
-                                g.apply(lambda x: np.average(x['high'], weights=x['volume'])),
-                                g.apply(lambda x: np.average(x['low'], weights=x['volume'])),
-                                g.apply(lambda x: np.average(x['close'], weights=x['volume'])),
-                                g.apply(lambda x: np.sum(x['volume']))],
-                               axis=1, keys=['open', 'high', 'low', 'close', 'volume'])
+                df_concat = df_concat[df_concat["volume"] > 12]
+                # print(df_concat)
+                # g = df_concat.groupby(df_concat.index.minute, sort=True)
+                g = df_concat.groupby(df_concat.index, sort=True)
+                # for date, group in g:
+                #     print(date)
+                #     print(group)
 
-            # df_00["pct"] = df_00["close"].pct_change(axis='rows')
-            # df_00 = df_00.loc[(df_00.pct < 0.09) & (df_00.pct > -0.09)]
-            with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-                print(df_00)
+                df_00 = pd.concat([g.apply(lambda x: np.average(x['open'], weights=x['volume'])),
+                                    g.apply(lambda x: np.average(x['high'], weights=x['volume'])),
+                                    g.apply(lambda x: np.average(x['low'], weights=x['volume'])),
+                                    g.apply(lambda x: np.average(x['close'], weights=x['volume'])),
+                                    g.apply(lambda x: np.sum(x['volume']))],
+                                   axis=1, keys=['open', 'high', 'low', 'close', 'volume'])
 
-            print(results)
-            results.append(tuple(((symbol + '00'), df_00)))
-            # print(results)
-            res = loop.run_until_complete(store_redis(loop, results))
-            # print(res)
-            loop.close
-        # except ValueError as e:
-        #     if str(e) == "F!!!":
-        #         print(str(e))
-        #         pass
-        #     else:
-        #         print(str(e))
-        except Exception as e:
-            print("error", str(e))
-            pass
+                # df_00["pct"] = df_00["close"].pct_change(axis='rows')
+                # df_00 = df_00.loc[(df_00.pct < 0.09) & (df_00.pct > -0.09)]
 
-    return
+                # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+                #     print(df_00)
+
+                # print(results)
+                results.append(tuple(((symbol + '00'), df_00)))
+                # print(results)
+                res = loop.run_until_complete(store_redis(loop, results))
+                # print(res)
+                loop.close
+            # except ValueError as e:
+            #     if str(e) == "F!!!":
+            #         print(str(e))
+            #         pass
+            #     else:
+            #         print(str(e))
+            except Exception as e:
+                print("error", str(e))
+                pass
+
+        return
 
 def main():
 
@@ -197,12 +212,11 @@ def main():
     sched_main = BackgroundScheduler()
 
     # # Runs from Monday to Friday at 5:30 (am) until
-    sched_main.add_job(job_function, 'cron', day_of_week='mon-sun', hour=1, minute=43, second=0)
+    sched_main.add_job(job_function, 'cron', day_of_week='mon-sun', hour=20, minute=35, second=0)
     sched_main.start()
 
     while True:
         time.sleep(10)
-
 
     sched.shutdown()
 
@@ -218,4 +232,3 @@ if __name__ == "__main__":
     #     schedule.run_pending()
     #     time.sleep(1)
     main()
-

@@ -9,7 +9,8 @@ class h5_store:
         self.freq = freq
         self.exchange = exchange
         self.__df = {}
-        print(self.h5_path)
+        self.__isempty = True
+        # print(self.h5_path)
         try:
 #            print(DATA_PATH_DICT[self.symbol])
             self.__h5Store = pd.HDFStore(self.h5_path)
@@ -20,26 +21,31 @@ class h5_store:
             if not symbol in self.__h5Store:
                 print("symbol not found in local file, will save new contracts to local")
                 return
-            else:
+
+            else:   #load local file storage to instance
                 self.months = self.get_symbol_months()
+
                 for month in self.months:
                     key = ''.join(["/", self.symbol, "/", self.freq, "/_", month])
     #                print(key)
                     self.__df[month] = pd.read_hdf(self.__h5Store, key)
+                # self.__isemtpy = False
+                self.set_notempty()
+                # print(self.__isempty)
     #                if self.exchange == "DCE":
     #                    self.__df[month].reset_index(inplace=True)
     #                    self.__df[month].set_index(["date", "symbol"], inplace=True)
-                    if self.exchange == "CZCE":
-                        if "d_oi" in self.__df[month].columns:
-                            self.__df[month].drop(["d_oi", "EDSP"], axis=1, inplace=True)
-                            self.__df[month]["pre_close"] = 0
-                            self.__df[month].reset_index(inplace=True)
-                            self.__df[month].set_index(["date", "symbol"], inplace=True)
+    #                 if self.exchange == "CZCE":
+    #                     if "d_oi" in self.__df[month].columns:
+    #                         self.__df[month].drop(["d_oi", "EDSP"], axis=1, inplace=True)
+    #                         self.__df[month]["pre_close"] = 0
+    #                         self.__df[month].reset_index(inplace=True)
+    #                         self.__df[month].set_index(["date", "symbol"], inplace=True)
     #                    if self.symbol == "TA":
     #                        self.__df[month].reset_index(inplace=True)
     #                        self.__df[month]["symbol"] = self.__df[month]["symbol"].str.replace("PTA", "TA")
     #                        self.__df[month].set_index(["date", "symbol"], inplace=True)
-                print("Local Data loaded successfully! Continue...")
+    #             print("Local Data loaded successfully! Continue...")
         #
         # except TypeError as e:
         #     print(str(e))
@@ -68,6 +74,15 @@ class h5_store:
 #             return
 #         else:
 #             return
+
+    def isempty(self):
+        return self.__isempty
+
+    def set_empty(self):
+        self.__isempty = True
+
+    def set_notempty(self):
+        self.__isempty = False
 
     def get_data(self, year, month):
         if not year is None:
@@ -99,6 +114,7 @@ class h5_store:
                 if("00" in months):     #do not update vw_idx
                     months.remove("00")
 
+            return months
         # except ValueError as e:
         #     print(str(e))
         #
@@ -122,8 +138,9 @@ class h5_store:
 
         except Exception as e:
             print(str(e))
+            return None
 
-        return months
+
 
     def get_symbol_months_with_idx(self):
         try:

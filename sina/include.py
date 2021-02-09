@@ -31,8 +31,27 @@ def time_in_range(start, end, x):
     else:
         return start <= x or x < end
 
-def trading_symbols(t):
-    for tm_rng in t_range:
-        if time_in_range(tm_rng[0], tm_rng[1], t):
-            print(tm_rng[0], tm_rng[1], t_range[tm_rng])
-            return t_range[tm_rng]
+class trading_symbols:
+    def __init__(self, t):
+        self._t_range = None
+
+        for tm_rng in t_range:
+            if time_in_range(tm_rng[0], tm_rng[1], t):
+                print(tm_rng[0], tm_rng[1])
+                # return t_range[tm_rng]
+                self._t_range = t_range[tm_rng]
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        del self
+
+    def get_t_range(self):
+        return self._t_range
+
+# def trading_symbols(t):
+#     for tm_rng in t_range:
+#         if time_in_range(tm_rng[0], tm_rng[1], t):
+#             print(tm_rng[0], tm_rng[1], t_range[tm_rng])
+#             return t_range[tm_rng]
