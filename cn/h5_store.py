@@ -23,7 +23,7 @@ class h5_store:
                 return
 
             else:   #load local file storage to instance
-                self.months = self.get_symbol_months()
+                self.months = self.get_symbol_months_with_idx()
 
                 for month in self.months:
                     key = ''.join(["/", self.symbol, "/", self.freq, "/_", month])
@@ -166,8 +166,8 @@ class h5_store:
         return latest_local_date_dic
 
     def append_data(self, df_append, exchange, symbol, freq, month):
-#        print(df_append)
-#        print(self.__df[month])
+        # print(df_append)
+        # print(self.__df[month])
 #        self.__df[month].reset_index(inplace=True)
 #        self.__df[month].set_index(["date", "symbol"], inplace=True)
         df_new = self.__df[month].append(df_append, sort=True)

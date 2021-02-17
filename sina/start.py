@@ -96,7 +96,7 @@ def job_function():
     # date = datetime.now()
     # t = date.time()
     contract_dict = getAllContractDict()
-    # print(contract_dict)
+    print(contract_dict)
     # Execution will block here until Ctrl+C (Ctrl+Break on Windows) is pressed.
     try:
         # asyncio.get_event_loop()\
@@ -104,7 +104,7 @@ def job_function():
         asyncio.set_event_loop(new_loop)
         sched_background = AsyncIOScheduler()
         sched_background.add_job(get_sina5m, "interval", minutes=5, next_run_time=datetime.datetime.now(), args=[contract_dict])
-        sched_background.add_job(archive_sina_5m, "cron", hour='0-1, 8-10, 12-14, 20-23', minute="2, 17, 32, 47", args=[contract_dict])
+        sched_background.add_job(archive_sina_5m, "cron", hour='0-1, 8-10, 12-14, 20-23', minute="1, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56", args=[contract_dict])
         # sched_background.add_job(get_sina5m, "interval", minutes=5,
                                  # args=[contract_dict, datetime.datetime.now().time()])
         sched_background.start()
@@ -208,19 +208,28 @@ async def get_sina5m(contract_dict):
 
     return
 
+
+
 def main():
 
-    # sched_main = BlockingScheduler()
     sched_main = BackgroundScheduler()
 
+    def disable_job_function():
+        sched_main.remove_job('SINA_RETRIEVE_JOB')
+
+    # def enable_interval():
+    #     sched_main.add_job(job_function, 'cron', day_of_week='mon-fri', hour=9, minutes=0, second=2, id='SINA_RETRIEVE_JOB')
+
     # # Runs from Monday to Friday at 5:30 (am) until
-    sched_main.add_job(job_function, 'cron', day_of_week='mon-sun', hour=23, minute=27, second=30)
+    sched_main.add_job(job_function, 'cron', day_of_week='mon-sun', hour=9, minute=0, second=2, id='SINA_RETRIEVE_JOB')
     sched_main.start()
+    sched_main.add_job(disable_job_function, 'cron', day_of_week='tue-sat', hour=2, minute=35, second=0)
 
     while True:
         time.sleep(10)
 
     sched.shutdown()
+    # job_function()
 
     return
 

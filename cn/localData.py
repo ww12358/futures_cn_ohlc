@@ -12,4 +12,4 @@ class localData(h5_store):
 
         super(localData, self).__init__(exchange, symbol, freq)
 
-        print(self.h5_path)
+        # print(self.h5_path)

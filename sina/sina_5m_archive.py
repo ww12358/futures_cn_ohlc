@@ -18,8 +18,9 @@ class sina_5m(h5_store):
         # print(self.h5_path)
 
 def archive_sina_5m(contract_dict):
-    delta = datetime.timedelta(minutes=10)      #delay for 1 circle
-    t = (datetime.datetime.now() - delta).time()
+    # delta = datetime.timedelta(minutes=1)      #delay for 1 circle
+    # t = (datetime.datetime.now() - delta).time()
+    t = datetime.datetime.now()
     t_symbols = trading_symbols(t)
     print(t_symbols)
 
@@ -29,66 +30,75 @@ def archive_sina_5m(contract_dict):
     r = redis.Redis(host='localhost', port=6379, db=0)
     for symbol in t_symbols:
         contract_d = contract_dict[symbol]
+        contract_d.update({"00":(symbol+"00")})     # append index as updating contract
+        # print(contract_d)
     # for symbol, contract_d in contract_dict.items():
         exchange = symbol_exchange_map[symbol]
         with sina_5m(exchange, symbol, "M5") as local_5m_data:
-            if local_5m_data.isempty():
-                for month, contract in contract_d.items():
-                    try:
-                        print(contract)
-                        ser = r.get((contract))
-                        if not ser:
-                            print(symbol, " not find in buffer. Skip...")
-                            continue
-                        df = pa.deserialize(ser)
-                        if not df is None:
-                            print("writing new dataframe to sian_5M_local\n", df)
-                            local_5m_data.save_contract(df, exchange, symbol, "M5", month)
-                        else:
-                            print(symbol + " data not updating within redis. Skip...")
-                            continue
-                    except Exception as e:
-                        print("Error ocurred while creating local archive", str(e))
-                        pass
+            # if local_5m_data.isempty():     #local file contains no data
+            #     for month, contract in contract_d.items():
+            #         try:
+            #             print(contract)
+            #             ser = r.get((contract))
+            #             if not ser:
+            #                 print(symbol, " not find in buffer. Skip...")
+            #                 continue
+            #             df = pa.deserialize(ser)
+            #             print(df)
+            #             if not df is None:
+            #                 print("writing new dataframe to sian_5M_local\n", df)
+            #                 local_5m_data.save_contract(df, exchange, symbol, "M5", month)
+            #             else:
+            #                 print(symbol + " data not updating within redis. Skip...")
+            #                 continue
+            #         except Exception as e:
+            #             print("Error ocurred while creating local archive", str(e))
+            #             pass
 
-            else:
-                for month, contract in contract_d.items():
-                    try:
-                        print(contract)
-                        ser = r.get((contract))
+            # else:
+            for month, contract in contract_d.items():
+                try:
+                    # print(contract)
+                    ser = r.get((contract))
 
-                        if not ser:
-                            print(symbol, "not find in buffer. Skip...")
-                            continue
+                    if not ser:
+                        print(symbol, "not find in buffer. Skip...")
+                        continue
 
-                        d = local_5m_data.get_contract_by_month(month)
-                        # print(d)
-                        if d is not None:
+                    d = local_5m_data.get_contract_by_month(month)
+                    # print(d)
+
+                        # start_time = datetime.datetime(1970, 1, 1)
+
+                    # print(start_time)
+                    # if not ser is None:
+                    df = pa.deserialize(ser)
+                    if not df is None:      #redis buffer exists
+                        # print(df)
+                        if d is not None:   #sina_5m local data contains current contract
                             start_time = d.index[-1]
-                        else:
-                            start_time = datetime.datetime(1970, 1, 1)
-                        # print(start_time)
-                        # if not ser is None:
-                        df = pa.deserialize(ser)
-                        if not df is None:
-                            # print(df)
                             df = df.loc[df.index > start_time]
-                            # print(df)
-
-                            if not df.empty:
-                                local_5m_data.append_data(df, exchange, symbol, "M5", month)
-                            else:
-                                continue
-                            # if not df is None:
-                            #     print(df)
-                            #     pass
                         else:
-                            print(symbol + " data not updating within redis. Skip...")
+                            local_5m_data.save_contract(df, exchange, symbol, "M5", month)  #current contract cannot find in local file, just save it
                             continue
+                        # print(df)
 
-                    except Exception as e:
-                        print(str(e))
-                        pass
+                        if not df.empty:
+                            # if month == "00":
+                            #     print("here")
+                            local_5m_data.append_data(df, exchange, symbol, "M5", month)
+                        else:
+                            continue
+                        # if not df is None:
+                        #     print(df)
+                        #     pass
+                    else:
+                        print(contract + " data not updating within redis. Skip...")
+                        continue
+
+                except Exception as e:
+                    print(str(e))
+                    pass
 
     return
 
