@@ -20,15 +20,19 @@ class sina_5m(h5_store):
 def archive_sina_5m(contract_dict):
     # delta = datetime.timedelta(minutes=1)      #delay for 1 circle
     # t = (datetime.datetime.now() - delta).time()
-    t = datetime.datetime.now()
+
+    t = datetime.datetime.now().time()
     t_symbols = trading_symbols(t)
-    print(t_symbols)
+
 
     if t_symbols is None:
         return
 
+    print("Saving below contracts: ", t_symbols)
+
     r = redis.Redis(host='localhost', port=6379, db=0)
     for symbol in t_symbols:
+    # for symbol in contract_dict.keys():
         contract_d = contract_dict[symbol]
         contract_d.update({"00":(symbol+"00")})     # append index as updating contract
         # print(contract_d)
@@ -58,7 +62,7 @@ def archive_sina_5m(contract_dict):
             # else:
             for month, contract in contract_d.items():
                 try:
-                    # print(contract)
+                    print("Saving : ", contract)
                     ser = r.get((contract))
 
                     if not ser:
@@ -67,11 +71,6 @@ def archive_sina_5m(contract_dict):
 
                     d = local_5m_data.get_contract_by_month(month)
                     # print(d)
-
-                        # start_time = datetime.datetime(1970, 1, 1)
-
-                    # print(start_time)
-                    # if not ser is None:
                     df = pa.deserialize(ser)
                     if not df is None:      #redis buffer exists
                         # print(df)

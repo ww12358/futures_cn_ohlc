@@ -31,6 +31,9 @@ async def update_redis(r, contract, df):
     # await r.set(contract, comp)
     # await r.set(contract+"size", size)
     # context = pa.default_serialization_context()
+
+    print("Buffering : ", contract)
+
     try:
         ser = await r.get((contract))
         if not ser is None:     #redis buffer exists, append data
@@ -42,12 +45,16 @@ async def update_redis(r, contract, df):
             else:
                 df_latest = df_origin.append(df)
 
+            # print(df_latest)
+
             await r.set(contract, pa.serialize(df_latest).to_buffer().to_pybytes())
 
         else:       #initialize redis buffer
+            # print(df)
             await r.set(contract, pa.serialize(df).to_buffer().to_pybytes())
 
     except Exception as e:
+
         await r.set(contract, pa.serialize(df).to_buffer().to_pybytes())
         print(str(e))
         pass

@@ -60,7 +60,7 @@ def download_sina_data(contract):
 
 def download_sina_data_hq(contract):
     try:
-        print(contract)
+        print("Download : ", contract)
         # urls = ["http://stock.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=" + contract,
         #         "http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=" + contract]
         url = ('http://hq.sinajs.cn/list=' + contract)
@@ -96,7 +96,7 @@ def job_function():
     # date = datetime.now()
     # t = date.time()
     contract_dict = getAllContractDict()
-    print(contract_dict)
+    # print(contract_dict)
     # Execution will block here until Ctrl+C (Ctrl+Break on Windows) is pressed.
     try:
         # asyncio.get_event_loop()\
@@ -104,16 +104,13 @@ def job_function():
         asyncio.set_event_loop(new_loop)
         sched_background = AsyncIOScheduler()
         sched_background.add_job(get_sina5m, "interval", minutes=5, next_run_time=datetime.datetime.now(), args=[contract_dict])
-        sched_background.add_job(archive_sina_5m, "cron", hour='0-1, 8-10, 12-14, 20-23', minute="1, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56", args=[contract_dict])
+        sched_background.add_job(archive_sina_5m, "cron", hour='0-1, 8-10, 12-18, 20-23', minute="1, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56", args=[contract_dict])
         # sched_background.add_job(get_sina5m, "interval", minutes=5,
                                  # args=[contract_dict, datetime.datetime.now().time()])
         sched_background.start()
         asyncio.get_event_loop().run_forever()
     except (KeyboardInterrupt, SystemExit):
         pass
-
-def remove_job():
-    return
 
 
 # asyncio def interval_function():
@@ -141,17 +138,20 @@ async def get_sina_contracts(contract):
         return contract, df
 
 async def get_sina5m(contract_dict):
-    t = datetime.datetime.now().time()
+
     # print("sina!" + datetime.now().strftime("%H:%M:%S"))
     # print(t)
     # with trading_symbols(t) as ts:
     # t_symbols = ts.get_t_range()
+
+    t = datetime.datetime.now().time()
     t_symbols = trading_symbols(t)
-    print(t_symbols)
 
     if t_symbols is None:
         return
-    # for symbol, contract_d in contract_dict.items():
+
+    print("Downloading below contracts: ", t_symbols)
+    # for symbol in contract_dict.keys():
     for symbol in t_symbols:
         try:
             contract_d = contract_dict[symbol]
@@ -169,10 +169,11 @@ async def get_sina5m(contract_dict):
             # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
             #     print(df_concat)
 
-            df_concat = df_concat[df_concat["volume"] > 12]
+            df_concat = df_concat[df_concat["volume"] > 1]
             # print(df_concat)
             # g = df_concat.groupby(df_concat.index.minute, sort=True)
             g = df_concat.groupby(df_concat.index, sort=True)
+            # g.apply(print)
             # for date, group in g:
             #     print(date)
             #     print(group)
@@ -181,8 +182,9 @@ async def get_sina5m(contract_dict):
                                 g.apply(lambda x: np.average(x['high'], weights=x['volume'])),
                                 g.apply(lambda x: np.average(x['low'], weights=x['volume'])),
                                 g.apply(lambda x: np.average(x['close'], weights=x['volume'])),
-                                g.apply(lambda x: np.sum(x['volume']))],
-                               axis=1, keys=['open', 'high', 'low', 'close', 'volume'])
+                                g.apply(lambda x: np.sum(x['volume'])),
+                                g.apply(lambda x: np.sum(x['oi']))],
+                               axis=1, keys=['open', 'high', 'low', 'close', 'volume', 'oi'])
 
             # df_00["pct"] = df_00["close"].pct_change(axis='rows')
             # df_00 = df_00.loc[(df_00.pct < 0.09) & (df_00.pct > -0.09)]
@@ -196,12 +198,7 @@ async def get_sina5m(contract_dict):
             res = loop.run_until_complete(store_redis(loop, results))
             # print(res)
             loop.close
-        # except ValueError as e:
-        #     if str(e) == "F!!!":
-        #         print(str(e))
-        #         pass
-        #     else:
-        #         print(str(e))
+
         except Exception as e:
             print("error", str(e))
             pass
@@ -221,7 +218,7 @@ def main():
     #     sched_main.add_job(job_function, 'cron', day_of_week='mon-fri', hour=9, minutes=0, second=2, id='SINA_RETRIEVE_JOB')
 
     # # Runs from Monday to Friday at 5:30 (am) until
-    sched_main.add_job(job_function, 'cron', day_of_week='mon-sun', hour=9, minute=0, second=2, id='SINA_RETRIEVE_JOB')
+    sched_main.add_job(job_function, 'cron', day_of_week='mon-fri', hour=9, minute=0, second=10, id='SINA_RETRIEVE_JOB')
     sched_main.start()
     sched_main.add_job(disable_job_function, 'cron', day_of_week='tue-sat', hour=2, minute=35, second=0)
 
