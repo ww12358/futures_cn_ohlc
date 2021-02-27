@@ -90,11 +90,14 @@ def genMonoIdx(ex_name, symbol, rebuild):
     #         months = [(lambda x: x.strip('_'))(x) for x in months_raw]
     with localData(ex_name, symbol, "D") as data:
         months = data.get_symbol_months_with_idx()
+        print(months)
+        # month = data.get_symbol_months()
         if "00" in months:
             months.remove("00")
 #            print("Months after index removed", months)
             try:
                 mono_idx_df = data.get_idx_data()
+                # print("data in archive: ", mono_idx_df)
                 latest_idx_date = mono_idx_df.index.get_level_values("date").max()
                 if mono_idx_df.empty:       #in case price index data is empty, set a very early date
                     latest_idx_date = pd.to_datetime("19700101", "%Y%m%d")
@@ -118,7 +121,7 @@ def genMonoIdx(ex_name, symbol, rebuild):
 #             except KeyError:
 #                 continue
 #         df = pd.concat(d_li, sort=True)
-        dfs = list(data.get_all_data().values())
+        dfs = list(data.get_contract_data().values())
         # print(dfs)
         # dfs = dfs.values()
         # print(dfs)

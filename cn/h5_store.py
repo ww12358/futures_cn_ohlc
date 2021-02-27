@@ -225,6 +225,18 @@ class h5_store:
             print("Data not loaded correctly, abort!")
             return
 
+    def get_contract_data(self):   # all data except "00" / index
+        # print(self.__df)
+        if not self.__df is None:
+            if "00" in self.__df.keys():
+                del self.__df["00"]
+                return self.__df
+            else:
+                return self.__df
+        else:
+            print("Data not loaded correctly, abort!")
+            return
+
     def get_last_trade_data(self):
         if not self.__df is None:
             for key in self.__df.keys():

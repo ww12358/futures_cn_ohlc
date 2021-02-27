@@ -8,6 +8,8 @@ import pyarrow as pa
 import datetime
 from sina.include import trading_symbols
 
+DEBUG = 1
+
 class sina_5m(h5_store):
     def __init__(self, exchange, symbol, freq):
         self.symbol = symbol.upper()
@@ -78,14 +80,20 @@ def archive_sina_5m(contract_dict):
                             start_time = d.index[-1]
                             df = df.loc[df.index > start_time]
                         else:
-                            local_5m_data.save_contract(df, exchange, symbol, "M5", month)  #current contract cannot find in local file, just save it
+                            if DEBUG:
+                                print(df)
+                            else:
+                                local_5m_data.save_contract(df, exchange, symbol, "M5", month)  #current contract cannot find in local file, just save it
                             continue
                         # print(df)
 
                         if not df.empty:
+                            if DEBUG:
+                                print(df)
+                            else:
                             # if month == "00":
                             #     print("here")
-                            local_5m_data.append_data(df, exchange, symbol, "M5", month)
+                                local_5m_data.append_data(df, exchange, symbol, "M5", month)
                         else:
                             continue
                         # if not df is None:
@@ -98,6 +106,8 @@ def archive_sina_5m(contract_dict):
                 except Exception as e:
                     print(str(e))
                     pass
+
+        print("Archive finished at : ", datetime.datetime.now())
 
     return
 
