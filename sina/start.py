@@ -17,7 +17,7 @@ from sina.redis_buffer import store_redis
 import nest_asyncio
 import numpy as np
 from sina.include import trading_symbols
-from sina.sina_5m_archive import archive_sina_5m
+from sina.sina_M5_archive import archive_sina_M5
 import sys
 
 import urllib
@@ -28,7 +28,7 @@ nest_asyncio.apply()
 logging.basicConfig()
 logging.getLogger('apscheduler').setLevel(logging.DEBUG)
 
-DEBUG = 1
+DEBUG = 0
 
 def download_sina_data(contract):
     try:
@@ -105,7 +105,7 @@ def job_function():
         asyncio.set_event_loop(new_loop)
         sched_background = AsyncIOScheduler()
         sched_background.add_job(get_sina5m, "interval", minutes=5, next_run_time=datetime.datetime.now(), args=[contract_dict])
-        sched_background.add_job(archive_sina_5m, "cron", hour='0-2, 8-10, 12-18, 20-23', minute="1, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56", args=[contract_dict])
+        sched_background.add_job(archive_sina_M5, "cron", hour='0-2, 8-10, 12-18, 20-23', minute="1, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56", args=[contract_dict])
         # sched_background.add_job(get_sina5m, "interval", minutes=5,
                                  # args=[contract_dict, datetime.datetime.now().time()])
         sched_background.start()

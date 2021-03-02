@@ -4,7 +4,7 @@ import asyncio
 import pyarrow as pa
 import pandas as pd
 
-from sina.include import SINA_5M_PATH
+from sina.include import SINA_M5_PATH
 
 # def put(contract, df):
 #     r = redis.StrictRedis(host='localhost', port=6379, db=0)

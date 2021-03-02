@@ -1,25 +1,15 @@
 import pandas as pd
-from sina.include import SINA_5M_PATH
-from cn.h5_store import h5_store
 from cn.include import symbol_exchange_map
 from sina.getContractDict import getContractDict, getAllContractDict
 import redis
 import pyarrow as pa
 import datetime
 from sina.include import trading_symbols
+from sina.sina_M5 import sina_M5
 
 DEBUG = 1
 
-class sina_5m(h5_store):
-    def __init__(self, exchange, symbol, freq):
-        self.symbol = symbol.upper()
-        self.exchange = exchange.upper()
-        self.h5_path = "".join([SINA_5M_PATH, exchange, "/", symbol, ".hdf5"])
-
-        super(sina_5m, self).__init__(exchange, symbol, freq)
-        # print(self.h5_path)
-
-def archive_sina_5m(contract_dict):
+def archive_sina_M5(contract_dict):
     # delta = datetime.timedelta(minutes=1)      #delay for 1 circle
     # t = (datetime.datetime.now() - delta).time()
 
@@ -40,7 +30,7 @@ def archive_sina_5m(contract_dict):
         # print(contract_d)
     # for symbol, contract_d in contract_dict.items():
         exchange = symbol_exchange_map[symbol]
-        with sina_5m(exchange, symbol, "M5") as local_5m_data:
+        with sina_M5(exchange, symbol, "M5") as local_5m_data:
             # if local_5m_data.isempty():     #local file contains no data
             #     for month, contract in contract_d.items():
             #         try:
