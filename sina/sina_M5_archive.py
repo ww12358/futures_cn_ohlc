@@ -7,7 +7,7 @@ import datetime
 from sina.include import trading_symbols
 from sina.sina_M5 import sina_M5
 
-DEBUG = 1
+DEBUG = 0
 
 def archive_sina_M5(contract_dict):
     # delta = datetime.timedelta(minutes=1)      #delay for 1 circle
