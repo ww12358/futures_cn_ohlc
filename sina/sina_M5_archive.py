@@ -20,7 +20,7 @@ def archive_sina_M5(contract_dict):
     if t_symbols is None:
         return
 
-    print("Saving below contracts: ", t_symbols)
+    # print("Saving below contracts: ", t_symbols)
 
     r = redis.Redis(host='localhost', port=6379, db=0)
     for symbol in t_symbols:
@@ -54,11 +54,11 @@ def archive_sina_M5(contract_dict):
             # else:
             for month, contract in contract_d.items():
                 try:
-                    print("Saving : ", contract)
+                    # print("Saving : ", contract)
                     ser = r.get((contract))
 
                     if not ser:
-                        print(symbol, "not find in buffer. Skip...")
+                        # print(symbol, "not find in buffer. Skip...")
                         continue
 
                     d = local_5m_data.get_contract_by_month(month)
@@ -90,7 +90,7 @@ def archive_sina_M5(contract_dict):
                         #     print(df)
                         #     pass
                     else:
-                        print(contract + " data not updating within redis. Skip...")
+                        # print(contract + " data not updating within redis. Skip...")
                         continue
 
                 except Exception as e:

@@ -61,7 +61,7 @@ def download_sina_data(contract):
 
 def download_sina_data_hq(contract):
     try:
-        print("Download : ", contract)
+        # print("Download : ", contract)
         # urls = ["http://stock.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=" + contract,
         #         "http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=" + contract]
         url = ('http://hq.sinajs.cn/list=' + contract)
@@ -105,7 +105,7 @@ def job_function():
         asyncio.set_event_loop(new_loop)
         sched_background = AsyncIOScheduler()
         sched_background.add_job(get_sina5m, "interval", minutes=5, next_run_time=datetime.datetime.now(), args=[contract_dict])
-        sched_background.add_job(archive_sina_M5, "cron", hour='0-2, 8-10, 12-18, 20-23', minute="1, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56", args=[contract_dict])
+        sched_background.add_job(archive_sina_M5, "cron", hour='0-2, 9-11, 13-15, 21-23', minute="1, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56", args=[contract_dict])
         # sched_background.add_job(get_sina5m, "interval", minutes=5,
                                  # args=[contract_dict, datetime.datetime.now().time()])
         sched_background.start()
@@ -151,7 +151,7 @@ async def get_sina5m(contract_dict):
     if t_symbols is None:
         return
 
-    print("Downloading below contracts: ", t_symbols)
+    # print("Downloading below contracts: ", t_symbols)
     # for symbol in contract_dict.keys():
     for symbol in t_symbols:
         try:
@@ -221,7 +221,7 @@ def main():
         #     sched_main.add_job(job_function, 'cron', day_of_week='mon-fri', hour=9, minutes=0, second=2, id='SINA_RETRIEVE_JOB')
 
         # # Runs from Monday to Friday at 5:30 (am) until
-        sched_main.add_job(job_function, 'cron', day_of_week='mon-fri', hour=9, minute=0, second=10, id='SINA_RETRIEVE_JOB')
+        sched_main.add_job(job_function, 'cron', day_of_week='mon-fri', hour=9, minute=0, second=15, id='SINA_RETRIEVE_JOB')
         sched_main.start()
         sched_main.add_job(disable_job_function, 'cron', day_of_week='tue-sat', hour=2, minute=35, second=0)
 
