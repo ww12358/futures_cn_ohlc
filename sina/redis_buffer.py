@@ -15,24 +15,8 @@ from sina.include import SINA_M5_PATH
 #     r.set(contract + "size", size)
 
 async def update_redis(r, contract, df):
-    # try:
-    #     print(contract)
-    #     df_origin = get_redis_buff(r, contract)
-    #     print(df_origin)
-    #     df_latest = df_origin.append(df)
-    #     print(df_latest)
-    # except Exception as e:
-    #     print(str(e))
-    #     pass
 
-    # ser = pyarrow.serialize(df).to_buffer()
-    # comp = pyarrow.compress(ser, asbytes=True)
-    # size = str(len(ser))
-    # await r.set(contract, comp)
-    # await r.set(contract+"size", size)
-    # context = pa.default_serialization_context()
-
-    print("Buffering : ", contract)
+    # print("Buffering : ", contract)
 
     try:
         ser = await r.get((contract))

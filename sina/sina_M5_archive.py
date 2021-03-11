@@ -97,7 +97,7 @@ def archive_sina_M5(contract_dict):
                     print(str(e))
                     pass
 
-        print("Archive finished at : ", datetime.datetime.now())
+        # print("Archive finished at : ", datetime.datetime.now())
 
     return
 
