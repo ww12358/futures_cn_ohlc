@@ -1,27 +1,22 @@
-from apscheduler.schedulers.blocking import BlockingScheduler
+# from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import asyncio
 import os
 import time
 import logging
-import requests
 import pandas as pd
-import json
 import functools
 from concurrent.futures import ThreadPoolExecutor
 import concurrent
 import datetime
 from sina.getContractDict import getContractDict, getAllContractDict
 from sina.redis_buffer import store_redis
+from sina.download_sina import download_sina_data, download_sina_data_hq
 import nest_asyncio
 import numpy as np
 from sina.include import trading_symbols
 from sina.sina_M5_archive import archive_sina_M5
-import sys
-
-import urllib
-from cn.include import all_symbols
 
 nest_asyncio.apply()
 
@@ -29,66 +24,6 @@ logging.basicConfig()
 logging.getLogger('apscheduler').setLevel(logging.DEBUG)
 
 DEBUG = 0
-
-def download_sina_data(contract):
-    try:
-        print(contract)
-        # urls = ["http://stock.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=" + contract,
-        #         "http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=" + contract]
-        url = "http://stock.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=" + contract
-        info = requests.get(url)
-        if info.status_code != 200:
-            print("OK"+contract+"\n")
-        data = info.content
-        data = json.loads(data)
-        data = pd.DataFrame(data)
-        # print(data.tail(1))
-        data = data.sort_values(0)
-        data.columns = "date open high low close volume".split()
-        data = data.set_index('date')
-        data.index = pd.to_datetime(data.index)
-        data[["open", "high", "low", "close", "volume"]] = data[["open", "high", "low", "close", "volume"]].apply(pd.to_numeric)
-    # except ValueError as error:
-    #     print("Decoding falied")
-    #     # raise error.with_traceback(sys.exc_info()[2])
-    #     raise ValueError("BUSTERED")
-    #     pass
-
-    except Exception as e:
-        print("error", str(e))
-
-    return data
-
-def download_sina_data_hq(contract):
-    try:
-        # print("Download : ", contract)
-        # urls = ["http://stock.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=" + contract,
-        #         "http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=" + contract]
-        url = ('http://hq.sinajs.cn/list=' + contract)
-        resp = requests.get(url)  # 获取数据
-        data = resp.text.split(',')  # 数据分解成list
-        # if info.status_code != 200:
-        #     print("OK"+contract+"\n")
-        if len(data) > 1:
-            data_l = [
-                #                 datetime.strptime(data[17], "%Y-%m-%d"),    #date
-                datetime.datetime.now().replace(second=0, microsecond=0),        #round instantaneous time to minute
-                pd.to_numeric(data[2]),  # open
-                pd.to_numeric(data[3]),  # high
-                pd.to_numeric(data[4]),  # low
-                pd.to_numeric(data[8]),  # close
-                pd.to_numeric(data[13]),  # open interest
-                pd.to_numeric(data[14]),  # volume
-            ]
-            #         data_flist = list(map(float, data_list))     # 字符串转换成浮点数据
-            df = pd.DataFrame([data_l], columns=['date', 'open', 'high', 'low', 'close', 'oi', 'volume'])
-            df.set_index("date", inplace=True)
-            # print(df)
-            return df
-
-    except Exception as e:
-        print("error", str(e))
-        return None
 
 def job_function():
     # print("Hello World")
@@ -215,6 +150,7 @@ def main():
         sched_main = BackgroundScheduler()
 
         def disable_job_function():
+            print("job_disabled")
             sched_main.remove_job('SINA_RETRIEVE_JOB')
 
         # def enable_interval():
@@ -223,7 +159,7 @@ def main():
         # # Runs from Monday to Friday at 5:30 (am) until
         sched_main.add_job(job_function, 'cron', day_of_week='mon-fri', hour=9, minute=0, second=15, id='SINA_RETRIEVE_JOB')
         sched_main.start()
-        sched_main.add_job(disable_job_function, 'cron', day_of_week='tue-sat', hour=2, minute=35, second=0)
+        # sched_main.add_job(disable_job_function, 'cron', day_of_week='tue-sat', hour=2, minute=35, second=0)
 
         while True:
             time.sleep(10)

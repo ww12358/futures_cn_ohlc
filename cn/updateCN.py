@@ -1,9 +1,10 @@
 # -*- coding:utf-8 -*-
 from shfe.include import SHFE_DATA_PATH, shfe_symbols
 from .include import local_ts_ex_map, symbol_exchange_map
-from cn.localData import localData
-from cn.qlData import qlData
-from cn.tsData import tsData
+from .contracts import get_list_delist_dates
+# from cn.localData import localData
+# from cn.qlData import qlData
+# from cn.tsData import tsData
 from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
@@ -29,9 +30,6 @@ def get_start_end_date(df_basics, exchange, symbol, year, month):
             end_date = df_info.delist_date.values[0]
 
             return (start_date, end_date)
-
-
-
 
 def get_last_trading_day(exchange, tm, pro):
 
@@ -81,27 +79,6 @@ def delist_date(symbol, exchange, year, month, df_basics):
         print("Contract not listed yet")
         return None
 
-
-def get_list_delist_dates(symbol, exchange, contracts, df_basics):
-#    print(df_basics)
-#    print(contracts)
-    contract_delist_date = {}
-    contract_list_date = {}
-    for year, month in contracts:
-#        print(year, month)
-        contract = year + month
-        smbl_str = symbol + year + month + '.' + exchange
-#        print(smbl_str)
-        try:
-            contract_delist_date[
-                pd.to_datetime(df_basics.loc[df_basics["ts_code"] == smbl_str, "delist_date"].values[0])] = contract
-            contract_list_date[
-                pd.to_datetime(df_basics.loc[df_basics["ts_code"] == smbl_str, "list_date"].values[0])] = contract
-        except IndexError:
-            #            print("Contract not listed yet")
-            continue
-
-    return contract_list_date, contract_delist_date
 
 def first_last_contract(list_dates, delist_dates, date, today):
     # print(list_dates, "\n", delist_dates)

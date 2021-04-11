@@ -65,15 +65,6 @@ class h5_store:
         if self.__h5Store:
             #            self.__h5St`   ore.flush()
             self.__h5Store.close()
-#     def __del__(self):
-#         if self.__h5Store:
-# #            self.__h5Store.flush()
-#             self.__h5Store.close()
-#             print("Saving data to disk drive... Please wait.")
-#             print("Success! Update exit.")
-#             return
-#         else:
-#             return
 
     def isempty(self):
         return self.__isempty
@@ -113,28 +104,7 @@ class h5_store:
                 months = [(lambda x: x.strip('_'))(x) for x in months_raw]
                 if("00" in months):     #do not update vw_idx
                     months.remove("00")
-
             return months
-        # except ValueError as e:
-        #     print(str(e))
-        #
-        # except TypeError as e:
-        #     print(str(e))
-        #     return None
-        #
-        # except KeyError as e:
-        #     print(str(e))
-        #
-        # except IOError as e:
-        #     print(str(e))
-        #
-        # except NotImplementedError as e:
-        #     print(str(e))
-        #     return None
-        # #node does not exist, new contracts
-        # except tb.NoSuchNodeError as e:
-        #     print(str(e))
-        #     return None
 
         except Exception as e:
             print(str(e))
