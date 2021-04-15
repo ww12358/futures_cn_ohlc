@@ -81,8 +81,6 @@ def genMonoIdx(ex_name, symbol, rebuild):
         print("Processing %s\t%s" % (ex_name, symbol))
         next
 
-
-
     # d_li=[]
     # with pd.HDFStore(DATA_PATH) as f:
     #     for item in f.walk("/" + symbol + "/D/"):

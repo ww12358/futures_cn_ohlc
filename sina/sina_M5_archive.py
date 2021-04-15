@@ -83,7 +83,7 @@ def archive_sina_M5(contract_dict):
                             else:
                             # if month == "00":
                             #     print("here")
-                                local_5m_data.append_data(df, exchange, symbol, "M5", month)
+                                local_5m_data.append_data(df, month)
                         else:
                             continue
                         # if not df is None:

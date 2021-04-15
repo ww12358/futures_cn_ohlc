@@ -21,6 +21,7 @@ def download_sina_data(contract):
         data = data.set_index('date')
         data.index = pd.to_datetime(data.index)
         data[["open", "high", "low", "close", "volume"]] = data[["open", "high", "low", "close", "volume"]].apply(pd.to_numeric)
+        data['contract'] = contract[-4:]
     # except ValueError as error:
     #     print("Decoding falied")
     #     # raise error.with_traceback(sys.exc_info()[2])

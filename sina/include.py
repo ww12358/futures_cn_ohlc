@@ -7,6 +7,7 @@ from ine.include import  ine_symbols, ine_symbols_2300pm, ine_symbols_0100am, in
 from cffex.include import cffex_symbols, cffex_symbols_equity, cffex_symbols_bond
 
 SINA_M5_PATH = '/home/sean/sync/creek/sina/'
+SINA_M5_ORIGIN_PATH = '/home/sean/sync/creek/sina_origin/'
 SINA_H1_PATH = '/home/sean/sync/creek/H1/'
 SINA_H3_PATH = '/home/sean/sync/creek/H3/'
 all_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols + cffex_symbols

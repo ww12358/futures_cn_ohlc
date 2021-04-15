@@ -112,13 +112,13 @@ def normalize_new_data(df):
 def append_data(exchange, symbol, freq, year, month, start_date, end_date, ldata, rdata):
     df = ldata.get_data(year, month)
     ts_month_str = year + month
-    print("local data", df)
-    print(symbol, exchange, start_date, end_date)
+    # print("local data", df)
+    # print(symbol, exchange, start_date, end_date)
 
 #    month_short = yymm[2:]
     df_ts = rdata.get_data(symbol, exchange, freq, ts_month_str, start_date, end_date)
-    print("df_ts", df_ts)
-    print(df.shape)
+    # print("df_ts", df_ts)
+    # print(df.shape)
 
     i = df_ts.index.size - df.index.size  #
     if i == 0:  # df_open.index.size equals with df.index.size in length
@@ -139,7 +139,7 @@ def append_data(exchange, symbol, freq, year, month, start_date, end_date, ldata
 #        df.set_index("symbol", append=True, inplace=True)
         print(df_append, "\nAbove data is going to be appended to local data.\n")
         if not df_append.empty:
-            ldata.append_data(df_append, exchange, symbol, freq, month)
+            ldata.append_data(df_append, month)
 
     return
 

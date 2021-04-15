@@ -19,7 +19,7 @@ class h5_store:
                 print("file not exists, will create new file")
 
             if not symbol in self.__h5Store:
-                print("symbol not found in local file, will save new contracts to local")
+                print("symbol not found in local file, will save new contracts to local.\n")
                 return
 
             else:   #load local file storage to instance
@@ -135,22 +135,39 @@ class h5_store:
 
         return latest_local_date_dic
 
-    def append_data(self, df_append, exchange, symbol, freq, month):
+    def append_data(self, df_append, month):
+        try:
+            self.__df[month]
         # print(df_append)
         # print(self.__df[month])
 #        self.__df[month].reset_index(inplace=True)
 #        self.__df[month].set_index(["date", "symbol"], inplace=True)
-        df_new = self.__df[month].append(df_append, sort=True)
-#        df_new.sort_index(level=["date","symbol"], ascending=True, inplace=True)
-#         with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-#             print(df_new.head(10))
-#             print(df_new.tail(50))
-
-        df_new.to_hdf(self.__h5Store, '/' + symbol + '/' + freq + '/_' + month, mode='a', format='table', append=False,
-                                  data_columns=True, complevel=9, complib='blosc:snappy')
-
-        self.__df[month] = df_new
-#        self.__h5Store.flush()
+            if isinstance(df_append.index, pd.MultiIndex):
+                # print(df_append)
+                # print(df_append.index.get_level_values(("date")))
+                # print(self.__df[month].iloc[-1].name)
+                df_append = df_append.loc[df_append.index.get_level_values("date") > self.__df[month].iloc[-1].name[0]]
+                df_append.sort_index(level=["date", "symbol"], ascending=True, inplace=True)
+                # print(df_append)
+            else:
+                df_append = df_append.loc[df_append.index > self.__df[month].iloc[-1].name]
+                df_append.sort_index(ascending=True, inplace=True)
+            # df_new.sort_index(level=["date","symbol"], ascending=True, inplace=True)
+            # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+            #     print(df_append.head(10))
+            #     print(df_append.tail(50))
+            df_append.to_hdf(self.__h5Store, '/' + self.symbol + '/' + self.freq + '/_' + month, mode='a', format='table', append=True,
+                                      data_columns=True, complevel=9, complib='blosc:snappy')
+            self.__df[month] = df_append
+        except KeyError:
+            # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+            #     print(df_append.head(10))
+            #     print(df_append.tail(50))
+            df_append.to_hdf(self.__h5Store, '/' + self.symbol + '/' + self.freq + '/_' + month, mode='a', format='table',
+                          append=False, data_columns=True, complevel=9, complib='blosc:snappy')
+            self.__df[month] = df_append
+        except Exception as e:
+            print(str(e))
 
         return
 
