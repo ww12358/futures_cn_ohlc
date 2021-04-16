@@ -6,6 +6,10 @@ import click
 from vw.include import ex_config, idx_headers, idx_dtypes
 from cn.include import all_symbols, all_exchanges, symbol_exchange_map, exchange_symbols_map
 from cn.localData import localData
+# from sina.sina_M5_archive import sina_M5
+from sina.sina_H3 import sina_H3
+from sina.sina_H1 import sina_H1
+from sina.sina_M5 import sina_M5
 import numpy as np
 
 
@@ -70,7 +74,7 @@ def aggr_contracts(symbol, dfs, start_date):
 
     return df_append
 
-def genMonoIdx(ex_name, symbol, rebuild):
+def genMonoIdx(ex_name, symbol, rebuild, freq="1d"):
     latest_local_date_dic = {}
     local_data_length_dic ={}
     months = []
@@ -86,42 +90,38 @@ def genMonoIdx(ex_name, symbol, rebuild):
     #     for item in f.walk("/" + symbol + "/D/"):
     #         months_raw = list(item[2])
     #         months = [(lambda x: x.strip('_'))(x) for x in months_raw]
-    with localData(ex_name, symbol, "D") as data:
-        months = data.get_symbol_months_with_idx()
-        print(months)
-        # month = data.get_symbol_months()
-        if "00" in months:
-            months.remove("00")
-#            print("Months after index removed", months)
-            try:
-                mono_idx_df = data.get_idx_data()
-                # print("data in archive: ", mono_idx_df)
-                latest_idx_date = mono_idx_df.index.get_level_values("date").max()
-                if mono_idx_df.empty:       #in case price index data is empty, set a very early date
-                    latest_idx_date = pd.to_datetime("19700101", "%Y%m%d")
-                print("Current price index latest date", latest_idx_date)
-            except Exception as e:
-                print("Error occured accessing %s index data", symbol)
-                print(str(e))
-                return
+    if freq == "1d":
+        with localData(ex_name, symbol, "D") as data:
+    else freq == "H3":
+        with sina_H3(ex_name, symbol, "H3") as data:
+    else frq == "H1":
+            months = data.get_symbol_months_with_idx()
+            print(months)
+            # month = data.get_symbol_months()
+            if "00" in months:
+                months.remove("00")
+    #            print("Months after index removed", months)
+                try:
+                    mono_idx_df = data.get_idx_data()
+                    # print("data in archive: ", mono_idx_df)
+                    latest_idx_date = mono_idx_df.index.get_level_values("date").max()
+                    if mono_idx_df.empty:       #in case price index data is empty, set a very early date
+                        latest_idx_date = pd.to_datetime("19700101", "%Y%m%d")
+                    print("Current price index latest date", latest_idx_date)
+                except Exception as e:
+                    print("Error occured accessing %s index data", symbol)
+                    print(str(e))
+                    return
 
-        else:
-            print(symbol, "Price Index does not exsist. Constructing new dataframe...")
-            # mono_index_df = pd.DataFrame(columns=idx_dtypes)
-            latest_idx_date = datetime.strptime("19700101", "%Y%m%d")
+            else:
+                print(symbol, "Price Index does not exsist. Constructing new dataframe...")
+                # mono_index_df = pd.DataFrame(columns=idx_dtypes)
+                latest_idx_date = datetime.strptime("19700101", "%Y%m%d")
 
-#         for month in months:
-#             try:
-#                 df_month = data.get_contract_by_month(month)
-#                 d_li.append(df_month)
-#                 latest_local_date_dic[month] = df_month.index.get_level_values("date").max()
-# #                local_data_length_dic[month] = len(df_month.index)
-#             except KeyError:
-#                 continue
-#         df = pd.concat(d_li, sort=True)
-        dfs = list(data.get_contract_data().values())
-        # print(dfs)
-        # dfs = dfs.values()
+#
+            dfs = list(data.get_contract_data().values())
+            # print(dfs)
+            # dfs = dfs.values()
         # print(dfs)
         DATA_PATH = ex_config[ex_name]["DATA_PATH"]
 

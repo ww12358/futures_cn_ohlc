@@ -188,6 +188,16 @@ class h5_store:
 
         return
 
+    def overwrite(self, df_new, symbol, freq, month):
+        confirm =  input("Are your sure you want to overwrite contract data? (\"Y\" to confirm or \"N\" to quit")
+
+        if confirm in ["Y", "Yes"]:
+            try:
+                df_new.to_hdf(self.__h5Store, '/' + symbol + '/' + freq + '/_' + month, mode='a', format='table', append=False, data_columns=True, complevel=9, complib='blosc:snappy')
+            except Exception as e:
+                print(str(e))
+
+
     def print_all(self):
         months = self.get_symbol_months()
         for month in months:
