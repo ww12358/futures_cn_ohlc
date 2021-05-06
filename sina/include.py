@@ -8,11 +8,13 @@ from cffex.include import cffex_symbols, cffex_symbols_equity, cffex_symbols_bon
 
 SINA_M5_PATH = '/home/sean/sync/creek/sina/'
 SINA_M5_ORIGIN_PATH = '/home/sean/sync/creek/sina_origin/'
+SINA_M15_PATH = '/home/sean/sync/creek/M15/'
+SINA_M30_PATH = '/home/sean/sync/creek/M30/'
 SINA_H1_PATH = '/home/sean/sync/creek/H1/'
 SINA_H3_PATH = '/home/sean/sync/creek/H3/'
 all_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols + cffex_symbols
 com_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols
-
+watch_list = ["CU", "RB", "I", "A", "M", "Y", "TA", "SR", "CF"]
 
 t_range = { (time(9, 0), time(9, 15)) : com_symbols,
             (time(9, 15), time(9, 30)) : com_symbols + cffex_symbols_bond,

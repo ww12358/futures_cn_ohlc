@@ -6,6 +6,7 @@ import pyarrow as pa
 import datetime
 from sina.include import trading_symbols
 from sina.sina_M5 import sina_M5
+from cn.include import symbol_exchange_map
 
 DEBUG = 0
 
@@ -30,7 +31,7 @@ def archive_sina_M5(contract_dict):
         # print(contract_d)
     # for symbol, contract_d in contract_dict.items():
         exchange = symbol_exchange_map[symbol]
-        with sina_M5(exchange, symbol, "M5") as local_5m_data:
+        with sina_M5(symbol, "M5") as local_5m_data:
             # if local_5m_data.isempty():     #local file contains no data
             #     for month, contract in contract_d.items():
             #         try:

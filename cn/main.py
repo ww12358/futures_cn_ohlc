@@ -75,7 +75,7 @@ def main(symbol, exchange, year, month, latest, new, clean, source="T"):
             if latest:
                 for smbl in ex_symList_map[exchange]:
                     # print(exchange, smbl)
-                    with localData(exchange, smbl, "D") as local_data:
+                    with localData(smbl, "D") as local_data:
                         print(local_data.symbol)
                         remote_data = tsData(pro, exchange, smbl, "D")
                         update_cn_latest(exchange, smbl, "D", local_data, remote_data, basics_df)
@@ -96,10 +96,10 @@ def main(symbol, exchange, year, month, latest, new, clean, source="T"):
                 basics_df = pro.fut_basic(exchange=exchange, fut_type='1', fields='ts_code,symbol,list_date,delist_date')
                 for smbl in exchange_symbols_map[exchange]:
                     print("Exchange:{ex}, Symbol:{smbl}".format(ex=exchange, smbl=smbl))
-                    with localData(exchange, smbl, "D") as local_data:
+                    with localData(smbl, "D") as local_data:
                         remote_data = tsData(pro, exchange, smbl, "D")
                         update_cn_latest(exchange, smbl, "D", local_data, remote_data, basics_df)
-                    time.sleep(30)
+                    # time.sleep(1)
             return
 
         if clean:
@@ -115,7 +115,7 @@ def main(symbol, exchange, year, month, latest, new, clean, source="T"):
         print("Exchange:{ex}, Symbol:{smbl}".format(ex=exchange, smbl=symbol))
         basics_df = pro.fut_basic(exchange=exchange, fut_type='1', fields='ts_code,symbol,list_date,delist_date')
         remote_data = tsData(pro, exchange, symbol, "D")
-        with localData(exchange, symbol, "D") as local_data:
+        with localData(symbol, "D") as local_data:
             if latest:
                 print("Updating %s to latest..." % symbol)
                 update_cn_latest(exchange, symbol, "D", local_data, remote_data, basics_df)
@@ -136,7 +136,7 @@ def main(symbol, exchange, year, month, latest, new, clean, source="T"):
             if year and 8 <= year <= (datetime.now().year - 1999):
                 #        print("good year")
                 #        print(year_s)
-                with localData(exchange, symbol, "D") as local_data:
+                with localData(symbol, "D") as local_data:
                     months = local_data.get_symbol_months()
                     if month in months:
                         update_cn(exchange, symbol, "D", str(year), month, local_data, remote_data)
@@ -149,7 +149,7 @@ def main(symbol, exchange, year, month, latest, new, clean, source="T"):
 
             elif year is None:
                 print("all years")
-                with localData(exchange, symbol, "D") as local_data:
+                with localData(symbol, "D") as local_data:
                     months = local_data.get_symbol_months()
                     if month in months:
                         for y in range(2000 + year, datetime.now().year + 1):

@@ -71,7 +71,7 @@ class tsData:
 #        print(ts_code)
         df_ts = self.feed.fut_daily(ts_code=ts_code, start_date=start_date, end_date=end_date)
 
-        time.sleep(5)
+        time.sleep(3)
 #        print(df_ts)
 
         if not df_ts.empty:
@@ -83,7 +83,7 @@ class tsData:
     def get_all_data(self, ts_code, start_date, end_date, month_str):
 
         df_ts = self.feed.fut_daily(ts_code=ts_code,  start_date=start_date, end_date=end_date)
-        time.sleep(5)
+        time.sleep(3)
         if not df_ts.empty:
             return self.normalize_ts_raw(df_ts, self.exchange, self.symbol, month_str)
         else:

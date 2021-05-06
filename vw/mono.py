@@ -9,7 +9,11 @@ from cn.localData import localData
 # from sina.sina_M5_archive import sina_M5
 from sina.sina_H3 import sina_H3
 from sina.sina_H1 import sina_H1
+from sina.sina_M15 import sina_M15
+from sina.sina_M30 import sina_M30
 from sina.sina_M5 import sina_M5
+from sina.sina_M5_origin import sina_M5_origin
+from sina.include import watch_list
 import numpy as np
 
 
@@ -52,125 +56,55 @@ import numpy as np
 #
 #     return df_append
 
-def aggr_contracts(symbol, dfs, start_date):
-
-    df_concat = pd.concat(dfs, axis=0)
-    df_concat = df_concat[(df_concat["volume"] > 0) & (df_concat.index.get_level_values("date") > start_date)]
-    g = df_concat.groupby(level='date', sort=True)
-    df_append = pd.concat([
-        g.apply(lambda x: np.average(x['open'], weights=x['volume'])),
-        g.apply(lambda x: np.average(x['high'], weights=x['volume'])),
-        g.apply(lambda x: np.average(x['low'], weights=x['volume'])),
-        g.apply(lambda x: np.average(x['close'], weights=x['volume'])),
-        g.apply(lambda x: np.average(x['settlement'], weights=x['volume'])),
-        g.apply(lambda x: np.sum(x['volume'])),
-        g.apply(lambda x: np.sum(x['turnover'])),
-        g.apply(lambda x: np.sum(x['oi'])),
-    ],
-        axis=1, keys=['open', 'high', 'low', 'close', 'settlement', 'volume', 'turnover', 'oi'])
-    df_append['symbol'] = ''.join([symbol, "0000"])
-    df_append = df_append[['symbol', 'open', 'high', 'low', 'close', 'settlement', 'volume', 'turnover', 'oi']]
-    print(df_append)
-
-    return df_append
-
-def genMonoIdx(ex_name, symbol, rebuild, freq="1d"):
-    latest_local_date_dic = {}
-    local_data_length_dic ={}
-    months = []
-    if ex_name not in ex_config.keys() or symbol not in ex_config[ex_name]["symbols"]:
-        print("Exchange or symbol error")
-        exit(-1)
-    else:
-        print("Processing %s\t%s" % (ex_name, symbol))
-        next
-
-    # d_li=[]
-    # with pd.HDFStore(DATA_PATH) as f:
-    #     for item in f.walk("/" + symbol + "/D/"):
-    #         months_raw = list(item[2])
-    #         months = [(lambda x: x.strip('_'))(x) for x in months_raw]
-    if freq == "1d":
-        with localData(ex_name, symbol, "D") as data:
-    else freq == "H3":
-        with sina_H3(ex_name, symbol, "H3") as data:
-    else frq == "H1":
-            months = data.get_symbol_months_with_idx()
-            print(months)
-            # month = data.get_symbol_months()
-            if "00" in months:
-                months.remove("00")
-    #            print("Months after index removed", months)
-                try:
-                    mono_idx_df = data.get_idx_data()
-                    # print("data in archive: ", mono_idx_df)
-                    latest_idx_date = mono_idx_df.index.get_level_values("date").max()
-                    if mono_idx_df.empty:       #in case price index data is empty, set a very early date
-                        latest_idx_date = pd.to_datetime("19700101", "%Y%m%d")
-                    print("Current price index latest date", latest_idx_date)
-                except Exception as e:
-                    print("Error occured accessing %s index data", symbol)
-                    print(str(e))
-                    return
-
-            else:
-                print(symbol, "Price Index does not exsist. Constructing new dataframe...")
-                # mono_index_df = pd.DataFrame(columns=idx_dtypes)
-                latest_idx_date = datetime.strptime("19700101", "%Y%m%d")
-
+# def aggr_contracts(symbol, dfs, start_date):
 #
-            dfs = list(data.get_contract_data().values())
-            # print(dfs)
-            # dfs = dfs.values()
-        # print(dfs)
-        DATA_PATH = ex_config[ex_name]["DATA_PATH"]
+#     df_concat = pd.concat(dfs, axis=0)
+#     df_concat = df_concat[(df_concat["volume"] > 0) & (df_concat.index.get_level_values("date") > start_date)]
+#     g = df_concat.groupby(level='date', sort=True)
+#     df_append = pd.concat([
+#         g.apply(lambda x: np.average(x['open'], weights=x['volume'])),
+#         g.apply(lambda x: np.average(x['high'], weights=x['volume'])),
+#         g.apply(lambda x: np.average(x['low'], weights=x['volume'])),
+#         g.apply(lambda x: np.average(x['close'], weights=x['volume'])),
+#         g.apply(lambda x: np.average(x['settlement'], weights=x['volume'])),
+#         g.apply(lambda x: np.sum(x['volume'])),
+#         g.apply(lambda x: np.sum(x['turnover'])),
+#         g.apply(lambda x: np.sum(x['oi'])),
+#     ],
+#         axis=1, keys=['open', 'high', 'low', 'close', 'settlement', 'volume', 'turnover', 'oi'])
+#     df_append['symbol'] = ''.join([symbol, "0000"])
+#     df_append = df_append[['symbol', 'open', 'high', 'low', 'close', 'settlement', 'volume', 'turnover', 'oi']]
+#     print(df_append)
+#
+#     return df_append
 
-    if rebuild == True:
-        print("rebuild")
-        df_new = aggr_contracts(symbol, dfs, datetime.strptime("19700101", "%Y%m%d"))
-        print(df_new)
 
-        with pd.HDFStore(DATA_PATH) as f:
-            df_new.to_hdf(f, '/' + symbol + '/D/' + '_00', mode='a', format='table', append=False,
-                                    data_columns=True, complevel=9, complib='blosc:snappy')
-            f.close()
+def genMonoIdx(symbol, freq="1d", f_rebuild=False, f_dry_run=False):
 
-    else:       # rebuild == False
-        print("update/append")
-    # dates = list(latest_local_date_dic.values())
-        dates = [df.index.get_level_values('date').max() for df in dfs]
-    # data_length = local_data_length_dic
-    # print(data_length)
-    # print(months)
-    #     print(dates)
-
-        #check if each month data table has the same data lenth and ends with same date
-        dates_set = set(dates)
-        if len(dates_set) == 1:
-            latest_date = dates_set.pop()
-#            latest_date = dates[0]
-            print("Finished checking contracts. All dates are same. Continue...")
-        else:
-            print("Warning!!! Last dates not equal. \nPlease update contract data with 'update_shfe_ts.py' first. Ignore if this is special contracts like \'AU\'")
-            latest_date = max(dates)
-    #        return
-        print("latest_date\t", latest_date)
-
-        if latest_date == latest_idx_date:
-            print(symbol, "Price index \'00\' is Up-to-date. Skip!")
-            return
-        else:
-            # print(latest_date)
-            df_append = aggr_contracts(symbol, dfs, latest_idx_date)
-            print(df_append)
-
-            with pd.HDFStore(DATA_PATH) as f:
-                df_append.to_hdf(f, '/' + symbol + '/D/' + '_00', mode='a', format='table', append=True,
-                              data_columns=True, complevel=9, complib='blosc:snappy')
-                f.close()
+    if freq == "1d":
+        with localData(symbol, "D") as data:
+            # print(data.get_idx_data())
+            data.generate_idx(f_rebuild, f_dry_run)
+    elif freq == "H3":
+        with sina_H3(symbol, "H3") as data:
+            data.generate_idx(f_rebuild, f_dry_run)
+    elif freq == "H1":
+        with sina_H1(symbol, "H1") as data:
+            data.generate_idx(f_rebuild, f_dry_run)
+    elif freq == "M15":
+        with sina_M15(symbol, "M15") as data:
+            data.generate_idx(f_rebuild, f_dry_run)
+    elif freq == "M30":
+        with sina_M30(symbol, "M30") as data:
+            data.generate_idx(f_rebuild, f_dry_run)
+    elif freq == "M5":
+        with sina_M5_origin(symbol, "M5") as data:
+            data.generate_idx(f_rebuild, f_dry_run)
+    else:
+        print("Unknow symbol {symbol} or freqency {freq}" )
+        return
 
     print("%s%s updated.\n" % (symbol, '00'))
-
     return
 
 ## main
@@ -181,22 +115,25 @@ def genMonoIdx(ex_name, symbol, rebuild, freq="1d"):
 @click.option("--exchange", "-e",
               type=click.STRING,
               )
+@click.option("--freq", "-f",
+              type=click.STRING,
+              )
+@click.option("--major", "-M", is_flag=True, help="generate only major contract indexes")
 @click.option("--rebuild", "-R", is_flag=True, help="to rebuild 00 data")
+@click.option("--dry_run", "-D", is_flag=True, help="do not acctually save data if True")
+def main(symbol, exchange, freq, major, rebuild, dry_run):
 
-def main(symbol, exchange, rebuild):
-
-#    shfe_symbols = ex_config["SHFE"]["symbols"]
-
+    # print(f"rebuild {rebuild}, dry_run {dry_run}")
     if symbol:
         symbol = symbol.strip().upper()
         if symbol == "ALL":
             for ex in all_exchanges:
                 for smbl in exchange_symbols_map[ex]:
-                    genMonoIdx(ex, smbl, rebuild)
+                    genMonoIdx(smbl, freq, rebuild, dry_run)
 
         elif symbol in all_symbols:
-            exchange = symbol_exchange_map[symbol]
-            genMonoIdx(exchange, symbol, rebuild)
+            # exchange = symbol_exchange_map[symbol]
+            genMonoIdx(symbol, freq, rebuild, dry_run)
             return
 
         else:
@@ -206,9 +143,17 @@ def main(symbol, exchange, rebuild):
     if exchange:
         exchange = exchange.strip().upper()
 
-    if exchange in ex_config.keys() and symbol in ex_config[exchange]["symbols"]:
-        print(exchange, symbol)
-        genMonoIdx(exchange, symbol, rebuild)
+        if exchange in all_exchanges:
+            for symbol in exchange_symbols_map[exchange]:
+                print(exchange, symbol)
+                genMonoIdx(symbol, freq, rebuild, dry_run)
+
+    if major:
+        print("Generating watch list indexes...")
+        for smb in watch_list:
+            genMonoIdx(smb, freq, rebuild, dry_run)
+
+        return
 
 if __name__ == "__main__":
     main()
