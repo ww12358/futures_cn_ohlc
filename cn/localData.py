@@ -36,7 +36,7 @@ class localData(h5_store):
             axis=1, keys=['open', 'high', 'low', 'close', 'settlement', 'volume', 'turnover', 'oi'])
         df_trans['symbol'] = ''.join([self.symbol, "0000"])
         df_trans = df_trans[['symbol', 'open', 'high', 'low', 'close', 'settlement', 'volume', 'turnover', 'oi']]
-        print(df_trans)
+        # print(df_trans)
 
         return df_trans
 
