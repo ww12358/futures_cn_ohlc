@@ -43,7 +43,7 @@ def getContractDict(symbol):
     return contract_dict
 
 
-def getAllContractDict():
+def getAllContractDict(dt = datetime.now()):
 
     all_contracts = {}  # {'CU':{'05':'CU2105', '08':'CU2108'...},
     #                       'A':{'09":''A2109', '12': ' A2112'}
@@ -54,23 +54,29 @@ def getAllContractDict():
         basics_df["list_date"] = pd.to_datetime(basics_df["list_date"], format="%Y%m%d")
         basics_df["delist_date"] = pd.to_datetime(basics_df["delist_date"], format="%Y%m%d")
         active_contracts = basics_df.loc[
-            (basics_df.list_date <= datetime.now()) & (basics_df.delist_date >= datetime.now())]
-        #     print(active_contracts)
+            (basics_df.list_date <= dt) & (basics_df.delist_date >= dt)]
+        # print(active_contracts)
 
-        for symbol in exchange_symbols_map[exchange]:
-            #         print(symbol)
-            #         cur_contracts = active_contracts[active_contracts.ts_code.str.contains(symbol)]
-            mask = active_contracts.ts_code.apply(lambda x: re.search("^\D+", x).group() == symbol)
-            current_contracts = active_contracts[mask]
-            length = len(symbol) + 4
-            contracts = [x[0:length] for x in current_contracts["ts_code"].values]
-            #         print(contracts)
-            contract_dict = {}
-            for contract in contracts:
-                month = contract[(len(symbol) + 2):]
-                #             print(month)
-                contract_dict[month] = contract
+        try:
+            for symbol in exchange_symbols_map[exchange]:
+                # print(symbol)
+                # cur_contracts = active_contracts[active_contracts.ts_code.str.contains(symbol)]
+                # print(cur_contracts)
+                mask = active_contracts.ts_code.apply(lambda x: re.search("^\D+", x).group() == symbol)
+                current_contracts = active_contracts[mask]
+                length = len(symbol) + 4
+                contracts = [x[0:length] for x in current_contracts["ts_code"].values]
+                #         print(contracts)
+                contract_dict = {}
+                for contract in contracts:
+                    month = contract[(len(symbol) + 2):]
+                    #             print(month)
+                    contract_dict[month] = contract
 
-            all_contracts[symbol] = contract_dict
+                all_contracts[symbol] = contract_dict
+        except KeyError:
+            continue
+        except Exception as e:
+            print(str(e))
 
     return all_contracts

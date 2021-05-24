@@ -145,6 +145,7 @@ class h5_store:
             # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
             #     print(df_append.head(10))
             #     print(df_append.tail(50))
+            df_append.sort_index(ascending=True, inplace=True)
             df_append.to_hdf(self.h5Store, '/' + self.symbol + '/' + self.freq + '/_' + month, mode='a', format='table',
                              append=False, data_columns=True, complevel=9, complib='blosc:snappy')
         except Exception as e:
@@ -153,6 +154,49 @@ class h5_store:
         self.df[month] = df_append
 
         return
+
+    def insert_data(self, df_insert, month, trustNew=True):
+        try:
+            self.df[month]
+            if trustNew:
+                print(self.df[month])
+                df_origin = self.df[month].loc[self.df[month].index.get_level_values("date") > df_insert.index.get_level_values("date")[-1]]
+                df_new = pd.concat([df_insert, df_origin], axis=0, join='inner')
+            else:
+                df_insert = df_insert.loc[df_insert.index.get_level_values("date") < self.df[month].index.get_level_values("date")[0]]
+                df_new = pd.concat([df_insert, self.df[month]], axis=0, join='inner')
+            # df_append = df_append.loc[df_append.index > self.df[month].iloc[-1].name]
+            df_new.sort_index(ascending=True, inplace=True)
+            # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+            #     print(df_new.head(10))
+            #     print(df_new.tail(100))
+            # print(df_new.info())
+            df_new.to_hdf(self.h5Store, '/' + self.symbol + '/' + self.freq + '/_' + month, mode='a', format='table', append=False,
+                             data_columns=True, complevel=9, complib='blosc:snappy')
+            self.df[month] = df_new
+        except KeyError:
+            # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+            #     print(df_insert.head(10))
+            #     print(df_insert.tail(50))
+            df_insert.sort_index(ascending=True, inplace=True)
+            df_insert.to_hdf(self.h5Store, '/' + self.symbol + '/' + self.freq + '/_' + month, mode='a', format='table',
+                             append=False, data_columns=True, complevel=9, complib='blosc:snappy')
+            self.df[month] = df_insert
+        except Exception as e:
+            print(self.symbol, self.freq, str(e))
+
+        return
+
+    def clease_data(self, month):
+        try:
+            self.df[month]
+            self.df[month].drop_duplicates(keep='first', inplace=True)
+            self.df[month].to_hdf(self.h5Store, '/' + self.symbol + '/' + self.freq + '/_' + month, mode='a', format='table',
+                             append=False, data_columns=True, complevel=9, complib='blosc:snappy')
+        except KeyError:
+            print("Data does not exist. Quit...")
+        except Exception as e:
+            print(self.symbol, self.freq, str(e))
 
     def save_contract(self, df_new, exchange, symbol, freq, month):
         try:

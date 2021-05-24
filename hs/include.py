@@ -1,0 +1,1 @@
+HS_M5_PATH = '/home/sean/sync/creek/hs/min5/'
