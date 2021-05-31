@@ -215,14 +215,14 @@ class h5_store:
 
         return
 
-    def overwrite(self, df_new, symbol, month):
+    def overwrite(self, df_new, month):
         # confirm =  input("Are your sure you want to overwrite contract data? (\"Y or Yes\" to confirm or \"N or No\" to quit:\t")
         confirm = "y"
 
         if confirm in ["Y", "Yes", "y", "yes"]:
             print("Overwrite confirmed. Saving data...")
             try:
-                df_new.to_hdf(self.h5Store, '/' + symbol + '/' + self.freq + '/_' + month, mode='a', format='table', append=False, data_columns=True, complevel=9, complib='blosc:snappy')
+                df_new.to_hdf(self.h5Store, '/' + self.symbol + '/' + self.freq + '/_' + month, mode='a', format='table', append=False, data_columns=True, complevel=9, complib='blosc:snappy')
             except Exception as e:
                 print(str(e))
             return
@@ -359,7 +359,7 @@ class h5_store:
         df_new = self.aggr_contracts(dfs, datetime.strptime("19700101", "%Y%m%d"))
         print(df_new)
         if not f_dry_run:
-            self.overwrite(df_new, self.symbol, "00")
+            self.overwrite(df_new, "00")
             print("not dry run. do overwrite data...")
 
     def generate_idx(self, f_rebuild=False, f_dry_run=False):

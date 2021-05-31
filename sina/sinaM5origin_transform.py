@@ -23,7 +23,7 @@ def ohlcsum(data):
             'low': data['low'].min(),
             'close': data['close'].iloc[-1],
             'volume': data['volume'].sum(),
-            'contract': data['contract']
+            # 'contract': data['contract']
         }, index=data.index)
 
 def freq_map(self):
@@ -32,7 +32,7 @@ def freq_map(self):
 
     return freq_dic[self.freq]
 
-def convert_sinaM5origin(symbol, freq, data):
+def convert_sinaM5origin(symbol, freq, data, rebuild):
     with sina_M5_origin(symbol, "M5") as data_m5:
         months = data_m5.get_symbol_months()
 
@@ -41,16 +41,21 @@ def convert_sinaM5origin(symbol, freq, data):
 
         for month in months:
             df_m5 = data_m5.get_contract_by_month(month)
+            # print(df_m5)
             g = df_m5.groupby(pd.Grouper(freq=data.freq_map(), offset='21h', closed='right', label='left'))
             #         g.apply(print)
             df_trans = g.apply(ohlcsum)
             df_result = df_trans.groupby(pd.Grouper(freq=freq, offset='21h', closed='right', label='left')).agg('last')
             df_result.dropna(inplace=True)
             print(month, df_result)
-            data.append_data(df_result, month)
+            if not rebuild:
+                data.append_data(df_result, month)
+            else:
+                data.overwrite(df_result, month)
         return
 
-def trans_freq(symbol, freq):
+def trans_freq(symbol, freq, rebuild):
+    print(symbol)
     if freq in ["5mim", "15min", "30min", "1h", "3h", "1d"]:
         pass
     else:
@@ -60,19 +65,19 @@ def trans_freq(symbol, freq):
     try:
         if freq == "15min":
             with sina_M15(symbol, "M15") as data:
-                convert_sinaM5origin(symbol, freq, data)
+                convert_sinaM5origin(symbol, freq, data, rebuild)
 
         elif freq == "30min":
             with sina_M30(symbol, "M30") as data:
-                convert_sinaM5origin(symbol, freq, data)
+                convert_sinaM5origin(symbol, freq, data, rebuild)
 
         elif freq == "1h":
             with sina_H1(symbol, "H1") as data:
-                convert_sinaM5origin(symbol, freq, data)
+                convert_sinaM5origin(symbol, freq, data, rebuild)
 
         elif freq == "3h":
             with sina_H3(symbol, "H3") as data:
-                convert_sinaM5origin(symbol, freq, data)
+                convert_sinaM5origin(symbol, freq, data, rebuild)
 
     except Exception as e:
         print(str(e))
@@ -81,26 +86,27 @@ def trans_freq(symbol, freq):
 
 @click.command()
 @click.option("--symbol", "-S", type=click.STRING, help="contract symbol")
+@click.option("--rebuild", "-R", is_flag=True, help="rebuild all data rows")
 @click.option("--all", "-A", is_flag=True, help="download all data")
 @click.option("--major", "-M", is_flag=True, help="download important data only")
 @click.option("--freq", "-F",  type=click.STRING, help="freqency inlcude 5min, 15min, 30min, 1h, 3h, 1d")
 
-def main(all, major, symbol, freq):
+def main(all, major, symbol, freq, rebuild=False):
 
     if all:
         for smbl in all_symbols:
-            trans_freq(smbl, freq)
+            trans_freq(smbl, freq, rebuild)
         return
 
     elif major:
         for smbl in watch_list:
-            trans_freq(smbl, freq)
+            trans_freq(smbl, freq, rebuild)
         return
 
     else:
         symbol = symbol.strip().upper()
         if symbol in all_symbols:
-            trans_freq(symbol, freq)
+            trans_freq(symbol, freq, rebuild)
             return
         else:
             print("not a valid symbol")
