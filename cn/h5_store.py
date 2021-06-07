@@ -346,9 +346,9 @@ class h5_store:
             g.apply(lambda x: np.sum(x['volume'])),
             g.apply(lambda x: np.sum(x['oi'])),
         ],
-            axis=1, keys=['open', 'high', 'low', 'close', 'volume'])
+            axis=1, keys=['open', 'high', 'low', 'close', 'volume', 'oi'])
         df_trans['symbol'] = ''.join([self.symbol, "0000"])
-        df_trans = df_trans[['symbol', 'open', 'high', 'low', 'close', 'volume']]
+        df_trans = df_trans[['symbol', 'open', 'high', 'low', 'close', 'volume', 'oi']]
         # print(df_trans)
 
         return df_trans
