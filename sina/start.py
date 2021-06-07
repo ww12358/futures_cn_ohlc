@@ -121,7 +121,7 @@ async def get_sina5m(contract_dict):
                                 g.apply(lambda x: np.sum(x['volume'])),
                                 g.apply(lambda x: np.sum(x['oi']))],
                                axis=1, keys=['open', 'high', 'low', 'close', 'volume', 'oi'])
-
+            df_00['symbol'] = symbol + '0000'
             # df_00["pct"] = df_00["close"].pct_change(axis='rows')
             # df_00 = df_00.loc[(df_00.pct < 0.09) & (df_00.pct > -0.09)]
 
