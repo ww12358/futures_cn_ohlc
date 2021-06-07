@@ -23,7 +23,7 @@ nest_asyncio.apply()
 logging.basicConfig()
 logging.getLogger('apscheduler').setLevel(logging.DEBUG)
 
-DEBUG = 0
+DEBUG = 1
 
 def job_function():
     # print("Hello World")
@@ -95,7 +95,7 @@ async def get_sina5m(contract_dict):
             loop = asyncio.get_event_loop()
             group = asyncio.gather(*[get_sina_contracts(contract) for contract in contract_d.values()])
             results = loop.run_until_complete(group)
-            print(results)
+            # print(results)
             _, dfs = map(list, zip(*results))
 
             if all(item is None for item in dfs):    #if all dfs items are None

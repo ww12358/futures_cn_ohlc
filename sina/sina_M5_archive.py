@@ -68,8 +68,8 @@ def archive_sina_M5(contract_dict):
                     if df.empty:
                         continue
                     else:
-                        print(df)
-                        print(d)
+                        # print(df)
+                        # print(d)
                         local_5m_data.append_data(df, month)
                     # if not df is None:      #redis buffer exists
                     #     # print(df)
