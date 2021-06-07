@@ -100,6 +100,9 @@ def genMonoIdx(symbol, freq="1d", f_rebuild=False, f_dry_run=False):
     elif freq == "M5":
         with sina_M5_origin(symbol, "M5") as data:
             data.generate_idx(f_rebuild, f_dry_run)
+    elif freq == "M1":
+        with sina_M5(symbol, "M5") as data:
+            data.generate_idx(f_rebuild, f_dry_run)
     else:
         print("Unknow symbol {symbol} or freqency {freq}" )
         return
