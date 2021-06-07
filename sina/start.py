@@ -23,7 +23,7 @@ nest_asyncio.apply()
 logging.basicConfig()
 logging.getLogger('apscheduler').setLevel(logging.DEBUG)
 
-DEBUG = 1
+DEBUG = 0
 
 def job_function():
     # print("Hello World")
