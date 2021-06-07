@@ -344,7 +344,7 @@ class h5_store:
             g.apply(lambda x: np.average(x['low'], weights=x['volume'])),
             g.apply(lambda x: np.average(x['close'], weights=x['volume'])),
             g.apply(lambda x: np.sum(x['volume'])),
-            # g.apply(lambda x: np.sum(x['oi'])),
+            g.apply(lambda x: np.sum(x['oi'])),
         ],
             axis=1, keys=['open', 'high', 'low', 'close', 'volume'])
         df_trans['symbol'] = ''.join([self.symbol, "0000"])
