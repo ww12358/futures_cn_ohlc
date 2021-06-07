@@ -201,6 +201,7 @@ class h5_store:
     def save_contract(self, df_new, exchange, symbol, freq, month):
         try:
             self.df[month]
+            # print(self.df[month])
             df_append = self.df[month].append(df_new, sort=False)
             df_append.sort_index(ascending=True, inplace=True)
             df_append.to_hdf(self.h5Store, '/' + symbol + '/' + freq + '/_' + month, mode='a', format='table', append=False, data_columns=True, complevel=9, complib='blosc:snappy')

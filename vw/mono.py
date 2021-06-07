@@ -81,7 +81,7 @@ import numpy as np
 
 def genMonoIdx(symbol, freq="1d", f_rebuild=False, f_dry_run=False):
 
-    if freq == "1d":
+    if freq == "D":
         with localData(symbol, "D") as data:
             # print(data.get_idx_data())
             data.generate_idx(f_rebuild, f_dry_run)

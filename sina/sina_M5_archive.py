@@ -55,7 +55,7 @@ def archive_sina_M5(contract_dict):
             # else:
             for month, contract in contract_d.items():
                 try:
-                    # print("Saving : ", contract)
+                    print("Saving : ", contract)
                     ser = r.get((contract))
 
                     if not ser:
@@ -73,6 +73,7 @@ def archive_sina_M5(contract_dict):
                         else:
                             if DEBUG:
                                 print(df)
+                                # local_5m_data.save_contract(df, exchange, symbol, "M5", month)
                             else:
                                 local_5m_data.save_contract(df, exchange, symbol, "M5", month)  #current contract cannot find in local file, just save it
                             continue
@@ -81,6 +82,7 @@ def archive_sina_M5(contract_dict):
                         if not df.empty:
                             if DEBUG:
                                 print(df)
+                                # local_5m_data.append_data(df, month)
                             else:
                             # if month == "00":
                             #     print("here")

@@ -91,11 +91,11 @@ async def get_sina5m(contract_dict):
     for symbol in t_symbols:
         try:
             contract_d = contract_dict[symbol]
-            # print(symbol)
+            print(symbol)
             loop = asyncio.get_event_loop()
             group = asyncio.gather(*[get_sina_contracts(contract) for contract in contract_d.values()])
             results = loop.run_until_complete(group)
-            # print(results)
+            print(results)
             _, dfs = map(list, zip(*results))
 
             if all(item is None for item in dfs):    #if all dfs items are None
@@ -125,8 +125,8 @@ async def get_sina5m(contract_dict):
             # df_00["pct"] = df_00["close"].pct_change(axis='rows')
             # df_00 = df_00.loc[(df_00.pct < 0.09) & (df_00.pct > -0.09)]
 
-            # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-            #     print(df_00)
+            with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+                print(df_00)
 
             # print(results)
             results.append(tuple(((symbol + '00'), df_00)))

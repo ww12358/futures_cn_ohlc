@@ -23,7 +23,7 @@ def ohlcsum(data):
             'low': data['low'].min(),
             'close': data['close'].iloc[-1],
             'volume': data['volume'].sum(),
-            # 'contract': data['contract']
+            'contract': data['contract']
         }, index=data.index)
 
 def freq_map(self):
@@ -45,6 +45,7 @@ def convert_sinaM5origin(symbol, freq, data, rebuild):
             g = df_m5.groupby(pd.Grouper(freq=data.freq_map(), offset='21h', closed='right', label='left'))
             #         g.apply(print)
             df_trans = g.apply(ohlcsum)
+            # print(df_trans)
             df_result = df_trans.groupby(pd.Grouper(freq=freq, offset='21h', closed='right', label='left')).agg('last')
             df_result.dropna(inplace=True)
             print(month, df_result)

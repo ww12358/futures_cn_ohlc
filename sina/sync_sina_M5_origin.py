@@ -28,8 +28,22 @@ from cn.include import symbol_exchange_map, all_symbols, dce_symbols
 def update_sina_origin(symbol, group):
     with sina_M5_origin(symbol, "M5") as data:
         for month, contract, df in group:
-#             print(month, contract)
-            data.append_data(df, month)
+            # df.drop('contract', axis=1, inplace=True)
+            # print(df)
+            # print(data.get_contract_by_month(month))
+            local_data = data.get_contract_by_month(month)
+            # print("local", local_data)
+            if 'contract' in local_data.columns:
+                data.append_data(df, month)
+            else:
+                local_data['contract'] = contract[2:]
+                df_new = pd.concat([local_data, df], axis=0, join='outer')
+                df_new.drop_duplicates(keep="first", inplace=True)
+                data.overwrite(df_new, month)
+                # print(df_new)
+
+            # print(month, contract)
+            # data.append_data(df, month)
             # duplicated_count = df.duplicated(keep='first').sum()
             # if duplicated_count:
             #     print("WARNING!!! %d Duplicated data in %s found. please check!" % (duplicated_count, contract))
