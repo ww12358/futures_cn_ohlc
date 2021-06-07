@@ -65,36 +65,42 @@ def archive_sina_M5(contract_dict):
                     d = local_5m_data.get_contract_by_month(month)
                     # print(d)
                     df = pa.deserialize(ser)
-                    if not df is None:      #redis buffer exists
-                        # print(df)
-                        if d is not None:   #sina_5m local data contains current contract
-                            start_time = d.index[-1]
-                            df = df.loc[df.index > start_time]
-                        else:
-                            if DEBUG:
-                                print(df)
-                                # local_5m_data.save_contract(df, exchange, symbol, "M5", month)
-                            else:
-                                local_5m_data.save_contract(df, exchange, symbol, "M5", month)  #current contract cannot find in local file, just save it
-                            continue
-                        # print(df)
-
-                        if not df.empty:
-                            if DEBUG:
-                                print(df)
-                                # local_5m_data.append_data(df, month)
-                            else:
-                            # if month == "00":
-                            #     print("here")
-                                local_5m_data.append_data(df, month)
-                        else:
-                            continue
-                        # if not df is None:
-                        #     print(df)
-                        #     pass
-                    else:
-                        # print(contract + " data not updating within redis. Skip...")
+                    if df.empty:
                         continue
+                    else:
+                        print(df)
+                        print(d)
+                        local_5m_data.append_data(df, month)
+                    # if not df is None:      #redis buffer exists
+                    #     # print(df)
+                    #     if d is not None:   #sina_5m local data contains current contract
+                    #         start_time = d.index[-1]
+                    #         df = df.loc[df.index > start_time]
+                    #     else:
+                    #         if DEBUG:
+                    #             print(df)
+                    #             # local_5m_data.save_contract(df, exchange, symbol, "M5", month)
+                    #         else:
+                    #             local_5m_data.save_contract(df, exchange, symbol, "M5", month)  #current contract cannot find in local file, just save it
+                    #         continue
+                    #     # print(df)
+                    #
+                    #     if not df.empty:
+                    #         if DEBUG:
+                    #             print(df)
+                    #             # local_5m_data.append_data(df, month)
+                    #         else:
+                    #         # if month == "00":
+                    #         #     print("here")
+                    #             local_5m_data.append_data(df, month)
+                    #     else:
+                    #         continue
+                    #     # if not df is None:
+                    #     #     print(df)
+                    #     #     pass
+                    # else:
+                    #     # print(contract + " data not updating within redis. Skip...")
+                    #     continue
 
                 except Exception as e:
                     print(str(e))
