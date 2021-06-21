@@ -377,7 +377,7 @@ class h5_store:
                 latest_idx_date = mono_idx_df.index.get_level_values("date").max()
                 # latest_idx_date = mono_idx_df.index.max()
                 print("latest index date",latest_idx_date)
-                print("Current price index latest date", latest_idx_date)
+                print("Current price index latest date", latest_contract_date)
 
                 if mono_idx_df.empty:  # in case price index data is empty, set a very early date
                     latest_idx_date = pd.to_datetime("19700101", "%Y%m%d")
@@ -389,7 +389,7 @@ class h5_store:
                 elif latest_idx_date < latest_contract_date:
                     dfs = list(self.get_contract_data().values())
                     # print(dfs)
-                    # print(latest_date)
+                    # print(latest_idx_date, latest_contract_date)
                     df_append = self.aggr_contracts(dfs, latest_idx_date)
                     # print(df_append)
                     if not f_dry_run:

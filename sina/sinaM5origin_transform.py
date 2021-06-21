@@ -33,6 +33,7 @@ def freq_map(self):
     return freq_dic[self.freq]
 
 def convert_sinaM5origin(symbol, freq, data, rebuild):
+    # tm = data.iloc[-2].name
     with sina_M5_origin(symbol, "M5") as data_m5:
         months = data_m5.get_symbol_months()
 
@@ -41,14 +42,16 @@ def convert_sinaM5origin(symbol, freq, data, rebuild):
 
         for month in months:
             df_m5 = data_m5.get_contract_by_month(month)
-            # print(df_m5)
+            # df_m5 = df_m5.loc[df_m5.index > tm]
+            # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+            #     print(df_m5)
             g = df_m5.groupby(pd.Grouper(freq=data.freq_map(), offset='21h', closed='right', label='left'))
             #         g.apply(print)
             df_trans = g.apply(ohlcsum)
             # print(df_trans)
             df_result = df_trans.groupby(pd.Grouper(freq=freq, offset='21h', closed='right', label='left')).agg('last')
             df_result.dropna(inplace=True)
-            print(month, df_result)
+            # print(month, df_result)
             if not rebuild:
                 data.append_data(df_result, month)
             else:
