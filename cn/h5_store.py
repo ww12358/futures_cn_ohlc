@@ -32,8 +32,11 @@ class h5_store:
                 for month in self.months:
                     key = ''.join(["/", self.symbol, "/", self.freq, "/_", month])
     #                print(key)
-                    self.df[month] = pd.read_hdf(self.h5Store, key)
-                    # print(month, '\n', self.df[month])
+                    if (data := pd.read_hdf(self.h5Store, key)) is not None:
+                        self.df[month] = data
+                #   print(month, '\n', self.df[month])
+                # self.df = {k:v for k,v in self.df.items() if v is not None}     #filter None
+
                 # self.__isemtpy = False
                 self.set_notempty()
                 # print(self.__isempty)
@@ -263,6 +266,7 @@ class h5_store:
     def get_contract_data(self):   # all data except "00" / index
         # print(self.__df)
         dfs_copy = self.df.copy()
+        # print(self.df)
         if not dfs_copy is None:
             if "00" in dfs_copy.keys():
                 del dfs_copy["00"]
@@ -293,6 +297,7 @@ class h5_store:
     def get_max_contract_date(self):
 
         dfs = list(self.get_contract_data().values())
+
         dates = [df.index.get_level_values('date').max() for df in dfs]
         # print(dates)
 
@@ -406,6 +411,6 @@ class h5_store:
             return
 
         except Exception as e:
-            print("Error occured accessing %s index data", self.get_symbol())
+            print("Error occured accessing %s index data" % self.get_symbol())
             print(str(e))
             return

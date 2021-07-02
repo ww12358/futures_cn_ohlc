@@ -38,7 +38,8 @@ def update_sina_origin(symbol, group):
             else:
                 local_data['contract'] = contract[2:]
                 df_new = pd.concat([local_data, df], axis=0, join='outer')
-                df_new.drop_duplicates(keep="first", inplace=True)
+                df_new = df_new.loc[df_new.volume > 9]
+                df_new.drop_duplicates(keep=False, inplace=True)
                 data.overwrite(df_new, month)
                 # print(df_new)
 
@@ -87,9 +88,10 @@ def get_sina5m(contract_dict, l):
 
 @click.command()
 @click.option("--all", "-A", is_flag=True, help="download all data")
+@click.option("--symbol", "-S", type=click.STRING)
 @click.option("--major", "-M", is_flag=True, help="download important data only")
 
-def main(all, major):
+def main(all, major, symbol):
 
     # watch_list = ["RB"]
     try:

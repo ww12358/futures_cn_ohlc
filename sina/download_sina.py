@@ -15,8 +15,8 @@ def download_sina_data(contract):
         data = info.content
         data = json.loads(data)
         data = pd.DataFrame(data)
-        with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-            print(data)
+        # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        #     print(data)
         data = data.sort_values(0)
         data.columns = "date open high low close volume".split()
         data = data.set_index('date')
