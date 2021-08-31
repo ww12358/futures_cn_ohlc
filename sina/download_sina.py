@@ -8,7 +8,7 @@ def download_sina_data(contract):
         print(contract)
         # urls = ["http://stock.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=" + contract,
         #         "http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=" + contract]
-        url = "http://stock.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=" + contract
+        url = "http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=" + contract
         info = requests.get(url)
         if info.status_code != 200:
             print("OK"+contract+"\n")
@@ -23,6 +23,7 @@ def download_sina_data(contract):
         data.index = pd.to_datetime(data.index)
         data[["open", "high", "low", "close", "volume"]] = data[["open", "high", "low", "close", "volume"]].apply(pd.to_numeric)
         data['contract'] = contract[-4:]
+        # print(data)
     # except ValueError as error:
     #     print("Decoding falied")
     #     # raise error.with_traceback(sys.exc_info()[2])

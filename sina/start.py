@@ -15,7 +15,7 @@ from sina.redis_buffer import store_redis
 from sina.download_sina import download_sina_data, download_sina_data_hq
 import nest_asyncio
 import numpy as np
-from sina.include import trading_symbols
+from sina.include import trading_symbols, DEBUG, RUN_NOW
 from sina.sina_M5_archive import archive_sina_M5
 
 nest_asyncio.apply()
@@ -23,7 +23,7 @@ nest_asyncio.apply()
 logging.basicConfig()
 logging.getLogger('apscheduler').setLevel(logging.DEBUG)
 
-DEBUG = 0
+# DEBUG = 1
 
 def job_function():
     # print("Hello World")
@@ -31,7 +31,7 @@ def job_function():
 
     # date = datetime.now()
     # t = date.time()
-    contract_dict = getAllContractDict()
+    contract_dict = getAllContractDict(debug=DEBUG)
     # print(contract_dict)
     # Execution will block here until Ctrl+C (Ctrl+Break on Windows) is pressed.
     try:
@@ -40,7 +40,7 @@ def job_function():
         asyncio.set_event_loop(new_loop)
         sched_background = AsyncIOScheduler()
         sched_background.add_job(get_sina5m, "interval", minutes=5, next_run_time=datetime.datetime.now(), args=[contract_dict])
-        sched_background.add_job(archive_sina_M5, "cron", hour='0-2, 9-11, 13-15, 21-23', minute="2, 7, 12, 17, 22, 27, 32, 37, 42, 47, 52, 57", args=[contract_dict])
+        sched_background.add_job(archive_sina_M5, "cron", hour='0-2,  9-11, 13-15, 21-23', minute="2, 7, 12, 17, 22, 27, 32, 37, 42, 47, 52, 57", args=[contract_dict])
         # sched_background.add_job(get_sina5m, "interval", minutes=5,
                                  # args=[contract_dict, datetime.datetime.now().time()])
         sched_background.start()
@@ -62,7 +62,9 @@ async def get_sina_contracts(contract):
         # for key,symbol in contract_dict.items():
         #print(key, symbol)
         try:
+            # df = await loop.run_in_executor(executor, functools.partial(download_sina_data_hq, contract=contract))
             df = await loop.run_in_executor(executor, functools.partial(download_sina_data_hq, contract=contract))
+
         # except ValueError as e:
         #     if str(e) == "BUSTERED":
         #         raise ValueError("F!!!")
@@ -81,7 +83,7 @@ async def get_sina5m(contract_dict):
     # t_symbols = ts.get_t_range()
 
     t = datetime.datetime.now().time()
-    t_symbols = trading_symbols(t)
+    t_symbols = trading_symbols(DEBUG, t)
 
     if t_symbols is None:
         return
@@ -119,7 +121,8 @@ async def get_sina5m(contract_dict):
                                 g.apply(lambda x: np.average(x['low'], weights=x['volume'])),
                                 g.apply(lambda x: np.average(x['close'], weights=x['volume'])),
                                 g.apply(lambda x: np.sum(x['volume'])),
-                                g.apply(lambda x: np.sum(x['oi']))],
+                                g.apply(lambda x: np.sum(x['oi'])),
+                               ],
                                axis=1, keys=['open', 'high', 'low', 'close', 'volume', 'oi'])
             df_00['symbol'] = symbol + '0000'
             # df_00["pct"] = df_00["close"].pct_change(axis='rows')
@@ -145,7 +148,7 @@ async def get_sina5m(contract_dict):
 
 def main():
 
-    if not DEBUG:
+    if not RUN_NOW:
 
         sched_main = BackgroundScheduler()
 

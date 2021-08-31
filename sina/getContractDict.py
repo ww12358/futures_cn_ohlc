@@ -11,15 +11,10 @@ if module_path not in sys.path:
     sys.path.append(module_path)
     sys.path.append(cn_path)
 
-from cn.tsData import tsData
-from cn.updateCN import update_cn_latest
-from cn.updateCN import get_start_end_date
 from cn.include import all_symbols, all_exchanges, symbol_exchange_map, exchange_symbols_map
 
 ts.set_token('d0d22ccf30dfceef565c7d36d8d6cefd43fe4f35200575a198124ba5')
 pro = ts.pro_api()
-
-
 
 def getContractDict(symbol):
     if symbol in all_symbols:
@@ -43,7 +38,7 @@ def getContractDict(symbol):
     return contract_dict
 
 
-def getAllContractDict(dt = datetime.now()):
+def getAllContractDict(debug, dt = datetime.now()):
 
     all_contracts = {}  # {'CU':{'05':'CU2105', '08':'CU2108'...},
     #                       'A':{'09":''A2109', '12': ' A2112'}

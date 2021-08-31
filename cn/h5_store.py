@@ -32,8 +32,9 @@ class h5_store:
                 for month in self.months:
                     key = ''.join(["/", self.symbol, "/", self.freq, "/_", month])
     #                print(key)
-                    if (data := pd.read_hdf(self.h5Store, key)) is not None:
-                        self.df[month] = data
+                    if (d := pd.read_hdf(self.h5Store, key)) is not None:
+                        self.df[month] = d
+                    # self.df[month] = d if (d:=pd.read_hdf(self.h5Store, key)) is not None
                 #   print(month, '\n', self.df[month])
                 # self.df = {k:v for k,v in self.df.items() if v is not None}     #filter None
 
@@ -297,7 +298,6 @@ class h5_store:
     def get_max_contract_date(self):
 
         dfs = list(self.get_contract_data().values())
-
         dates = [df.index.get_level_values('date').max() for df in dfs]
         # print(dates)
 

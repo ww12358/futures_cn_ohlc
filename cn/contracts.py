@@ -2,7 +2,7 @@ import pandas as pd
 
 def get_list_delist_dates(symbol, exchange, contracts, df_basics):
 #    print(df_basics)
-#    print(contracts)
+#     print(contracts)
     contract_delist_date = {}
     contract_list_date = {}
     for year, month in contracts:
