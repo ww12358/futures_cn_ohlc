@@ -16,7 +16,7 @@ SINA_H1_PATH = '/home/sean/sync/creek/H1/'
 SINA_H3_PATH = '/home/sean/sync/creek/H3/'
 all_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols + cffex_symbols
 com_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols
-watch_list = ["CU", "RB", "I", "A", "M", "Y", "TA", "SR", "CF", "RU"]
+watch_list = ["CU", "AL", "RB", "I", "A", "M", "Y", "P", "JM", "TA", "EG", "SR", "CF"]
 
 t_range = { (time(9, 0), time(9, 15)) : com_symbols,
             (time(9, 15), time(9, 30)) : com_symbols + cffex_symbols_bond,
