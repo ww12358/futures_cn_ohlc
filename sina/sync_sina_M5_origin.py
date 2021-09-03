@@ -95,7 +95,7 @@ def main(all, major, symbol):
 
     # watch_list = ["RB"]
     try:
-        contract_dict = getAllContractDict()
+        contract_dict = getAllContractDict(debug=0)
         # contract = {"RB":{'05':'RB2105'}}
 
         if all:
