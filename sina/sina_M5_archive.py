@@ -39,7 +39,7 @@ def archive_sina_M5(contract_dict):
                     if df.empty:
                         continue
                     else:
-                        print(df)
+                        # print(df)
                         # print(d)
                         local_5m_data.append_data(df, month)
 
