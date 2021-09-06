@@ -39,8 +39,10 @@ def job_function():
         new_loop = asyncio.new_event_loop()
         asyncio.set_event_loop(new_loop)
         sched_background = AsyncIOScheduler()
-        sched_background.add_job(get_sina5m, "interval", minutes=5, next_run_time=datetime.datetime.now(), args=[contract_dict])
-        sched_background.add_job(archive_sina_M5, "cron", hour='0-2,  9-11, 13-15, 21-23', minute="2, 7, 12, 17, 22, 27, 32, 37, 42, 47, 52, 57", args=[contract_dict])
+        sched_background.add_job(get_sina5m, "interval", minutes=1, next_run_time=datetime.datetime.now(), args=[contract_dict])
+        # sched_background.add_job(archive_sina_M5, "cron", hour='0-2,  9-11, 13-15, 21-23', minute="2, 7, 12, 17, 22, 27, 32, 37, 42, 47, 52, 57", args=[contract_dict])
+        sched_background.add_job(archive_sina_M5, "cron", hour='0-2,  9-11, 13-15, 21-23',
+                                 minute="52", args=[contract_dict])
         # sched_background.add_job(get_sina5m, "interval", minutes=5,
                                  # args=[contract_dict, datetime.datetime.now().time()])
         sched_background.start()
