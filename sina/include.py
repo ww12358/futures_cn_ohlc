@@ -17,6 +17,8 @@ SINA_H3_PATH = '/home/sean/sync/creek/H3/'
 all_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols + cffex_symbols
 com_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols
 watch_list = ["CU", "AL", "RB", "I", "A", "M", "Y", "P", "JM", "TA", "EG", "SR", "CF"]
+redis_svr_addr = '192.168.3.15'
+redis_port = '6379'
 
 t_range = { (time(9, 0), time(9, 15)) : com_symbols,
             (time(9, 15), time(9, 30)) : com_symbols + cffex_symbols_bond,
@@ -59,7 +61,7 @@ def time_in_range(start, end, x):
 
 def trading_symbols(debug, t):
     if debug:
-        return ['CU', 'Y']
+        return ['CU', 'P']
     else:
         for tm_rng in t_range:
             if time_in_range(tm_rng[0], tm_rng[1], t):
