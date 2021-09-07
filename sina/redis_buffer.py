@@ -52,17 +52,21 @@ async def store_redis(loop, results):
 
 class buffer():
     def __init__(self, symbol, month, ip_addr, port, db=0):
-        print(ip_addr, port, symbol, month)
-        self.r = redis.StrictRedis(host=ip_addr, port=port, db=db)
-        if month == '00':
-            ptn = symbol + month
-        else:
-            ptn = ''.join([symbol, '??', month])
-        k = self.r.keys(pattern=ptn)
-        print(k)
-        buf = self.r.get(k[0])
-        self.df_buf = pa.deserialize(buf)
-        print(self.df_buf)
+        # print(ip_addr, port, symbol, month)
+        try:
+            self.r = redis.StrictRedis(host=ip_addr, port=port, db=db)
+            if month == '00':
+                ptn = symbol + month
+            else:
+                ptn = ''.join([symbol, '??', month])
+            k = self.r.keys(pattern=ptn)
+            # print(k)
+            buf = self.r.get(k[0])
+            self.df_buf = pa.deserialize(buf)
+            # print(self.df_buf)
+        except Exception as e:
+            print("Error ocurred when retrieving data from redis server.", str(e))
+            pass
 
     def get_df(self):
         return self.df_buf
