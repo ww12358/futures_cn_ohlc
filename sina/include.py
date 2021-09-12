@@ -7,7 +7,7 @@ from ine.include import  ine_symbols, ine_symbols_2300pm, ine_symbols_0100am, in
 from cffex.include import cffex_symbols, cffex_symbols_equity, cffex_symbols_bond
 
 DEBUG = 0
-RUN_NOW = 1
+RUN_NOW = 0
 SINA_M5_PATH = '/home/sean/sync/creek/sina/'
 SINA_M5_ORIGIN_PATH = '/home/sean/sync/creek/sina_origin/'
 SINA_M15_PATH = '/home/sean/sync/creek/M15/'
@@ -17,8 +17,8 @@ SINA_H3_PATH = '/home/sean/sync/creek/H3/'
 all_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols + cffex_symbols
 com_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols
 watch_list = ["CU", "AL", "RB", "I", "A", "M", "Y", "P", "JM", "TA", "EG", "SR", "CF"]
-# redis_svr_addr = '192.168.3.15'
-redis_svr_addr = '127.0.0.1'
+redis_svr_addr = '192.168.3.15'
+# redis_svr_addr = '127.0.0.1'
 redis_port = '6379'
 
 t_range = { (time(9, 0), time(9, 15)) : com_symbols,

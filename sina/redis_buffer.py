@@ -51,7 +51,7 @@ async def store_redis(loop, results):
         await r.wait_closed()
 
 class buffer():
-    def __init__(self, symbol, month, ip_addr, port, db=0):
+    def __init__(self, symbol, month, ip_addr, port=6379, db=0):
         # print(ip_addr, port, symbol, month)
         try:
             self.r = redis.StrictRedis(host=ip_addr, port=port, db=db)
