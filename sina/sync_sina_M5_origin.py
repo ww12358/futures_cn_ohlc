@@ -57,7 +57,8 @@ async def store_sina_origin(loop, results):
 
 async def get_sina_contracts(month, contract):
 #     print(contract)
-    time.sleep(random.randint(0, 3))
+    time.sleep(random.randint(0, 3))  #disable/enable
+
     with concurrent.futures.ThreadPoolExecutor() as executor:
         loop = asyncio.get_event_loop()
         try:

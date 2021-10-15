@@ -17,6 +17,7 @@ import nest_asyncio
 import numpy as np
 from sina.include import trading_symbols, DEBUG, RUN_NOW
 from sina.sina_M5_archive import archive_sina_M5
+import random
 
 nest_asyncio.apply()
 

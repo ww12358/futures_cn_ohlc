@@ -25,7 +25,7 @@ def archive_sina_M5(contract_dict):
         with sina_M5(symbol, "M5") as local_5m_data:
             for month, contract in contract_d.items():
                 try:
-                    print("Saving : ", contract)
+                    # print("Saving : ", contract)
                     ser = r.get((contract))
 
                     if not ser:

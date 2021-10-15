@@ -10,7 +10,7 @@ from sina.sina_M15 import sina_M15
 from sina.sina_M30 import sina_M30
 from cn.localData import localData
 
-watch_list = ["CU", "RB", "I", "A", "M", "Y", "TA", "SR", "CF"]
+watch_list = ["CU", "RB", "I", "A", "M", "Y", "TA", "SR", "CF", "AL", "ZC"]
 
 def ohlcsum(data):
     if data.empty:
