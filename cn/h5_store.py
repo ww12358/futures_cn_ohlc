@@ -343,17 +343,32 @@ class h5_store:
         # g = g.filter(lambda x: x if not x.empty)
         # g.apply(print)
 
-        df_trans = pd.concat([
-            g.apply(lambda x: np.average(x['open'], weights=x['volume'])),
-            g.apply(lambda x: np.average(x['high'], weights=x['volume'])),
-            g.apply(lambda x: np.average(x['low'], weights=x['volume'])),
-            g.apply(lambda x: np.average(x['close'], weights=x['volume'])),
-            g.apply(lambda x: np.sum(x['volume'])),
-            g.apply(lambda x: np.sum(x['oi'])),
-        ],
-            axis=1, keys=['open', 'high', 'low', 'close', 'volume', 'oi'])
-        df_trans['symbol'] = ''.join([self.symbol, "0000"])
-        df_trans = df_trans[['symbol', 'open', 'high', 'low', 'close', 'volume', 'oi']]
+        if 'oi' in df_concat.columns:
+
+            df_trans = pd.concat([
+                g.apply(lambda x: np.average(x['open'], weights=x['volume'])),
+                g.apply(lambda x: np.average(x['high'], weights=x['volume'])),
+                g.apply(lambda x: np.average(x['low'], weights=x['volume'])),
+                g.apply(lambda x: np.average(x['close'], weights=x['volume'])),
+                g.apply(lambda x: np.sum(x['volume'])),
+                g.apply(lambda x: np.sum(x['oi'])),
+            ],
+                axis=1, keys=['open', 'high', 'low', 'close', 'volume', 'oi'])
+            df_trans['symbol'] = ''.join([self.symbol, "0000"])
+            df_trans = df_trans[['symbol', 'open', 'high', 'low', 'close', 'volume', 'oi']]
+
+        else:
+            df_trans = pd.concat([
+                g.apply(lambda x: np.average(x['open'], weights=x['volume'])),
+                g.apply(lambda x: np.average(x['high'], weights=x['volume'])),
+                g.apply(lambda x: np.average(x['low'], weights=x['volume'])),
+                g.apply(lambda x: np.average(x['close'], weights=x['volume'])),
+                g.apply(lambda x: np.sum(x['volume'])),
+                # g.apply(lambda x: np.sum(x['oi'])),
+            ],
+                axis=1, keys=['open', 'high', 'low', 'close', 'volume'])
+            df_trans['symbol'] = ''.join([self.symbol, "0000"])
+            df_trans = df_trans[['symbol', 'open', 'high', 'low', 'close', 'volume']]
         # print(df_trans)
 
         return df_trans
