@@ -1,0 +1,12 @@
+checkout list:{
+	download_sina_data_hq:{
+		cn_ex_sync: tq,
+		qt_View: scatter
+	},
+
+	download_sina_data:{
+		cn_ex_sync: sina_fix,
+		qt_View: sina_fix
+	}
+}
+
