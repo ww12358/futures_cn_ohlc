@@ -40,9 +40,9 @@ def job_function():
         new_loop = asyncio.new_event_loop()
         asyncio.set_event_loop(new_loop)
         sched_background = AsyncIOScheduler()
-        sched_background.add_job(get_sina5m, "interval", minutes=1, next_run_time=datetime.datetime.now(), args=[contract_dict])
+        sched_background.add_job(get_sina5m, "interval", minutes=5, next_run_time=datetime.datetime.now(), args=[contract_dict])
         # sched_background.add_job(archive_sina_M5, "cron", hour='0-2,  9-11, 13-15, 21-23', minute="2, 7, 12, 17, 22, 27, 32, 37, 42, 47, 52, 57", args=[contract_dict])
-        sched_background.add_job(archive_sina_M5, "cron", hour='0-2,  9-11, 13-15, 21-23',
+        sched_background.add_job(archive_sina_M5, "cron", hour='0-2, 9-11, 13-15, 21-23',
                                  minute="52", args=[contract_dict])
         # sched_background.add_job(get_sina5m, "interval", minutes=5,
                                  # args=[contract_dict, datetime.datetime.now().time()])
@@ -66,7 +66,7 @@ async def get_sina_contracts(contract):
         #print(key, symbol)
         try:
             # df = await loop.run_in_executor(executor, functools.partial(download_sina_data_hq, contract=contract))
-            df = await loop.run_in_executor(executor, functools.partial(download_sina_data_hq, contract=contract))
+            df = await loop.run_in_executor(executor, functools.partial(download_sina_data, contract=contract))
 
         # except ValueError as e:
         #     if str(e) == "BUSTERED":
@@ -124,9 +124,11 @@ async def get_sina5m(contract_dict):
                                 g.apply(lambda x: np.average(x['low'], weights=x['volume'])),
                                 g.apply(lambda x: np.average(x['close'], weights=x['volume'])),
                                 g.apply(lambda x: np.sum(x['volume'])),
-                                g.apply(lambda x: np.sum(x['oi'])),
+                                # g.apply(lambda x: np.sum(x['oi'])),
                                ],
-                               axis=1, keys=['open', 'high', 'low', 'close', 'volume', 'oi'])
+                               axis=1, keys=['open', 'high', 'low', 'close', 'volume',
+                                             # 'oi'
+                                             ])
             df_00['symbol'] = symbol + '0000'
             # df_00["pct"] = df_00["close"].pct_change(axis='rows')
             # df_00 = df_00.loc[(df_00.pct < 0.09) & (df_00.pct > -0.09)]
