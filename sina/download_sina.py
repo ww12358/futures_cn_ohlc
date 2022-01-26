@@ -6,14 +6,23 @@ import datetime
 def download_sina_data(contract):
     try:
         print(contract)
-        # urls = ["http://stock.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=" + contract,
-        #         "http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=" + contract]
-        url = "http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=" + contract
-        info = requests.get(url)
-        if info.status_code != 200:
-            print("OK"+contract+"\n")
-        data = info.content
-        data = json.loads(data)
+        urls = ["http://stock.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=" + contract,
+                "http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=" + contract]
+        # url = "http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=" + contract
+        try:
+            info = requests.get(urls[0])
+            if info.status_code != 200:
+                print("OK"+contract+"\n")
+
+            data = info.content
+            data = json.loads(data)
+
+        except Exception as e:
+            print("url stock.finance.sina.com.cn not available. switch to stock2...")
+            info = requests.get(urls[1])
+            data = info.content
+            data = json.loads(data)
+
         data = pd.DataFrame(data)
         # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
         #     print(data)
