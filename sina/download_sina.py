@@ -3,25 +3,47 @@ import requests
 import pandas as pd
 import datetime
 
+urls = ["http://stock.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=",    \
+        "http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol="]
+
+url_switch = 0
+count = 0
+
+def switch_url(s):
+    if s == 0:
+        return 1
+    if s == 1:
+        return 0
+    else:
+        print("Error switch url...")
+        return 0
+
 def download_sina_data(contract):
     try:
         print(contract)
-        urls = ["http://stock.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=" + contract,
-                "http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=" + contract]
+
         # url = "http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=" + contract
-        try:
-            info = requests.get(urls[0])
-            if info.status_code != 200:
-                print("OK"+contract+"\n")
+        while True:
+            try:
+                info = requests.get(urls[url_switch] + contract)
+                if info.status_code != 200:
+                    print("OK"+contract+"\n")
 
-            data = info.content
-            data = json.loads(data)
+                data = info.content
+                data = json.loads(data)
 
-        except Exception as e:
-            print("url stock.finance.sina.com.cn not available. switch to stock2...")
-            info = requests.get(urls[1])
-            data = info.content
-            data = json.loads(data)
+                break
+
+            except Exception as e:
+                if count == 5:
+                    break
+
+                switch_url(url_switch)
+                count += 1
+                print("url stock.finance.sina.com.cn not available. switch to stock2...", e)
+                # info = requests.get(urls[url_switch] + contract)
+                # data = info.content
+                # data = json.loads(data)
 
         data = pd.DataFrame(data)
         # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
