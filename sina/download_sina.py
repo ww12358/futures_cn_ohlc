@@ -6,8 +6,7 @@ import datetime
 urls = ["http://stock.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=",    \
         "http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol="]
 
-url_switch = 0
-count = 0
+
 
 def switch_url(s):
     if s == 0:
@@ -18,32 +17,27 @@ def switch_url(s):
         print("Error switch url...")
         return 0
 
-def download_sina_data(contract):
+def download_sina_data(contract, url_switch):
+    count = 0
     try:
         print(contract)
-
-        # url = "http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=" + contract
         while True:
             try:
                 info = requests.get(urls[url_switch] + contract)
                 if info.status_code != 200:
-                    print("OK"+contract+"\n")
+                    print(contract+" data received.\n")
 
                 data = info.content
                 data = json.loads(data)
-
                 break
 
             except Exception as e:
+                count += 1
                 if count == 5:
                     break
 
                 switch_url(url_switch)
-                count += 1
-                print("url stock.finance.sina.com.cn not available. switch to stock2...", e)
-                # info = requests.get(urls[url_switch] + contract)
-                # data = info.content
-                # data = json.loads(data)
+                print("switching url", e)
 
         data = pd.DataFrame(data)
         # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
@@ -54,7 +48,7 @@ def download_sina_data(contract):
         data.index = pd.to_datetime(data.index)
         data[["open", "high", "low", "close", "volume"]] = data[["open", "high", "low", "close", "volume"]].apply(pd.to_numeric)
         data['contract'] = contract[-4:]
-        print(data)
+        # print(data)
     # except ValueError as error:
     #     print("Decoding falied")
     #     # raise error.with_traceback(sys.exc_info()[2])
@@ -64,7 +58,7 @@ def download_sina_data(contract):
     except Exception as e:
         print("error", str(e))
 
-    return data
+    return data, url_switch
 
 def download_sina_data_hq(contract):
     try:

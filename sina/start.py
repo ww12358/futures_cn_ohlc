@@ -24,6 +24,7 @@ nest_asyncio.apply()
 logging.basicConfig()
 logging.getLogger('apscheduler').setLevel(logging.DEBUG)
 
+
 # DEBUG = 1
 
 def job_function():
@@ -54,27 +55,21 @@ def job_function():
 
 # asyncio def interval_function():
 async def get_sina_contracts(contract):
+    url_switch = 0
+
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        # futures = []
-        # for symbol in contract_dict.keys():
-        #     futures.append(executor.submit(get_wiki_page_existence, wiki_page_url=url))
-        # for future in concurrent.futures.as_completed(futures):
-        #     print(future.result())
         loop = asyncio.get_event_loop()
-        #     fv_dic = {}
-        # for key,symbol in contract_dict.items():
-        #print(key, symbol)
         try:
             # df = await loop.run_in_executor(executor, functools.partial(download_sina_data_hq, contract=contract))
-            df = await loop.run_in_executor(executor, functools.partial(download_sina_data, contract=contract))
-
+            df, switch = await loop.run_in_executor(executor, functools.partial(download_sina_data, contract=contract, url_switch=url_switch))
+            url_switch = switch
         # except ValueError as e:
         #     if str(e) == "BUSTERED":
         #         raise ValueError("F!!!")
         #     else:
         #         print(str(e))
         except:
-            print("something wrong")
+            print("something wrong when running get_sina_contracts")
         #     print(df)
         return contract, df
 
