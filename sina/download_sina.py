@@ -6,8 +6,6 @@ import datetime
 urls = ["http://stock.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=",    \
         "http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol="]
 
-
-
 def switch_url(s):
     if s == 0:
         return 1
@@ -33,11 +31,12 @@ def download_sina_data(contract, url_switch):
 
             except Exception as e:
                 count += 1
-                if count == 5:
+                if count == 3:
+                    count = 0
                     break
 
-                switch_url(url_switch)
-                print("switching url", e)
+                url_switch = switch_url(url_switch)
+                # print("switching url", e)
 
         data = pd.DataFrame(data)
         # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
