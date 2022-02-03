@@ -1,6 +1,7 @@
 import pandas as pd
 import datetime
 from tq.config import api
+
 def download_tq(contract):
     data = pd.DataFrame()
     try:

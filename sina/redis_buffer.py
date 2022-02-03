@@ -18,14 +18,15 @@ async def update_redis(r, contract, df):
 
     # print("Buffering : ", contract)
     try:
-        ser = await r.get((contract))
+        ser = await r.get(contract)
         if not ser is None:     #redis buffer exists, append data
             df_origin = pa.deserialize(ser)
             # print(df_origin)
             if df_origin is None:
                 df_latest = df
             else:
-                df_latest = df_origin.append(df)
+                # df_latest = df_origin.append(df)
+                df_latest = df_origin.combine_first(df)
             # print(df_latest)
             await r.set(contract, pa.serialize(df_latest).to_buffer().to_pybytes())
         else:       #initialize redis buffer
@@ -46,6 +47,26 @@ async def store_redis(loop, results):
         )
         return await asyncio.gather(*(update_redis(r, contract, df) for contract, df in results),  return_exceptions=True, )
 
+    finally:
+        r.close()
+        await r.wait_closed()
+
+async def store_redis_tq(contract, quote):
+    try:
+        if not quote.datetime.isnull().values.any():
+            # print(contract, quote)
+            quote.index = pd.to_datetime(quote.datetime)
+            quote = quote.shift(8, freq="H")
+            quote = quote.loc[:, ['open', 'high', 'low', 'close', 'volume', 'open_oi']]
+            quote.rename(columns={"open_oi": "oi"}, inplace=True)
+            print(contract, quote.tail(10))
+        else:
+            return
+
+        r = await aioredis.create_redis_pool(
+            "redis://localhost", minsize=5, maxsize=10, db=1
+        )
+        return await update_redis(r, contract, quote)
     finally:
         r.close()
         await r.wait_closed()

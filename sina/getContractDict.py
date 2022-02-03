@@ -69,6 +69,7 @@ def getAllContractDict(debug, dt = datetime.now()):
                     contract_dict[month] = contract
 
                 all_contracts[symbol] = contract_dict
+
         except KeyError:
             continue
         except Exception as e:

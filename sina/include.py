@@ -6,7 +6,7 @@ from shfe.include import shfe_symbols, shfe_symbols_2300pm, shfe_symbols_0100am,
 from ine.include import  ine_symbols, ine_symbols_2300pm, ine_symbols_0100am, ine_symbols_0230am
 from cffex.include import cffex_symbols, cffex_symbols_equity, cffex_symbols_bond
 
-DEBUG = 0
+DEBUG = 1
 RUN_NOW = 1
 SINA_M5_PATH = '/home/sean/sync/creek/sina/'
 SINA_M5_ORIGIN_PATH = '/home/sean/sync/creek/sina_origin/'
@@ -14,6 +14,7 @@ SINA_M15_PATH = '/home/sean/sync/creek/M15/'
 SINA_M30_PATH = '/home/sean/sync/creek/M30/'
 SINA_H1_PATH = '/home/sean/sync/creek/H1/'
 SINA_H3_PATH = '/home/sean/sync/creek/H3/'
+CONTRACT_INFO_PATH = '/home/sean/code/utils/main_contracts.json'
 all_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols + cffex_symbols
 com_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols
 watch_list = ["CU", "AL", "RB", "I", "A", "M", "Y", "P", "JM", "TA", "EG", "SR", "CF"]
@@ -66,7 +67,10 @@ def time_in_range(start, end, x):
 
 def trading_symbols(debug, t):
     if debug:
-        return ['CU', 'P']
+        # return ['SC']
+        # return ['SC', 'CU', 'P']
+        return ['FG', 'SR']
+
     else:
         for tm_rng in t_range:
             if time_in_range(tm_rng[0], tm_rng[1], t):
