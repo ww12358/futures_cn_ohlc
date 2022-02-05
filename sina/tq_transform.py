@@ -1,7 +1,7 @@
 import pandas as pd
 import datetime
 import click
-from concurrent import futures
+
 import asyncio
 import aioredis
 import functools
@@ -15,14 +15,17 @@ from sina.sina_H3 import sina_H3
 from sina.sina_M15 import sina_M15
 from sina.sina_M30 import sina_M30
 from sina.include import CONTRACT_INFO_PATH
-from sina.kMem import kMem
+from sina.kMem import kMem, load_hfreq, gen_idx
 from cn.localData import localData
 import warnings
+import nest_asyncio
+nest_asyncio.apply()
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # watch_list = ["CU", "RB", "I", "A", "M", "Y", "TA", "SR", "CF", "AL", "ZC"]
-watch_list = ["CU", "P", "ZC", "SC"]
+# watch_list = ["CU", "P", "ZC", "SC"]
+watch_list = ["SC"]
 
 def ohlcsum(data):
     if data.empty:
@@ -104,61 +107,61 @@ def trans_freq(symbol, freq, rebuild):
         print(str(e))
         pass
 
-async def load_symbol(symbol_li):
+async def load_symbol(symbol_li, freq):
     try:
-
-        # r = await aioredis.create_redis_pool(
-        #     "redis://localhost", minsize=5, maxsize=10, db=1
-        # )
 
         with open(CONTRACT_INFO_PATH) as f:
             cInfo_j = json.load(f)
 
         loop = asyncio.get_event_loop()
-        for smbl in symbol_li:
-            with futures.ThreadPoolExecutor() as executor:
-                cInfo = cInfo_j[smbl]
-                # print(cInfo)
-                loop.run_in_executor(executor, functools.partial(load_contracts, symbol=smbl, cInfo=cInfo, loop=loop))
-        # group = await asyncio.gather(*[load_contracts(symbol, r) for symbol in watch_list])
-        # results = loop.run_until_complete(group)
-        # for smbl in watch_list:
-        #     print(smbl)
-        #     with futures.ThreadPoolExecutor() as executor:
-        #         try:
-        #             # df = await loop.run_in_executor(executor, functools.partial(download_sina_data_hq, contract=contract))
-        #             grp = await asyncio.gather(*[loop.run_in_executor(executor, functools.partial(load_all, symbol=smbl, r=r))])
-        #             result = asyncio.run_until
-        #
-        #         # except ValueError as e:
-        #         #     if str(e) == "BUSTERED":
-        #         #         raise ValueError("F!!!")
-        #         #     else:
-        #         #         print(str(e))
-        #         except:
-        #             print("something wrong when running get_sina_contracts")
-        #         #     print(df)
-
-        return
-
+        r = await aioredis.create_redis_pool(
+            "redis://localhost", minsize=5, maxsize=10, loop=loop, db=1
+        )
+        group = asyncio.gather(*[gen_idx(sym, cInfo_j[sym], freq, r, loop) for sym in symbol_li])
+        results = loop.run_until_complete(group)
+        # loop.close()
+    except Exception as e:
+        print(str(e))
+        r.close()
+        await r.wait_closed()
     finally:
-        print("all done")
-
+        r.close()
+        await r.wait_closed()
+        loop.close()
+        # for smbl in symbol_li:
+        #     with futures.ThreadPoolExecutor() as executor:
+        #         cInfo = cInfo_j[smbl]
+                # print(cInfo)
+                # results = await loop.run_in_executor(executor, functools.partial(load_hfreq, symbol=smbl, cInfo=cInfo))
+                # print(future.result())
     return
 
 # async def load_redis(symbol, cInfo, r):
 #     contract = kMem(symbol, cInfo, r)
 #     await contract._init()
-def load_contracts(symbol, cInfo, loop):
-    # print(symbol)
-    # contract = kMem(symbol, cInfo, loop)
-    # await contract._init()
-    # print(contract.get_1st_contract())
-    # await r.set(symbol+'_done', 'yes')
-    with kMem(symbol, cInfo, loop) as contract:
-        main_contract = contract.get_1st_contract()
-    print(symbol, contract.get_all_contracts())
-    return main_contract
+# def load_contracts(symbol, cInfo, loop):
+#     print(symbol)
+#     # contract = kMem(symbol, cInfo, loop)
+#     # await contract._init()
+#     # print(contract.get_1st_contract())
+#     # await r.set(symbol+'_done', 'yes')
+#     try:
+#         # with kMem(symbol, cInfo, loop) as contract:
+#         #     # main_contract = contract.get_1st_contract()
+#         #     df = contract.to_idx('1min')
+#         #     if df is None:
+#         #         print("index not generated.")
+#         #         return None
+#         #     else:
+#         #         print(df)
+#         #         return df
+#         res = loop.run_until_complete(load_hfreq(symbol, cInfo, loop))
+#         # res = await asyncio.wait(load_hfreq(symbol, cInfo, loop))
+#
+#
+#     except Exception as e:
+#         print(str(e))
+    # print(symbol, contract.get_all_contracts())
 
 @click.command()
 @click.option("--symbol", "-S", type=click.STRING, help="contract symbol")
@@ -175,7 +178,11 @@ def main(all, major, symbol, freq, rebuild=False):
         return
 
     elif major:
-        asyncio.run(load_symbol(watch_list))
+        # asyncio.run(load_symbol(watch_list))
+        # loop = asyncio.get_event_loop()
+        # loop.run_until_complete(load_symbol(watch_list))
+        # loop.close()
+        asyncio.run(load_symbol(watch_list, freq))
         return
 
     # else:

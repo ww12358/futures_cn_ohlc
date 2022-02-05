@@ -16,7 +16,7 @@ from sina.include import SINA_M5_PATH
 
 async def update_redis(r, contract, df):
 
-    # print("Buffering : ", contract)
+    print("Buffering : ", contract)
     try:
         ser = await r.get(contract)
         if not ser is None:     #redis buffer exists, append data
@@ -57,8 +57,8 @@ async def store_redis_tq(contract, quote):
             # print(contract, quote)
             quote.index = pd.to_datetime(quote.datetime)
             quote = quote.shift(8, freq="H")
-            quote = quote.loc[:, ['open', 'high', 'low', 'close', 'volume', 'open_oi']]
-            quote.rename(columns={"open_oi": "oi"}, inplace=True)
+            quote = quote.loc[:, ['open', 'high', 'low', 'close', 'volume', 'close_oi']]
+            quote.rename(columns={"close_oi": "oi"}, inplace=True)
             print(contract, quote.tail(10))
         else:
             return
