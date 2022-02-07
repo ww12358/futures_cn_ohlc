@@ -84,7 +84,7 @@ async def load_hfreq(km, r):
             km.dfs[c] = raw_df.groupby(raw_df.index).apply(lambda g:g.iloc[-1])     #use only last row of each group
             # print(km.dfs[c])
     except IndexError:
-        print("Data of exist on redis. Pass...")
+        print("Data of {1} exist on redis. Pass...".format(ptn))
         pass
     except Exception as e:
         print("Error occured while loading hfreq contracts from redis...\t", str(e))
