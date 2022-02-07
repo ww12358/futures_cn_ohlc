@@ -66,12 +66,11 @@ async def load_1min(km, r):
        k = await r.keys(ptn)
        buf = await r.get(k[0])
        km.kandles['1min'] = pa.deserialize(buf)
-
-       return km.kandles['1min']
-
    except Exception as e:
-       print("Error occured while fetching {0} 1min".format(km.symbol), '\t', str(e))
+       print("Error occured while fetching {0} 1min".format(km.symbol), ptn, '\t', str(e))
        return None
+
+   return km.kandles['1min']
 
 async def load_hfreq(km, r):
     try:
