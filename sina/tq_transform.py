@@ -3,7 +3,7 @@ import click
 import asyncio
 import aioredis
 import json
-import datetime, timedelta
+from datetime import datetime, timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
@@ -85,7 +85,7 @@ def main(all, major, symbol, freq, rebuild=False):
         smb_li = watch_list
         # asyncio.run(load_symbol(watch_list, freq))
 
-    schdlr.add_job(load_symbol, "interval", minutes=5, next_run_time=round_by_five(datetime.datetime.now()), args=[smb_li, '1min'])
+    schdlr.add_job(load_symbol, "interval", minutes=5, next_run_time=round_by_five(datetime.now()), args=[smb_li, '1min'])
 
     schdlr.add_job(load_symbol, "cron",
                    hour='0-2,  9-11, 13-15, 21-23',
