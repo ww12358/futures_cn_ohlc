@@ -45,7 +45,7 @@ def ohlcsum(data):
         }, index=data.index)
 
 async def load_symbol(symbol_li, freq):
-    print(datetime.datetime.now())
+    print(datetime.now())
     try:
         with open(CONTRACT_INFO_PATH) as f:
             cInfo_j = json.load(f)
