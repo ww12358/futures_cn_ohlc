@@ -58,6 +58,11 @@ async def store_redis(loop, results):
 
 async def store_redis_tq(contract, quote):
     try:
+        loop = asyncio.get_event_loop()
+        r = await aioredis.create_redis_pool(
+            "redis://localhost", minsize=5, maxsize=10, loop=loop, db=1
+        )
+
         if not quote.datetime.isnull().values.any():
             # print(contract, quote)
             quote.index = pd.to_datetime(quote.datetime)
@@ -65,16 +70,17 @@ async def store_redis_tq(contract, quote):
             quote = quote.loc[:, ['open', 'high', 'low', 'close', 'volume', 'close_oi']]
             quote.rename(columns={"close_oi": "oi"}, inplace=True)
             print(contract, quote.tail(10))
+
+            return await update_redis(r, contract, quote)
         else:
             return
-
-        r = await aioredis.create_redis_pool(
-            "redis://localhost", minsize=5, maxsize=10, db=1
-        )
-        return await update_redis(r, contract, quote)
+    except Exception as e:
+        print("Error occured while store_redis_tq", '\t', str(e))
     finally:
         r.close()
         await r.wait_closed()
+
+
 
 class buffer():
     def __init__(self, symbol, month, freq, ip_addr, port=6379, db=1, no_print=False):
