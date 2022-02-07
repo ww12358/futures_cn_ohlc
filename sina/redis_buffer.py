@@ -60,7 +60,7 @@ async def store_redis_tq(contract, quote):
     try:
         loop = asyncio.get_event_loop()
         r = await aioredis.create_redis_pool(
-            "redis://localhost", minsize=5, maxsize=200, loop=loop, db=1
+            "redis://localhost", minsize=5, maxsize=1000, loop=loop, db=1
         )
 
         if not quote.datetime.isnull().values.any():
