@@ -9,6 +9,20 @@ from concurrent import futures
 import functools
 from sina.redis_buffer import update_redis
 
+def ohlcsum(data):
+    # print(data.columns)
+    if data.empty:
+        return data
+    else:
+        return pd.DataFrame({
+            'open': data['open'].iloc[0],
+            'high': data['high'].max(),
+            'low': data['low'].min(),
+            'close': data['close'].iloc[-1],
+            'volume': data['volume'].sum(),
+            'oi': data['oi'].iloc[-1]
+        }, index=data.index)
+
 async def gen_idx(symbol, cInfo, freq, r, loop):
     km = kMem(symbol, cInfo)
     if freq == '1min':
@@ -16,29 +30,59 @@ async def gen_idx(symbol, cInfo, freq, r, loop):
         with futures.ProcessPoolExecutor() as executor:
         # await loop.run_in_executor(executor, functools.partial(load_hfreq, km=km, r=r))
             df = await loop.run_in_executor(executor, functools.partial(km.to_idx, freq))
-            print(df)
+            # print(df)
             await update_redis(r, symbol+"00_"+freq, df)
         # try:
         #     with futures.ThreadPoolExecutor() as executor:
         #         await loop.run_in_executor(executor, functools.partial(load_hfreq, km=km, r=r))
         # except Exception as e:
-        #     print(str(e))
+        #     print(str(e)
+    elif freq in ['5min', '15min', '30min', '1h', '4h']:
+        # with futures.ThreadPoolExecutor() as executor:
+        df = await load_1min(km, r)
+        # df = df.iloc[:-1, :]
+        # print(df)
+        g = df.groupby(pd.Grouper(freq=freq, offset='21h', closed='left', label='left'))
+        # g.apply(print)
+        df_result = g.apply(ohlcsum)
+        df_result = df_result.groupby(pd.Grouper(freq=freq, offset='21h', closed='left', label='left')).agg('last')
+        # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        #     print("df_result", df_result)
+        df_result = df_result.dropna()
+        df_result = df_result.iloc[:-1, :]  # delete last row which is obviously not correct
+        # print(df_result)
+        # gv = df_result.groupby(pd.Grouper(freq='24h', offset='21h', closed='left', label='left'))
+        # # gv.apply(print)
+        # df_result_offset = gv.apply(trans_volume)
+        await update_redis(r, symbol + "00_" + freq, df_result)
+        # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        print("df_result", df_result.tail(40))
+        # df = load_1min()
     return
 
+async def load_1min(km, r):
+   try:
+       ptn = km.symbol + "00_1min"
+       k = await r.keys(ptn)
+       buf = await r.get(k[0])
+       km.kandles['1min'] = pa.deserialize(buf)
+
+       return km.kandles['1min']
+
+   except Exception as e:
+       print("Error occured while fetching {0} 1min".format(km.symbol), '\t', str(e))
+       return None
+
 async def load_hfreq(km, r):
-    # loop = asyncio.get_event_loop()
-    # km = kMem(symbol, cInfo)
-    # if loop == None:
-    #     loop = asyncio.get_event_loop()
     try:
         for c in km.all_contracts:
             ptn = km.symbol + '??' + c
-            print(ptn)
+            # print(ptn)
             k = await r.keys(ptn)
             buf = await r.get(k[0])
             raw_df = pa.deserialize(buf)
             # g = raw_df.groupby(raw_df.index, sort=True)
-            km.dfs[c] = raw_df.groupby(raw_df.index).apply(lambda g:g.iloc[-1])
+            km.dfs[c] = raw_df.groupby(raw_df.index).apply(lambda g:g.iloc[-1])     #use only last row of each group
             # print(km.dfs[c])
     except IndexError:
         print("Data of exist on redis. Pass...")
@@ -46,6 +90,20 @@ async def load_hfreq(km, r):
     except Exception as e:
         print("Error occured while loading hfreq contracts from redis...\t", str(e))
 
+async def clean_hfreq(km, r):
+    try:
+        for c in km.all_contracts:
+            ptn = km.symbol + '??' + c
+            k = await r.keys(ptn)
+            buf = await r.get(k[0])
+            raw_df = pa.deserialize(buf)
+            df = raw_df.groupby(raw_df.index).apply(lambda g:g.iloc[-1])    #delete all redundant data
+            await update_redis(r, ptn, df, force=True)
+    except IndexError:
+        print("Data of exist on redis. Pass...")
+        pass
+    except Exception as e:
+        print("Error occured while cleaning hfreq contracts...\t", str(e))
 
 class kMem:
     # async def _init(self):
@@ -61,6 +119,7 @@ class kMem:
         self.all_contracts = self.get_all_contracts()
         self.contract_1st = self.all_contracts[0]
         self.dfs = {}
+        self.kandles = {}
         # self.load_hfreq(loop)
 
         return
@@ -83,25 +142,6 @@ class kMem:
     def get_1st_contract(self):
         return self.contract_1st
 
-    # def load_hfreq(self):
-    #     # dfs = {}
-    #     try:
-    #         for c in self.all_contracts:
-    #             ptn = self.symbol + '??' + c
-    #             # print(ptn)
-    #             k = self._r.keys(ptn)
-    #             buf = self._r.get(k[0])
-    #             self.dfs[c] = pa.deserialize(buf)
-    #             # print(self.dfs[c])
-    #
-    #     except IndexError:
-    #         print("Data of exist on redis. Pass...")
-    #         pass
-    #     except Exception as e:
-    #         print("Error occured while loading hfreq contracts from redis...\t", str(e))
-
-
-
     def to_idx(self, freq):
         if len(self.dfs) > 0:
             dfs = self.dfs.values()
@@ -109,9 +149,8 @@ class kMem:
             # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
             #     print(df_concat)
 
-            # df_concat = df_concat[df_concat["volume"] > 1]      # avoid divide by 0 when wavg
+            df_concat = df_concat[df_concat["volume"] > 1]      # avoid divide by 0 when wavg
             # print(self.symbol, df_concat)
-            # g = df_concat.groupby(df_concat.index.minute, sort=True)
             g = df_concat.groupby(df_concat.index, sort=True)
             # g.apply(print)
             # for date, group in g:
@@ -129,9 +168,6 @@ class kMem:
 
             # print(self.symbol, df_00)
             if freq == "1min":
-                # print(self.symbol+'00_'+freq, df_00)
-                # if not self.loop == None:
-                #     res = self.loop.run_until_complete(update_redis(self._r, self.symbol+'00_'+freq, df_00))
                 return df_00
         else:
             print("{} contracts not loaded. Skip generating index.", self.symbol,)

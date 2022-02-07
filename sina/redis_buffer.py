@@ -14,11 +14,16 @@ from sina.include import SINA_M5_PATH
 #     r.set(contract, comp)
 #     r.set(contract + "size", size)
 
-async def update_redis(r, contract, df):
+async def update_redis(r, contract, df, force=False):
 
     print("Buffering : ", contract)
     try:
         ser = await r.get(contract)
+
+        if force:
+            await r.set(contract, pa.serialize(df).to_buffer().to_pybytes())
+            return
+
         if not ser is None:     #redis buffer exists, append data
             df_origin = pa.deserialize(ser)
             # print(df_origin)
@@ -72,19 +77,22 @@ async def store_redis_tq(contract, quote):
         await r.wait_closed()
 
 class buffer():
-    def __init__(self, symbol, month, ip_addr, port=6379, db=0, no_print=False):
+    def __init__(self, symbol, month, freq, ip_addr, port=6379, db=1, no_print=False):
         # print(ip_addr, port, symbol, month)
+        self.df_buf = None
         try:
             self.r = redis.StrictRedis(host=ip_addr, port=port, db=db)
             if month == '00':
-                ptn = symbol + month
+                ptn = symbol + '00_' + freq
             else:
                 ptn = ''.join([symbol, '??', month])
+
+            print(ptn)
             k = self.r.keys(pattern=ptn)
             # print(k)
             buf = self.r.get(k[0])
             self.df_buf = pa.deserialize(buf)
-            # print(self.df_buf)
+            print(self.df_buf)
         except Exception as e:
             if not no_print:
                 print("Error ocurred when retrieving data from redis server.", str(e))
@@ -94,8 +102,12 @@ class buffer():
         return self.df_buf
 
     def get_latest(self, tm):
-        self.df_buf = self.df_buf.loc[self.df_buf.index > tm]
-        print(self.df_buf)
+        if not self.df_buf is None:
+            return self.df_buf.loc[self.df_buf.index > tm]
+        else:
+            return None
+
+
 
     def __enter__(self):
         return self

@@ -6,7 +6,7 @@ from shfe.include import shfe_symbols, shfe_symbols_2300pm, shfe_symbols_0100am,
 from ine.include import  ine_symbols, ine_symbols_2300pm, ine_symbols_0100am, ine_symbols_0230am
 from cffex.include import cffex_symbols, cffex_symbols_equity, cffex_symbols_bond
 
-DEBUG = 1
+DEBUG = 0
 RUN_NOW = 1
 SINA_M5_PATH = '/home/sean/sync/creek/sina/'
 SINA_M5_ORIGIN_PATH = '/home/sean/sync/creek/sina_origin/'
@@ -20,11 +20,12 @@ com_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols
 watch_list = ["CU", "AL", "RB", "I", "A", "M", "Y", "P", "JM", "TA", "EG", "SR", "CF"]
 
 if DEBUG == 0:
-    redis_svr_addr = '192.168.3.11'
+    REDIS_SVR_ADDR = '192.168.3.11'
 else:
-    redis_svr_addr = '127.0.0.1'
+    REDIS_SVR_ADDR = '127.0.0.1'
 # redis_svr_addr = '127.0.0.1'
-redis_port = '6379'
+REDIS_PORT = '6379'
+REDIS_DB = 1
 
 t_range = { (time(9, 0), time(9, 15)) : com_symbols,
             (time(9, 15), time(9, 30)) : com_symbols, # + cffex_symbols_bond,
@@ -68,8 +69,8 @@ def time_in_range(start, end, x):
 def trading_symbols(debug, t):
     if debug:
         # return ['SC']
-        # return ['SC', 'CU', 'P']
-        return ['FG', 'SR']
+        return ['SC', 'CU', 'P', 'SR', 'RU']
+        # return ['FG', 'SR']
 
     else:
         for tm_rng in t_range:
