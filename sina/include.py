@@ -6,7 +6,7 @@ from shfe.include import shfe_symbols, shfe_symbols_2300pm, shfe_symbols_0100am,
 from ine.include import  ine_symbols, ine_symbols_2300pm, ine_symbols_0100am, ine_symbols_0230am
 from cffex.include import cffex_symbols, cffex_symbols_equity, cffex_symbols_bond
 
-DEBUG = 0
+DEBUG = 2
 RUN_NOW = 1
 SINA_M5_PATH = '/home/sean/sync/creek/sina/'
 SINA_M5_ORIGIN_PATH = '/home/sean/sync/creek/sina_origin/'
@@ -67,11 +67,12 @@ def time_in_range(start, end, x):
 #         return self._t_range
 
 def trading_symbols(debug, t):
-    if debug:
+    if debug == 1:
         # return ['SC']
         return ['SC', 'CU', 'P', 'SR', 'RU']
         # return ['FG', 'SR']
-
+    elif debug == 2:
+        return ["CU", "RB", "Y", "M", "SR", "FG", "SC"]
     else:
         for tm_rng in t_range:
             if time_in_range(tm_rng[0], tm_rng[1], t):

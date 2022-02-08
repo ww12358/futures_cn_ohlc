@@ -14,10 +14,20 @@ from sina.include import SINA_M5_PATH
 #     r.set(contract, comp)
 #     r.set(contract + "size", size)
 
+def trans_tq_quote(quote):
+    quote.index = pd.to_datetime(quote.datetime)
+    quote = quote.shift(8, freq="H")
+    quote = quote.loc[:, ['open', 'high', 'low', 'close', 'volume', 'close_oi']]
+    quote.rename(columns={"close_oi": "oi"}, inplace=True)
+    print(quote)
+
+    return quote
+
 async def update_redis(r, contract, df, force=False):
 
     print("Buffering : ", contract)
     try:
+        # df = trans_tq_quote(df)
         ser = await r.get(contract)
 
         if force:
@@ -41,14 +51,13 @@ async def update_redis(r, contract, df, force=False):
     except Exception as e:
         await r.set(contract, pa.serialize(df).to_buffer().to_pybytes())
         print(str(e))
-        pass
     # val = await r.get(key)
     # print(f"Got {key} -> {val}")
 
 async def store_redis(loop, results):
     try:
         r = await aioredis.create_redis_pool(
-            "redis://localhost", minsize=5, maxsize=10, loop=loop, db=0
+            "redis://localhost", minsize=5, maxsize=10, loop=loop, db=1
         )
         return await asyncio.gather(*(update_redis(r, contract, df) for contract, df in results),  return_exceptions=True, )
 
@@ -56,13 +65,8 @@ async def store_redis(loop, results):
         r.close()
         await r.wait_closed()
 
-async def store_redis_tq(contract, quote):
+async def store_redis_tq(r, contract, quote):
     try:
-        loop = asyncio.get_event_loop()
-        r = await aioredis.create_redis_pool(
-            "redis://localhost", minsize=5, maxsize=1000, loop=loop, db=1
-        )
-
         if not quote.datetime.isnull().values.any():
             # print(contract, quote)
             quote.index = pd.to_datetime(quote.datetime)
@@ -72,15 +76,12 @@ async def store_redis_tq(contract, quote):
             print(contract, quote.tail(10))
 
             return await update_redis(r, contract, quote)
+
         else:
             return
+
     except Exception as e:
         print("Error occured while store_redis_tq", '\t', str(e))
-    finally:
-        r.close()
-        await r.wait_closed()
-
-
 
 class buffer():
     def __init__(self, symbol, month, freq, ip_addr, port=6379, db=1, no_print=False):
