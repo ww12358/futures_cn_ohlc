@@ -23,16 +23,12 @@ def trans_tq_quote(quote):
 
     return quote
 
-async def update_redis(r, contract, df, force=False):
-
+async def update_redis(r, contract, df):
+    # print(contract, "idx", df)
     print("Buffering : ", contract)
     try:
         # df = trans_tq_quote(df)
         ser = await r.get(contract)
-
-        if force:
-            await r.set(contract, pa.serialize(df).to_buffer().to_pybytes())
-            return
 
         if not ser is None:     #redis buffer exists, append data
             df_origin = pa.deserialize(ser)
@@ -42,6 +38,7 @@ async def update_redis(r, contract, df, force=False):
             else:
                 # df_latest = df_origin.append(df)
                 df_latest = df_origin.combine_first(df)
+                # print("df_latest", df_latest)
             # print(df_latest)
             await r.set(contract, pa.serialize(df_latest).to_buffer().to_pybytes())
         else:       #initialize redis buffer

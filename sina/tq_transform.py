@@ -13,6 +13,7 @@ from sina.include import CONTRACT_INFO_PATH
 from sina.kMem import gen_idx
 import warnings
 import nest_asyncio
+from sina.include import REDIS_SVR_ADDR, REDIS_PORT, REDIS_DB
 nest_asyncio.apply()
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -52,7 +53,7 @@ async def load_symbol(symbol_li, freq):
 
         loop = asyncio.get_event_loop()
         r = await aioredis.create_redis_pool(
-            "redis://127.0.0.1", minsize=5, maxsize=10, loop=loop, db=1
+            "redis://"+REDIS_SVR_ADDR, minsize=5, maxsize=10, loop=loop, db=REDIS_DB
         )
         group = asyncio.gather(*[gen_idx(sym, cInfo_j[sym], freq, r, loop) for sym in symbol_li])
         results = loop.run_until_complete(group)
@@ -119,6 +120,7 @@ def main(all, major, symbol, freq, rebuild=False):
 
     schdlr.start()
     asyncio.get_event_loop().run_forever()
+
     # else:
     #     symbol = symbol.strip().upper()
         # for smbl in all_symbols:
