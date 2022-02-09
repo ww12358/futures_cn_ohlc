@@ -24,13 +24,14 @@ def ohlcsum(data):
         }, index=data.index)
 
 async def gen_idx(symbol, cInfo, freq, r, loop):
+    print(cInfo)
     km = kMem(symbol, cInfo)
     if freq == '1min':
         await load_hfreq(km, r)
         with futures.ProcessPoolExecutor() as executor:
         # await loop.run_in_executor(executor, functools.partial(load_hfreq, km=km, r=r))
             df = await loop.run_in_executor(executor, functools.partial(km.to_idx, freq))
-            # print(df)
+            print(df)
             await update_redis(r, symbol+"00_"+freq, df)
         # try:
         #     with futures.ThreadPoolExecutor() as executor:

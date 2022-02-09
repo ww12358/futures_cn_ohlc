@@ -53,7 +53,7 @@ async def load_symbol(symbol_li, contract_dict, freq):
         r = await aioredis.create_redis_pool(
             "redis://" + REDIS_SVR_ADDR, minsize=5, maxsize=20, loop=loop, db=REDIS_DB
         )
-        group = asyncio.gather(*[gen_idx(sym, contract_dict[sym], freq, r, loop) for sym in symbol_li])
+        group = asyncio.gather(*[gen_idx(sym, contract_dict[sym], freq, r, loop) for sym in contract_dict.keys()])
         results = loop.run_until_complete(group)
         # loop.close()
     except Exception as e:
@@ -75,21 +75,28 @@ async def load_symbol(symbol_li, contract_dict, freq):
 def main(all, major, symbol, freq, rebuild=False):
 
     contract_dict = getAllContractDict(debug=0)
-    print(contract_dict)
+    # print(contract_dict)
     c = {}
     for k, v in contract_dict.items():
-        c[k] = list(v.values())
-    print(c)
+        if len(v) > 0:
+            c[k] = list(v.values())
+        else:   #in case contract info was not retrieved which cause exceptions
+            print("Missing symbol {1} contract info. skip...".format(k))
+    # print(c)
     # print(all_symbols)
 
     schdlr = AsyncIOScheduler()
     if all:
         smb_li = all_symbols
+        # print(all_symbols)
         print(smb_li)
+        for s in smb_li:
+            print(s, '\t', c[s], '\n')
         asyncio.run(load_symbol(all_symbols, c, freq))
 
     elif major:
         smb_li = watch_list
+        print(watch_list)
         asyncio.run(load_symbol(watch_list, c, freq))
 
     # schdlr.add_job(load_symbol, "interval", minutes=5, next_run_time=round_by_five(datetime.now()), args=[smb_li, '1min'])
