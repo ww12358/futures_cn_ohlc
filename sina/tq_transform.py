@@ -10,6 +10,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from cn.include import all_symbols
 
 from sina.include import CONTRACT_INFO_PATH
+from sina.getContractDict import getContractDict, getAllContractDict
 from sina.kMem import gen_idx
 import warnings
 import nest_asyncio
@@ -45,17 +46,14 @@ def ohlcsum(data):
             'contract': data['contract']
         }, index=data.index)
 
-async def load_symbol(symbol_li, freq):
+async def load_symbol(symbol_li, contract_dict, freq):
     print(datetime.now())
     try:
-        with open(CONTRACT_INFO_PATH) as f:
-            cInfo_j = json.load(f)
-
         loop = asyncio.get_event_loop()
         r = await aioredis.create_redis_pool(
-            "redis://"+REDIS_SVR_ADDR, minsize=5, maxsize=10, loop=loop, db=REDIS_DB
+            "redis://" + REDIS_SVR_ADDR, minsize=5, maxsize=20, loop=loop, db=REDIS_DB
         )
-        group = asyncio.gather(*[gen_idx(sym, cInfo_j[sym], freq, r, loop) for sym in symbol_li])
+        group = asyncio.gather(*[gen_idx(sym, contract_dict[sym], freq, r, loop) for sym in symbol_li])
         results = loop.run_until_complete(group)
         # loop.close()
     except Exception as e:
@@ -75,71 +73,60 @@ async def load_symbol(symbol_li, freq):
 @click.option("--freq", "-F",  type=click.STRING, help="freqency inlcude 5min, 15min, 30min, 1h, 3h, 1d")
 
 def main(all, major, symbol, freq, rebuild=False):
-    # print(all_symbols)
-    schdlr = AsyncIOScheduler()
 
+    contract_dict = getAllContractDict(debug=0)
+    print(contract_dict)
+    c = {}
+    for k, v in contract_dict.items():
+        c[k] = list(v.values())
+    print(c)
+    # print(all_symbols)
+
+    schdlr = AsyncIOScheduler()
     if all:
         smb_li = all_symbols
-        # asyncio.run(load_symbol(all_symbols))
+        print(smb_li)
+        asyncio.run(load_symbol(all_symbols, c, freq))
 
     elif major:
         smb_li = watch_list
-        # asyncio.run(load_symbol(watch_list, freq))
+        asyncio.run(load_symbol(watch_list, c, freq))
 
-    schdlr.add_job(load_symbol, "interval", minutes=5, next_run_time=round_by_five(datetime.now()), args=[smb_li, '1min'])
-
-    schdlr.add_job(load_symbol, "cron",
-                   hour='0-2,  9-11, 13-15, 21-23',
-                   minute="0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55",
-                   second="35",
-                   args=[smb_li, '5min'])
-
-    schdlr.add_job(load_symbol, "cron",
-                   hour='0-2,  9-11, 13-15, 21-23',
-                   minute="0, 15, 30, 45",
-                   second="45",
-                   args=[smb_li, '15min'])
-
-    schdlr.add_job(load_symbol, "cron",
-                   hour='0-2,  9-11, 13-15, 21-23',
-                   minute="0, 30",
-                   second="50",
-                   args=[smb_li, '30min'])
-
-    schdlr.add_job(load_symbol, "cron",
-                   hour='0-2, 9-11, 13-15, 21-23',
-                   minute="0",
-                   second="55",
-                   args=[smb_li, '1h'])
-
-    schdlr.add_job(load_symbol, "cron",
-                   hour='1, 9, 13, 17',
-                   minute="3",
-                   second="42",
-                   args=[smb_li, '4h'])
-
-    schdlr.start()
-    asyncio.get_event_loop().run_forever()
-
-    # else:
-    #     symbol = symbol.strip().upper()
-        # for smbl in all_symbols:
-        #     # trans_freq(smbl, freq, rebuild)
-        #     print(smbl)
-        # if symbol in all_symbols:
-        #     # trans_freq(symbol, freq, rebuild)
-        #     print(symbol)
-        #     return
-        # else:
-        #     print("not a valid symbol")
-        # return
-
-
+    # schdlr.add_job(load_symbol, "interval", minutes=5, next_run_time=round_by_five(datetime.now()), args=[smb_li, '1min'])
+    #
+    # schdlr.add_job(load_symbol, "cron",
+    #                hour='0-2,  9-11, 13-15, 21-23',
+    #                minute="0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55",
+    #                second="35",
+    #                args=[smb_li, '5min'])
+    #
+    # schdlr.add_job(load_symbol, "cron",
+    #                hour='0-2,  9-11, 13-15, 21-23',
+    #                minute="0, 15, 30, 45",
+    #                second="45",
+    #                args=[smb_li, '15min'])
+    #
+    # schdlr.add_job(load_symbol, "cron",
+    #                hour='0-2,  9-11, 13-15, 21-23',
+    #                minute="0, 30",
+    #                second="50",
+    #                args=[smb_li, '30min'])
+    #
+    # schdlr.add_job(load_symbol, "cron",
+    #                hour='0-2, 9-11, 13-15, 21-23',
+    #                minute="0",
+    #                second="55",
+    #                args=[smb_li, '1h'])
+    #
+    # schdlr.add_job(load_symbol, "cron",
+    #                hour='1, 9, 13, 17',
+    #                minute="3",
+    #                second="42",
+    #                args=[smb_li, '4h'])
+    #
+    # schdlr.start()
+    # asyncio.get_event_loop().run_forever()
 
 
 if __name__ == "__main__":
     main()
-    # asyncio.run(main())
-    # loop = asyncio.get_event_loop()
-    # task = loop.create_task(main())
-    # loop.run_until_complete(task)

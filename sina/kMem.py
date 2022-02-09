@@ -37,7 +37,7 @@ async def gen_idx(symbol, cInfo, freq, r, loop):
         #         await loop.run_in_executor(executor, functools.partial(load_hfreq, km=km, r=r))
         # except Exception as e:
         #     print(str(e)
-    elif freq in ['5min', '15min', '30min', '1h', '4h']:
+    elif freq in ['5min', '15min', '30min', '1h', '4h', '1d']:
         # with futures.ThreadPoolExecutor() as executor:
         df = await load_1min(km, r)
         # df = df.iloc[:-1, :]
@@ -56,7 +56,7 @@ async def gen_idx(symbol, cInfo, freq, r, loop):
         # df_result_offset = gv.apply(trans_volume)
         await update_redis(r, symbol + "00_" + freq, df_result)
         # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-        print("df_result", df_result.tail(40))
+        # print("df_result", df_result.tail(20))
         # df = load_1min()
     return
 
@@ -75,14 +75,14 @@ async def load_1min(km, r):
 async def load_hfreq(km, r):
     try:
         for c in km.all_contracts:
-            ptn = km.symbol + '??' + c
+            ptn = c
             # print(ptn)
             k = await r.keys(ptn)
             buf = await r.get(k[0])
             raw_df = pa.deserialize(buf)
             # g = raw_df.groupby(raw_df.index, sort=True)
             km.dfs[c] = raw_df.groupby(raw_df.index).apply(lambda g:g.iloc[-1])     #use only last row of each group
-            # print(km.dfs[c])
+            print(km.dfs[c])
     except IndexError:
         print("Data of {1} exist on redis. Pass...".format(ptn))
         pass
@@ -92,7 +92,8 @@ async def load_hfreq(km, r):
 async def clean_hfreq(km, r):
     try:
         for c in km.all_contracts:
-            ptn = km.symbol + '??' + c
+            ptn = c
+            print(ptn)
             k = await r.keys(ptn)
             buf = await r.get(k[0])
             raw_df = pa.deserialize(buf)
@@ -112,7 +113,6 @@ class kMem:
 
     def __init__(self, symbol, cInfo):
         self.symbol = symbol
-        # self._r = redis.StrictRedis(host='127.0.0.1', port=6379, db=1)
         self.cInfo = cInfo
         # self.loop = loop
         self.all_contracts = self.get_all_contracts()
@@ -130,16 +130,15 @@ class kMem:
         return self
 
     def __exit__(self, exc_type, exc_value, tb):
-        self._r.close()
-
+        # self._r.close()
         return True
 
     def get_all_contracts(self):
         # print(self.cInfo)
-        return self.cInfo['all']
+        return self.cInfo
 
-    def get_1st_contract(self):
-        return self.contract_1st
+    # def get_1st_contract(self):
+    #     return self.contract_1st
 
     def to_idx(self, freq):
         if len(self.dfs) > 0:
@@ -166,10 +165,10 @@ class kMem:
                               axis=1, keys=['open', 'high', 'low', 'close', 'volume', 'oi'])
 
             # print(self.symbol, df_00)
-            if freq == "1min":
-                return df_00
+            # if freq == "1min":
+            return df_00
         else:
-            print("{} contracts not loaded. Skip generating index.", self.symbol,)
+            print("{1} contracts not loaded. Skip generating index.".format(self.symbol))
             return None
 
     def getMainContract(self):
