@@ -90,7 +90,7 @@ def main(all, major, symbol, freq, rebuild=False):
     # print(c)
     # print(all_symbols)
 
-    schdlr = AsyncIOScheduler()
+
     if all:
         smb_li = t_symbols
         # print(all_symbols)
@@ -104,41 +104,48 @@ def main(all, major, symbol, freq, rebuild=False):
         print(watch_list)
         # asyncio.run(load_symbol(watch_list, c, freq))
 
-    asyncio.run(load_symbol(smb_li, c, freq))
-    # schdlr.add_job(load_symbol, "interval", minutes=5, next_run_time=round_by_five(datetime.now()), args=[smb_li, '1min'])
-    #
-    # schdlr.add_job(load_symbol, "cron",
-    #                hour='0-2,  9-11, 13-15, 21-23',
-    #                minute="0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55",
-    #                second="35",
-    #                args=[smb_li, '5min'])
-    #
-    # schdlr.add_job(load_symbol, "cron",
-    #                hour='0-2,  9-11, 13-15, 21-23',
-    #                minute="0, 15, 30, 45",
-    #                second="45",
-    #                args=[smb_li, '15min'])
-    #
-    # schdlr.add_job(load_symbol, "cron",
-    #                hour='0-2,  9-11, 13-15, 21-23',
-    #                minute="0, 30",
-    #                second="50",
-    #                args=[smb_li, '30min'])
-    #
-    # schdlr.add_job(load_symbol, "cron",
-    #                hour='0-2, 9-11, 13-15, 21-23',
-    #                minute="0",
-    #                second="55",
-    #                args=[smb_li, '1h'])
-    #
-    # schdlr.add_job(load_symbol, "cron",
-    #                hour='1, 9, 13, 17',
-    #                minute="3",
-    #                second="42",
-    #                args=[smb_li, '4h'])
-    #
-    # schdlr.start()
-    # asyncio.get_event_loop().run_forever()
+    # asyncio.run(load_symbol(smb_li, c, freq))
+    schdlr = AsyncIOScheduler()
+    schdlr.add_job(load_symbol, "interval", minutes=5, next_run_time=round_by_five(datetime.now()), args=[smb_li, c, '1min'])
+
+    schdlr.add_job(load_symbol, "cron",
+                   hour='0-2,  9-11, 13-15, 21-23',
+                   minute="0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55",
+                   second="35",
+                   args=[smb_li, c, '5min'])
+
+    schdlr.add_job(load_symbol, "cron",
+                   hour='0-2,  9-11, 13-15, 21-23',
+                   minute="0, 15, 30, 45",
+                   second="45",
+                   args=[smb_li, c, '15min'])
+
+    schdlr.add_job(load_symbol, "cron",
+                   hour='0-2,  9-11, 13-15, 21-23',
+                   minute="0, 30",
+                   second="50",
+                   args=[smb_li, c, '30min'])
+
+    schdlr.add_job(load_symbol, "cron",
+                   hour='0-2, 9-11, 13-15, 21-23',
+                   minute="0",
+                   second="55",
+                   args=[smb_li, c, '1h'])
+
+    schdlr.add_job(load_symbol, "cron",
+                   hour='0-2, 9-11, 13-15, 21-23',
+                   minute="1",
+                   second="15",
+                   args=[smb_li, c, '1d'])
+
+    schdlr.add_job(load_symbol, "cron",
+                   hour='1, 9, 13, 17',
+                   minute="3",
+                   second="42",
+                   args=[smb_li, c, '4h'])
+
+    schdlr.start()
+    asyncio.get_event_loop().run_forever()
 
 
 if __name__ == "__main__":
