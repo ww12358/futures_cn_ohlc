@@ -51,7 +51,7 @@ async def gen_idx(symbol, cInfo, freq, r, loop):
             # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
             #     print("df_result", df_result)
             df_result = df_result.dropna()
-            df_result = df_result.iloc[:-1, :]  # delete last row which is obviously not correct
+            # df_result = df_result.iloc[:-1, :]  # delete last row which is obviously not correct
             # print(df_result)
             # gv = df_result.groupby(pd.Grouper(freq='24h', offset='21h', closed='left', label='left'))
             # # gv.apply(print)

@@ -26,7 +26,7 @@ def trans_tq_quote(quote):
 async def update_redis(r, contract, df):
     print(contract, "idx", df)
     print("Buffering : ", contract)
-    df = df.dropna()
+    # df = df.dropna()
     try:
         # df = trans_tq_quote(df)
         ser = await r.get(contract)
@@ -38,6 +38,7 @@ async def update_redis(r, contract, df):
                 df_latest = df
             else:
                 # df_latest = df_origin.append(df)
+                df_origin = df_origin.iloc[:-1, :]  # delete last row which is obviously not correct
                 df_latest = df_origin.combine_first(df)
                 # print("df_latest", df_latest)
             # print(df_latest)
