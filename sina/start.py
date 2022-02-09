@@ -23,7 +23,7 @@ import numpy as np
 from sina.include import trading_symbols, DEBUG, RUN_NOW
 from sina.redis_buffer import store_redis
 from sina.sina_M5_archive import archive_sina_M5
-from cn.include import symbol_exchange_map
+from cn.include import symbol_exchange_map, all_symbols
 
 nest_asyncio.apply()
 
@@ -90,15 +90,15 @@ def job_function():
 
 # async def get_tq_data(contract_dict):
 def get_tq_data(contract_dict, loop):
-    # t = datetime.datetime.now().time()
-    # t_symbols = trading_symbols(DEBUG, t)
-    #
-    # if t_symbols is None:
-    #     return
-    # print("Downloading below contracts: ", t_symbols)
-    # for symbol in contract_dict.keys():
+    t = datetime.datetime.now().time()
+    t_symbols = trading_symbols(DEBUG, t)
+
+    if t_symbols is None:
+        return
+    print("Downloading below contracts: ", t_symbols)
+
     tq_contract_dict = {}
-    for symbol in contract_dict.keys():
+    for symbol in t_symbols:
         contract_tq_d = {}
         contract_d = contract_dict[symbol]
         print(symbol)
@@ -116,8 +116,7 @@ def get_tq_data(contract_dict, loop):
     try:
         api = TqApi(auth=TqAuth("15381188725", "mancan@07"))
         # results = {}
-        results = asyncio.Queue()
-        event = asyncio.Event()
+
         # for symbol in t_symbols:
         #     try:
         #         contract_tq = {}

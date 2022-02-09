@@ -48,7 +48,7 @@ async def update_symbol(r, api, loop, contract_tq_d, contract_d):
         *[update_quote(r, api, contract_tq_d[k], contract) for k, contract in contract_d.items()])
     results = loop.run_until_complete(group)
 
-async def get_quote(api, t_symbols, tq_contract_dict, contract_dict):
+async def get_quote(api, smb_li, tq_contract_dict, contract_dict):
 
     try:
         loop = asyncio.get_event_loop()
@@ -63,7 +63,7 @@ async def get_quote(api, t_symbols, tq_contract_dict, contract_dict):
         #             # print(contract_tq_d[k])
 
         grp = await asyncio.gather(
-            *[update_symbol(r, api, loop, tq_contract_dict[symbol], contract_dict[symbol]) for symbol in t_symbols]
+            *[update_symbol(r, api, loop, tq_contract_dict[symbol], contract_dict[symbol]) for symbol in smb_li]
         )
         result = loop.run_until_complete(grp)
 
@@ -86,7 +86,8 @@ async def get_quote(api, t_symbols, tq_contract_dict, contract_dict):
             #     except Exception as e:
             #         print("Error in get_quote()", str(e))
             #         pass
-
+    except Exception as e:
+        print("Error in get_quote()", str(e))
     finally:
         r.close()
         await r.wait_closed()
