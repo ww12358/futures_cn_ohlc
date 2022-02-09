@@ -69,8 +69,6 @@ async def get_quote(api, smb_li, tq_contract_dict, contract_dict):
 
         # quote = api.get_quote(contract)
 
-
-            # for k, contract in contract_d.items():
             #     contract_tq = exchange+'.'+contract_tq_d[k]
             #     print(k, contract, contract_tq)
             #     try:

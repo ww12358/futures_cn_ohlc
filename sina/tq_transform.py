@@ -14,7 +14,7 @@ from sina.getContractDict import getContractDict, getAllContractDict
 from sina.kMem import gen_idx
 import warnings
 import nest_asyncio
-from sina.include import REDIS_SVR_ADDR, REDIS_PORT, REDIS_DB
+from sina.include import REDIS_SVR_ADDR, REDIS_PORT, REDIS_DB, trading_symbols, DEBUG, RUN_NOW
 nest_asyncio.apply()
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -46,14 +46,14 @@ def ohlcsum(data):
             'contract': data['contract']
         }, index=data.index)
 
-async def load_symbol(symbol_li, contract_dict, freq):
+async def load_symbol(symbols, contract_dict, freq):
     print(datetime.now())
     try:
         loop = asyncio.get_event_loop()
         r = await aioredis.create_redis_pool(
             "redis://" + REDIS_SVR_ADDR, minsize=5, maxsize=20, loop=loop, db=REDIS_DB
         )
-        group = asyncio.gather(*[gen_idx(sym, contract_dict[sym], freq, r, loop) for sym in contract_dict.keys()])
+        group = asyncio.gather(*[gen_idx(sym, contract_dict[sym], freq, r, loop) for sym in symbols])
         results = loop.run_until_complete(group)
         # loop.close()
     except Exception as e:
@@ -75,6 +75,11 @@ async def load_symbol(symbol_li, contract_dict, freq):
 def main(all, major, symbol, freq, rebuild=False):
 
     contract_dict = getAllContractDict(debug=0)
+    t = datetime.now().time()
+    t_symbols = trading_symbols(DEBUG, t)
+
+    if t_symbols is None:
+        return
     # print(contract_dict)
     c = {}
     for k, v in contract_dict.items():
@@ -87,18 +92,19 @@ def main(all, major, symbol, freq, rebuild=False):
 
     schdlr = AsyncIOScheduler()
     if all:
-        smb_li = all_symbols
+        smb_li = t_symbols
         # print(all_symbols)
         print(smb_li)
         for s in smb_li:
             print(s, '\t', c[s], '\n')
-        asyncio.run(load_symbol(all_symbols, c, freq))
+
 
     elif major:
         smb_li = watch_list
         print(watch_list)
-        asyncio.run(load_symbol(watch_list, c, freq))
+        # asyncio.run(load_symbol(watch_list, c, freq))
 
+    asyncio.run(load_symbol(smb_li, c, freq))
     # schdlr.add_job(load_symbol, "interval", minutes=5, next_run_time=round_by_five(datetime.now()), args=[smb_li, '1min'])
     #
     # schdlr.add_job(load_symbol, "cron",

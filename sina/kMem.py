@@ -26,39 +26,45 @@ def ohlcsum(data):
 async def gen_idx(symbol, cInfo, freq, r, loop):
     print(cInfo)
     km = kMem(symbol, cInfo)
-    if freq == '1min':
-        await load_hfreq(km, r)
-        with futures.ProcessPoolExecutor() as executor:
-        # await loop.run_in_executor(executor, functools.partial(load_hfreq, km=km, r=r))
-            df = await loop.run_in_executor(executor, functools.partial(km.to_idx, freq))
-            print(df)
-            await update_redis(r, symbol+"00_"+freq, df)
-        # try:
-        #     with futures.ThreadPoolExecutor() as executor:
-        #         await loop.run_in_executor(executor, functools.partial(load_hfreq, km=km, r=r))
-        # except Exception as e:
-        #     print(str(e)
-    elif freq in ['5min', '15min', '30min', '1h', '4h', '1d']:
-        # with futures.ThreadPoolExecutor() as executor:
-        df = await load_1min(km, r)
-        # df = df.iloc[:-1, :]
-        # print(df)
-        g = df.groupby(pd.Grouper(freq=freq, offset='21h', closed='left', label='left'))
-        # g.apply(print)
-        df_result = g.apply(ohlcsum)
-        df_result = df_result.groupby(pd.Grouper(freq=freq, offset='21h', closed='left', label='left')).agg('last')
-        # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-        #     print("df_result", df_result)
-        df_result = df_result.dropna()
-        df_result = df_result.iloc[:-1, :]  # delete last row which is obviously not correct
-        # print(df_result)
-        # gv = df_result.groupby(pd.Grouper(freq='24h', offset='21h', closed='left', label='left'))
-        # # gv.apply(print)
-        # df_result_offset = gv.apply(trans_volume)
-        await update_redis(r, symbol + "00_" + freq, df_result)
-        # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-        # print("df_result", df_result.tail(20))
-        # df = load_1min()
+    try:
+        if freq == '1min':
+            await load_hfreq(km, r)
+            with futures.ProcessPoolExecutor() as executor:
+            # await loop.run_in_executor(executor, functools.partial(load_hfreq, km=km, r=r))
+                df = await loop.run_in_executor(executor, functools.partial(km.to_idx, freq))
+                print(df)
+                await update_redis(r, symbol+"00_"+freq, df)
+            # try:
+            #     with futures.ThreadPoolExecutor() as executor:
+            #         await loop.run_in_executor(executor, functools.partial(load_hfreq, km=km, r=r))
+            # except Exception as e:
+            #     print(str(e)
+        elif freq in ['5min', '15min', '30min', '1h', '4h', '1d']:
+            # with futures.ThreadPoolExecutor() as executor:
+            df = await load_1min(km, r)
+            # df = df.iloc[:-1, :]
+            # print(df)
+            g = df.groupby(pd.Grouper(freq=freq, offset='21h', closed='left', label='left'))
+            # g.apply(print)
+            df_result = g.apply(ohlcsum)
+            df_result = df_result.groupby(pd.Grouper(freq=freq, offset='21h', closed='left', label='left')).agg('last')
+            # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+            #     print("df_result", df_result)
+            df_result = df_result.dropna()
+            df_result = df_result.iloc[:-1, :]  # delete last row which is obviously not correct
+            # print(df_result)
+            # gv = df_result.groupby(pd.Grouper(freq='24h', offset='21h', closed='left', label='left'))
+            # # gv.apply(print)
+            # df_result_offset = gv.apply(trans_volume)
+            await update_redis(r, symbol + "00_" + freq, df_result)
+            # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+            # print("df_result", df_result.tail(20))
+            # df = load_1min()
+
+    except Exception as e:
+        print("Error when gen_idx()", str(e))
+        pass
+
     return
 
 async def load_1min(km, r):
@@ -75,12 +81,14 @@ async def load_1min(km, r):
 
 async def load_hfreq(km, r):
     try:
+        print(km.all_contracts)
         for c in km.all_contracts:
             ptn = c
-            # print(ptn)
+            print(ptn)
             k = await r.keys(ptn)
             buf = await r.get(k[0])
             raw_df = pa.deserialize(buf)
+            print(raw_df)
             # g = raw_df.groupby(raw_df.index, sort=True)
             km.dfs[c] = raw_df.groupby(raw_df.index).apply(lambda g:g.iloc[-1])     #use only last row of each group
             print(km.dfs[c])
