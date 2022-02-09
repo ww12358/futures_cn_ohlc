@@ -90,7 +90,6 @@ def main(all, major, symbol, freq, rebuild=False):
     # print(c)
     # print(all_symbols)
 
-
     if all:
         smb_li = t_symbols
         # print(all_symbols)

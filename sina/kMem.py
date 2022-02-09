@@ -24,7 +24,7 @@ def ohlcsum(data):
         }, index=data.index)
 
 async def gen_idx(symbol, cInfo, freq, r, loop):
-    print(cInfo)
+    # print(cInfo)
     km = kMem(symbol, cInfo)
     try:
         if freq == '1min':
@@ -32,7 +32,7 @@ async def gen_idx(symbol, cInfo, freq, r, loop):
             with futures.ProcessPoolExecutor() as executor:
             # await loop.run_in_executor(executor, functools.partial(load_hfreq, km=km, r=r))
                 df = await loop.run_in_executor(executor, functools.partial(km.to_idx, freq))
-                print(df)
+                # print(df)
                 await update_redis(r, symbol+"00_"+freq, df)
             # try:
             #     with futures.ThreadPoolExecutor() as executor:
@@ -81,17 +81,17 @@ async def load_1min(km, r):
 
 async def load_hfreq(km, r):
     try:
-        print(km.all_contracts)
+        # print(km.all_contracts)
         for c in km.all_contracts:
             ptn = c
-            print(ptn)
+            # print(ptn)
             k = await r.keys(ptn)
             buf = await r.get(k[0])
             raw_df = pa.deserialize(buf)
-            print(raw_df)
+            # print(raw_df)
             # g = raw_df.groupby(raw_df.index, sort=True)
             km.dfs[c] = raw_df.groupby(raw_df.index).apply(lambda g:g.iloc[-1])     #use only last row of each group
-            print(km.dfs[c])
+            # print(km.dfs[c])
     except IndexError:
         print("Data of {1} exist on redis. Pass...".format(ptn))
         pass

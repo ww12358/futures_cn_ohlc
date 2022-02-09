@@ -26,6 +26,7 @@ def trans_tq_quote(quote):
 async def update_redis(r, contract, df):
     print(contract, "idx", df)
     print("Buffering : ", contract)
+    df = df.dropna()
     try:
         # df = trans_tq_quote(df)
         ser = await r.get(contract)
