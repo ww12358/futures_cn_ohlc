@@ -93,8 +93,8 @@ def get_tq_data(contract_dict, loop):
     t = datetime.datetime.now().time()
     t_symbols = trading_symbols(DEBUG, t)
 
-    if t_symbols is None:
-        return
+    # if t_symbols is None:
+    #     return
     print("Downloading below contracts: ", t_symbols)
 
     tq_contract_dict = {}

@@ -27,17 +27,10 @@ else:
 REDIS_PORT = '6379'
 REDIS_DB = 1
 
-t_range = { (time(9, 0), time(9, 15)) : com_symbols,
-            (time(9, 15), time(9, 30)) : com_symbols, # + cffex_symbols_bond,
-            (time(9, 30), time(10, 18)) : com_symbols,
-            # (time(10, 18), time(10, 30)) : cffex_symbols,
-            (time(10, 30), time(11, 33)) : com_symbols,
-            # (time(13, 0), time(13, 30)) : cffex_symbols,
-            (time(13, 30), time(15, 3)) : all_symbols,
-            # (time(15, 3), time(15, 33)) : cffex_symbols_bond,
-            (time(21, 0), time(23, 3)) : shfe_symbols_2300pm + dce_symbols_2300pm + cze_symbols_2300pm + ine_symbols_2300pm + shfe_symbols_0100am + shfe_symbols_0230am + ine_symbols_0100am + ine_symbols_0230am,
-            (time(23, 3), time(1, 3)) : shfe_symbols_0100am + ine_symbols_0100am + shfe_symbols_0230am + ine_symbols_0230am,
-            (time(1, 3), time(2, 33)) : shfe_symbols_0230am + ine_symbols_0230am
+t_range = { (time(2, 30), time(15, 30)) : all_symbols,
+            (time(15, 30), time(23, 0)) : shfe_symbols_2300pm + dce_symbols_2300pm + cze_symbols_2300pm + ine_symbols_2300pm + shfe_symbols_0100am + shfe_symbols_0230am + ine_symbols_0100am + ine_symbols_0230am,
+            (time(23, 0), time(1, 0)) : shfe_symbols_0100am + ine_symbols_0100am + shfe_symbols_0230am + ine_symbols_0230am,
+            (time(1, 0), time(2, 30)) : shfe_symbols_0230am + ine_symbols_0230am
 }
 
 def time_in_range(start, end, x):
