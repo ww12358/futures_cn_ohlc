@@ -16,8 +16,8 @@ def ohlcsum(data):
     else:
         return pd.DataFrame({
             'open': data['open'].iloc[0],
-            'high': data['high'].max(),
-            'low': data['low'].min(),
+            'high': data['close'].max(),
+            'low': data['close'].min(),
             'close': data['close'].iloc[-1],
             'volume': data['volume'].sum(),
             'oi': data['oi'].iloc[-1]

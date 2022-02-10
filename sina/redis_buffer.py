@@ -14,17 +14,8 @@ from sina.include import SINA_M5_PATH
 #     r.set(contract, comp)
 #     r.set(contract + "size", size)
 
-def trans_tq_quote(quote):
-    quote.index = pd.to_datetime(quote.datetime)
-    quote = quote.shift(8, freq="H")
-    quote = quote.loc[:, ['open', 'high', 'low', 'close', 'volume', 'close_oi']]
-    quote.rename(columns={"close_oi": "oi"}, inplace=True)
-    print(quote)
-
-    return quote
-
 async def update_redis(r, contract, df):
-    print(contract, "idx", df)
+    # print(contract, "idx", df)
     print("Buffering : ", contract)
     # df = df.dropna()
     try:
@@ -72,7 +63,7 @@ async def store_redis_tq(r, contract, quote):
             quote = quote.shift(8, freq="H")
             quote = quote.loc[:, ['open', 'high', 'low', 'close', 'volume', 'close_oi']]
             quote.rename(columns={"close_oi": "oi"}, inplace=True)
-            print(contract, quote.tail(10))
+            # print(contract, quote.tail(10))
 
             return await update_redis(r, contract, quote)
 
@@ -93,12 +84,12 @@ class buffer():
             else:
                 ptn = ''.join([symbol, '??', month])
 
-            print(ptn)
+            # print(ptn)
             k = self.r.keys(pattern=ptn)
             # print(k)
             buf = self.r.get(k[0])
             self.df_buf = pa.deserialize(buf)
-            print(self.df_buf)
+            # print(self.df_buf)
         except Exception as e:
             if not no_print:
                 print("Error ocurred when retrieving data from redis server.", str(e))

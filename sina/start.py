@@ -101,7 +101,7 @@ def get_tq_data(contract_dict, loop):
     for symbol in t_symbols:
         contract_tq_d = {}
         contract_d = contract_dict[symbol]
-        print(symbol)
+        # print(symbol)
         exchange = symbol_exchange_map[symbol]
 
         if exchange in ['SHFE', 'DCE', 'INE']:
