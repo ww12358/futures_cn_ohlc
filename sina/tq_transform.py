@@ -23,14 +23,17 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 # watch_list = ["CU", "P", "ZC", "SC"]
 watch_list = ["SC", 'CU', 'P', 'SR', 'RU']
 
-def round_by_five(time):
-    if time.second == 0 and time.microsecond == 0 and time.minute % 5 == 0:
-        return time
-    minutes_by_five = time.minute // 5
-    # get the difference in times
-    diff = (minutes_by_five + 1) * 5 - time.minute
-    time = (time + timedelta(minutes=diff)).replace(second=0, microsecond=0)
-    return time
+
+
+
+# def round_by_five(time):
+#     if time.second == 0 and time.microsecond == 0 and time.minute % 5 == 0:
+#         return time
+#     minutes_by_five = time.minute // 5
+#     # get the difference in times
+#     diff = (minutes_by_five + 1) * 5 - time.minute
+#     time = (time + timedelta(minutes=diff)).replace(second=0, microsecond=0)
+#     return time
 
 # def ohlcsum(data):
 #     if data.empty:
@@ -100,9 +103,11 @@ def main(all, major, symbol, freq, rebuild=False):
 
     elif major:
         smb_li = watch_list
+        # smb_li = ["NI"]
         print(watch_list)
 
     # asyncio.run(load_symbol(smb_li, c, freq))
+
     schdlr = AsyncIOScheduler()
     # schdlr.add_job(load_symbol, "interval", minutes=5, next_run_time=round_by_five(datetime.now()), args=[smb_li, c, '1min'], misfire_grace_time=120)
 

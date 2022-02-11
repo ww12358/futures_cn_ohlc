@@ -6,8 +6,19 @@ import redis
 import pandas as pd
 import numpy as np
 from concurrent import futures
+from datetime import datetime
 import functools
 from sina.redis_buffer import update_redis
+
+def round_by_five(tm):
+    if tm.second == 0 and tm.microsecond == 0 and tm.minute % 5 == 0:
+        return tm
+    minutes_by_five = tm.minute // 5
+    tm = tm.replace(minute=minutes_by_five * 5, second=0, microsecond=0)
+    # get the difference in times
+    # diff = (minutes_by_five + 1) * 5 - time.minute
+    # time = (time + timedelta(minutes=diff)).replace(second=0, microsecond=0)
+    return tm
 
 def ohlcsum(data):
     # print(data.columns)
@@ -176,7 +187,12 @@ class kMem:
 
             # print(self.symbol, df_00)
             # if freq == "1min":
-            return df_00.iloc[:-1, :]
+            # return df_00.iloc[:-1, :]
+            tm = round_by_five(datetime.now())
+            # print(df_00.iloc[-1], tm)
+            # print(df_00.tail(20))
+            df_00 = df_00.loc[df_00.index <= tm]
+            return df_00
         else:
             print("{1} contracts not loaded. Skip generating index.".format(self.symbol))
             return None
