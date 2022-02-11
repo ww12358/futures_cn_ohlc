@@ -25,7 +25,7 @@ def ohlcsum(data):
 
 async def gen_idx(symbol, cInfo, freq, r, loop):
     # print(cInfo)
-    print(symbol)
+    # print(symbol)
     km = kMem(symbol, cInfo)
     try:
         if freq == '1min':
@@ -63,7 +63,7 @@ async def gen_idx(symbol, cInfo, freq, r, loop):
             # df = load_1min()
 
     except Exception as e:
-        print("Error when gen_idx()", str(e))
+        print("Error when gen_idx()", symbol, str(e))
         pass
 
     return
