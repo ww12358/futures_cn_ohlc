@@ -25,6 +25,7 @@ def ohlcsum(data):
 
 async def gen_idx(symbol, cInfo, freq, r, loop):
     # print(cInfo)
+    print(symbol)
     km = kMem(symbol, cInfo)
     try:
         if freq == '1min':
