@@ -32,19 +32,19 @@ def round_by_five(time):
     time = (time + timedelta(minutes=diff)).replace(second=0, microsecond=0)
     return time
 
-def ohlcsum(data):
-    if data.empty:
-        return data
-    #     df = df.sort_index()
-    else:
-        return pd.DataFrame({
-            'open': data['open'].iloc[0],
-            'high': data['high'].max(),
-            'low': data['low'].min(),
-            'close': data['close'].iloc[-1],
-            'volume': data['volume'].sum(),
-            'contract': data['contract']
-        }, index=data.index)
+# def ohlcsum(data):
+#     if data.empty:
+#         return data
+#     #     df = df.sort_index()
+#     else:
+#         return pd.DataFrame({
+#             'open': data['open'].iloc[0],
+#             'high': data['close'].max(),
+#             'low': data['close'].min(),
+#             'close': data['close'].iloc[-1],
+#             'volume': data['volume'].sum(),
+#             'contract': data['contract']
+#         }, index=data.index)
 
 async def load_symbol(symbols, contract_dict, freq):
     print(datetime.now())

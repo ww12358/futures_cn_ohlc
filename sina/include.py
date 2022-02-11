@@ -27,7 +27,7 @@ else:
 REDIS_PORT = '6379'
 REDIS_DB = 1
 
-t_range = { (time(2, 30), time(15, 30)) : all_symbols,
+t_range = { (time(2, 30), time(15, 30)) : com_symbols,
             (time(15, 30), time(23, 0)) : shfe_symbols_2300pm + dce_symbols_2300pm + cze_symbols_2300pm + ine_symbols_2300pm + shfe_symbols_0100am + shfe_symbols_0230am + ine_symbols_0100am + ine_symbols_0230am,
             (time(23, 0), time(1, 0)) : shfe_symbols_0100am + ine_symbols_0100am + shfe_symbols_0230am + ine_symbols_0230am,
             (time(1, 0), time(2, 30)) : shfe_symbols_0230am + ine_symbols_0230am
