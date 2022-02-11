@@ -175,7 +175,7 @@ class kMem:
 
             # print(self.symbol, df_00)
             # if freq == "1min":
-            return df_00
+            return df_00.iloc[:-1, :]
         else:
             print("{1} contracts not loaded. Skip generating index.".format(self.symbol))
             return None
