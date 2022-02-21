@@ -29,8 +29,9 @@ async def update_redis(r, contract, df):
                 df_latest = df
             else:
                 # df_latest = df_origin.append(df)
-                df_origin = df_origin.iloc[:-1, :]  # delete last row which is obviously not correct
+                # df_origin = df_origin.iloc[:-1, :]  # delete last row which is obviously not correct
                 df_latest = df_origin.combine_first(df)
+                print(df_latest.info())
                 # print("df_latest", df_latest)
             # print(df_latest)
             await r.set(contract, pa.serialize(df_latest).to_buffer().to_pybytes())
