@@ -37,7 +37,8 @@ def job_function():
     # date = datetime.now()
     # t = date.time()
     contract_dict = getAllContractDict(debug=DEBUG)
-    # print(contract_dict)
+    contract_dict = {key: contract_dict[key] for key in contract_dict.keys() & watch_list}
+    print(contract_dict)
     # Execution will block here until Ctrl+C (Ctrl+Break on Windows) is pressed.
     try:
         # asyncio.get_event_loop()
