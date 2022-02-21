@@ -14,14 +14,14 @@ from sina.getContractDict import getContractDict, getAllContractDict
 from sina.kMem import gen_idx
 import warnings
 import nest_asyncio
-from sina.include import REDIS_SVR_ADDR, REDIS_PORT, REDIS_DB, trading_symbols, DEBUG, RUN_NOW
+from sina.include import REDIS_SVR_ADDR, REDIS_PORT, REDIS_DB, trading_symbols, DEBUG, RUN_NOW, watch_list
 nest_asyncio.apply()
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # watch_list = ["CU", "RB", "I", "A", "M", "Y", "TA", "SR", "CF", "AL", "ZC"]
 # watch_list = ["CU", "P", "ZC", "SC"]
-watch_list = ["SC", 'CU', 'P', 'SR', 'RU']
+# watch_list = ["SC", 'CU', 'P', 'SR', 'RU']
 
 
 
