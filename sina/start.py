@@ -20,7 +20,7 @@ from sina.download_sina import download_sina_data, download_sina_data_hq
 from sina.tq import get_quote
 import nest_asyncio
 import numpy as np
-from sina.include import trading_symbols, DEBUG, RUN_NOW
+from sina.include import trading_symbols, DEBUG, RUN_NOW, watch_list
 from sina.redis_buffer import store_redis
 from sina.sina_M5_archive import archive_sina_M5
 from cn.include import symbol_exchange_map, all_symbols
