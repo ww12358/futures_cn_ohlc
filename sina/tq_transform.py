@@ -79,7 +79,9 @@ def main(all, major, symbol, freq, rebuild=False):
 
     contract_dict = getAllContractDict(debug=0)
     t = datetime.now().time()
-    t_symbols = trading_symbols(DEBUG, t)
+    t_symbols = []
+    trading_symbols(DEBUG, t, t_symbols)
+    print(t_symbols)
 
     if t_symbols is None:
         return
@@ -100,7 +102,6 @@ def main(all, major, symbol, freq, rebuild=False):
         for s in smb_li:
             print(s, '\t', c[s], '\n')
 
-
     elif major:
         smb_li = watch_list
         # smb_li = ["NI"]
@@ -109,6 +110,11 @@ def main(all, major, symbol, freq, rebuild=False):
     # asyncio.run(load_symbol(smb_li, c, freq))
 
     schdlr = AsyncIOScheduler()
+
+    from apscheduler.triggers.cron import CronTrigger
+    schdlr.add_job(trading_symbols, CronTrigger.from_crontab('0 1,9,13,15,21,23 * * 1-5'), args=[DEBUG, datetime.now(), smb_li])
+    schdlr.add_job(trading_symbols, CronTrigger.from_crontab('30 2,11,13,15 * * 1-5'), args=[DEBUG, datetime.now(), smb_li])
+
     # schdlr.add_job(load_symbol, "interval", minutes=5, next_run_time=round_by_five(datetime.now()), args=[smb_li, c, '1min'], misfire_grace_time=120)
 
     schdlr.add_job(load_symbol, "cron",
