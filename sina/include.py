@@ -64,7 +64,7 @@ def time_in_range(start, end, x):
 #     def get_t_range(self):
 #         return self._t_range
 
-def trading_symbols(debug, t, t_symbols):
+def trading_symbols(debug, t, t_symbols, WATCH_LIST=True):
     t_symbols.clear()
     if debug == 1:
         # return ['SC']
@@ -78,5 +78,9 @@ def trading_symbols(debug, t, t_symbols):
         for tm_rng in t_range:
             if time_in_range(tm_rng[0], tm_rng[1], t):
                 print(tm_rng[0], tm_rng[1], t_range[tm_rng])
-                t_symbols.extend(t_range[tm_rng])
+                if WATCH_LIST:
+                    t_symbols.extend(t_range[tm_rng] & watch_list)
+                else:
+                    t_symbols.extend(t_range[tm_rng])
+
                 return

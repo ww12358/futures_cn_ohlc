@@ -50,6 +50,9 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 #         }, index=data.index)
 
 async def load_symbol(symbols, contract_dict, freq):
+    if len(symbols) == 0:
+        return
+
     print(datetime.now())
     try:
         loop = asyncio.get_event_loop()
@@ -103,17 +106,17 @@ def main(all, major, symbol, freq, rebuild=False):
             print(s, '\t', c[s], '\n')
 
     elif major:
-        smb_li = watch_list
+        smb_li = watch_list & t_symbols
         # smb_li = ["NI"]
-        print(watch_list)
+        # print(watch_list)
 
     # asyncio.run(load_symbol(smb_li, c, freq))
 
     schdlr = AsyncIOScheduler()
 
     from apscheduler.triggers.cron import CronTrigger
-    schdlr.add_job(trading_symbols, CronTrigger.from_crontab('0 1,9,13,15,21,23 * * 1-5'), args=[DEBUG, datetime.now(), smb_li])
-    schdlr.add_job(trading_symbols, CronTrigger.from_crontab('30 2,11,13,15 * * 1-5'), args=[DEBUG, datetime.now(), smb_li])
+    schdlr.add_job(trading_symbols, CronTrigger.from_crontab('0 1,9,13,15,21,23 * * 1-5'), args=[DEBUG, datetime.now().time(), smb_li, major])
+    schdlr.add_job(trading_symbols, CronTrigger.from_crontab('30 2,11,13,15 * * 1-5'), args=[DEBUG, datetime.now().time(), smb_li, major])
 
     # schdlr.add_job(load_symbol, "interval", minutes=5, next_run_time=round_by_five(datetime.now()), args=[smb_li, c, '1min'], misfire_grace_time=120)
 
