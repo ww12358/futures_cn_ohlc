@@ -17,7 +17,12 @@ SINA_H3_PATH = '/home/sean/sync/creek/H3/'
 CONTRACT_INFO_PATH = '/home/sean/code/utils/main_contracts.json'
 all_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols + cffex_symbols
 com_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols
-watch_list = ["CU", "AL", "RB", "I", "A", "M", "Y", "P", "JM", "TA", "EG", "SR", "CF", "RU", "MA", "AG", "AU", "FG"]
+watch_list = ["CU", "AL", "ZN", "NI", "RB", "RU",
+              # "BU",
+              "I", "A", "M", "Y", "P", "JM", "L",
+              "TA", "EG", "SR", "CF", "MA", "FG", "ZC",
+              "AG", "AU",
+              "SC"]
 
 if DEBUG == 0:
     REDIS_SVR_ADDR = '192.168.3.11'
