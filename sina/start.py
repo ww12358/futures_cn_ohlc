@@ -94,15 +94,18 @@ def get_tq_data(contract_dict, loop):
     t = datetime.datetime.now().time()
     t_symbols = trading_symbols(DEBUG, t)
 
+    t_symbols = t_symbols & contract_dict.keys()
+
     # if t_symbols is None:
     #     return
-    print("Downloading below contracts: ", t_symbols)
+    # print("Downloading below contracts: ", t_symbols)
 
     tq_contract_dict = {}
     for symbol in t_symbols:
         contract_tq_d = {}
+        # if symbol in contract_dict.keys():
         contract_d = contract_dict[symbol]
-        # print(symbol)
+        print(symbol)
         exchange = symbol_exchange_map[symbol]
 
         if exchange in ['SHFE', 'DCE', 'INE']:
@@ -113,6 +116,8 @@ def get_tq_data(contract_dict, loop):
                 contract_tq_d[k] = exchange + '.' + v[0:2] + v[3:]
 
         tq_contract_dict[symbol] = contract_tq_d
+
+    # print(tq_contract_dict)
 
     try:
         api = TqApi(auth=TqAuth("15381188725", "mancan@07"))
