@@ -16,7 +16,7 @@ from sina.include import SINA_M5_PATH
 
 async def update_redis(r, contract, df):
     # print(contract, "idx", df)
-    print("Buffering : ", contract)
+    # print("Buffering : ", contract)
     # df = df.dropna()
     try:
         # df = trans_tq_quote(df)
@@ -31,7 +31,10 @@ async def update_redis(r, contract, df):
                 # df_latest = df_origin.append(df)
                 # df_origin = df_origin.iloc[:-1, :]  # delete last row which is obviously not correct
                 df_latest = df_origin.combine_first(df)
-                print(df_latest.info())
+                # print(df_latest.info())
+                mmu = df_latest.memory_usage(deep=True).sum()
+                if mmu > 1024000:
+                    print(contract, mmu)
                 # print("df_latest", df_latest)
             # print(df_latest)
             await r.set(contract, pa.serialize(df_latest).to_buffer().to_pybytes())
