@@ -31,6 +31,7 @@ async def update_redis(r, contract, df):
                 df_latest = df_origin.append(df)
                 df_latest.drop_duplicates(keep='first', inplace=True)
                 df_latest.sort_index(ascending=True, inplace=True)
+                df_latest = df_latest.groupby(df_latest.index).last()
                 # df_origin = df_origin.iloc[:-1, :]  # delete last row which is obviously not correct
                 # df_latest = df_origin.combine_first(df)
                 # print(df_latest.info())

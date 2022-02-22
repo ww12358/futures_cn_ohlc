@@ -96,7 +96,7 @@ async def load_hfreq(km, r):
         # print(km.all_contracts)
         for c in km.all_contracts:
             ptn = c
-            print(ptn)
+            # print(ptn)
             k = await r.keys(ptn)
             # print(k)
             if len(k) == 0:
