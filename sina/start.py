@@ -24,6 +24,7 @@ from sina.include import trading_symbols, DEBUG, RUN_NOW, watch_list
 from sina.redis_buffer import store_redis
 from sina.sina_M5_archive import archive_sina_M5
 from cn.include import symbol_exchange_map, all_symbols
+from sina.include import watch_list
 
 nest_asyncio.apply()
 
@@ -96,7 +97,7 @@ def get_tq_data(contract_dict, loop):
     # trading_symbols(DEBUG, t, t_symbols)
     #
     # t_symbols = t_symbols & contract_dict.keys()
-    t_symbols = all_symbols
+    t_symbols = watch_list
 
     # if t_symbols is None:
     #     return
