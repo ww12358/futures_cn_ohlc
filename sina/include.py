@@ -16,6 +16,8 @@ SINA_H1_PATH = '/home/sean/sync/creek/H1/'
 SINA_H3_PATH = '/home/sean/sync/creek/H3/'
 CONTRACT_INFO_PATH = '/home/sean/code/utils/main_contracts.json'
 all_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols + cffex_symbols
+# exclude_li = ['LR', 'PM', 'RI', 'JR', 'WH', 'RS', 'PF', 'BB', 'FB', 'RR', 'WR']
+# all_symbols = [e for e in all_symbols if e not in exclude_li]
 com_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols
 watch_list = ["CU", "AL", "ZN", "NI", "RB", "RU",
               # "BU",

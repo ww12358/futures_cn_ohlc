@@ -15,6 +15,8 @@ from sina.include import SINA_M5_PATH
 #     r.set(contract + "size", size)
 
 async def update_redis(r, contract, df):
+    if df.empty:
+        return
     # print(contract, "idx", df)
     print("Buffering : ", contract)
     # df = df.dropna()

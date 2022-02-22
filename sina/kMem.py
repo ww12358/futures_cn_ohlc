@@ -44,7 +44,7 @@ async def gen_idx(symbol, cInfo, freq, r, loop):
             with futures.ProcessPoolExecutor() as executor:
             # await loop.run_in_executor(executor, functools.partial(load_hfreq, km=km, r=r))
                 df = await loop.run_in_executor(executor, functools.partial(km.to_idx, freq))
-                # print(df)
+                # print(df, symbol)
                 await update_redis(r, symbol+"00_"+freq, df)
             # try:
             #     with futures.ThreadPoolExecutor() as executor:
