@@ -83,4 +83,6 @@ def trading_symbols(debug, t, t_symbols, WATCH_LIST=True):
                 else:
                     t_symbols.extend(t_range[tm_rng])
 
+                print("current running symbols: ", t_symbols)
+
                 return

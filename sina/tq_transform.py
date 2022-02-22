@@ -99,7 +99,7 @@ def main(all, major, symbol, freq, rebuild=False):
 
     if all:
         trading_symbols(DEBUG, t, t_symbols, False)
-        print(t_symbols)
+        # print(t_symbols)
         smb_li = t_symbols
         # print(all_symbols)
         print(smb_li)
