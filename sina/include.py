@@ -79,7 +79,7 @@ def trading_symbols(debug, t, t_symbols, WATCH_LIST=True):
             if time_in_range(tm_rng[0], tm_rng[1], t):
                 print(tm_rng[0], tm_rng[1], t_range[tm_rng])
                 if WATCH_LIST:
-                    t_symbols.extend(t_range[tm_rng] & watch_list)
+                    t_symbols.extend(list(set(watch_list)&set(t_range[tm_rng])))
                 else:
                     t_symbols.extend(t_range[tm_rng])
 

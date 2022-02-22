@@ -6,6 +6,7 @@ import json
 from datetime import datetime, timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
 
 from cn.include import all_symbols
 
@@ -106,7 +107,7 @@ def main(all, major, symbol, freq, rebuild=False):
             print(s, '\t', c[s], '\n')
 
     elif major:
-        smb_li = watch_list & t_symbols
+        smb_li = list(set(watch_list) & set(t_symbols))
         # smb_li = ["NI"]
         # print(watch_list)
 
@@ -114,23 +115,23 @@ def main(all, major, symbol, freq, rebuild=False):
 
     schdlr = AsyncIOScheduler()
 
-    from apscheduler.triggers.cron import CronTrigger
+
     schdlr.add_job(trading_symbols, CronTrigger.from_crontab('0 1,9,13,15,21,23 * * 1-5'), args=[DEBUG, datetime.now().time(), smb_li, major])
     schdlr.add_job(trading_symbols, CronTrigger.from_crontab('30 2,11,13,15 * * 1-5'), args=[DEBUG, datetime.now().time(), smb_li, major])
 
     # schdlr.add_job(load_symbol, "interval", minutes=5, next_run_time=round_by_five(datetime.now()), args=[smb_li, c, '1min'], misfire_grace_time=120)
 
-    schdlr.add_job(load_symbol, "cron",
-                   hour='0-2,  9-11, 13-15, 21-23',
-                   minute="0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55",
-                   second="3",
-                   args=[smb_li, c, '1min'], misfire_grace_time=120)
-
     # schdlr.add_job(load_symbol, "cron",
     #                hour='0-2,  9-11, 13-15, 21-23',
     #                minute="0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55",
-    #                second="35",
-    #                args=[smb_li, c, '5min'], misfire_grace_time=270)
+    #                second="3",
+    #                args=[smb_li, c, '1min'], misfire_grace_time=120)
+
+    schdlr.add_job(load_symbol, "cron",
+                   hour='0-2,  9-11, 13-15, 21-23',
+                   minute="0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55",
+                   second="35",
+                   args=[smb_li, c, '5min'], misfire_grace_time=270)
 
     schdlr.add_job(load_symbol, "cron",
                    hour='0-2,  9-11, 13-15, 21-23',
