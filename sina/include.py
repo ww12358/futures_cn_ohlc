@@ -6,7 +6,7 @@ from shfe.include import shfe_symbols, shfe_symbols_2300pm, shfe_symbols_0100am,
 from ine.include import  ine_symbols, ine_symbols_2300pm, ine_symbols_0100am, ine_symbols_0230am
 from cffex.include import cffex_symbols, cffex_symbols_equity, cffex_symbols_bond
 
-DEBUG = 0
+DEBUG = 2
 RUN_NOW = 1
 SINA_M5_PATH = '/home/sean/sync/creek/sina/'
 SINA_M5_ORIGIN_PATH = '/home/sean/sync/creek/sina_origin/'
@@ -24,7 +24,7 @@ watch_list = ["CU", "AL", "ZN", "NI", "RB", "RU",
               "AG", "AU",
               "SC"]
 
-if DEBUG == 0:
+if DEBUG == 0 or DEBUG == 2:
     REDIS_SVR_ADDR = '192.168.3.11'
 else:
     REDIS_SVR_ADDR = '127.0.0.1'
@@ -72,7 +72,7 @@ def trading_symbols(debug, t, t_symbols, WATCH_LIST=True):
         return
         # return ['FG', 'SR']
     elif debug == 2:
-        t_symbols.exte(["CU", "RB", "Y", "M", "SR", "FG", "SC"])
+        t_symbols.extend(["MA", "ZC"])
         return
     else:
         for tm_rng in t_range:
