@@ -53,11 +53,8 @@ def job_function():
         # get_tq_data(contract_dict, api, new_loop)
         # asyncio.run(get_tq_data(contract_dict, api))
         try:
-            # get_tq_data(contract_dict, new_loop)
             new_loop.run_until_complete(get_tq_data(contract_dict, new_loop))
             # asyncio.run(get_tq_data(contract_dict, new_loop))
-            # pending = asyncio.Task.all_tasks()
-            # new_loop.run_until_complete(asyncio.gather(*pending))
         except:
             new_loop.close()
 
@@ -101,7 +98,7 @@ def get_tq_data(contract_dict, loop):
 
     # if t_symbols is None:
     #     return
-    # print("Downloading below contracts: ", t_symbols)
+    print("Downloading below contracts: ", t_symbols)
 
     tq_contract_dict = {}
     for symbol in t_symbols:
@@ -119,6 +116,7 @@ def get_tq_data(contract_dict, loop):
                 contract_tq_d[k] = exchange + '.' + v[0:2] + v[3:]
 
         tq_contract_dict[symbol] = contract_tq_d
+        # print(tq_contract_dict[symbol])
 
     # print(tq_contract_dict)
 
