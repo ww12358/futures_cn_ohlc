@@ -91,11 +91,12 @@ def job_function():
 
 # async def get_tq_data(contract_dict):
 def get_tq_data(contract_dict, loop):
-    t = datetime.datetime.now().time()
-    t_symbols = []
-    trading_symbols(DEBUG, t, t_symbols)
-
-    t_symbols = t_symbols & contract_dict.keys()
+    # t = datetime.datetime.now().time()
+    # t_symbols = []
+    # trading_symbols(DEBUG, t, t_symbols)
+    #
+    # t_symbols = t_symbols & contract_dict.keys()
+    t_symbols = all_symbols
 
     # if t_symbols is None:
     #     return
