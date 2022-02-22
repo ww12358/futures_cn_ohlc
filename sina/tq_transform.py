@@ -84,8 +84,6 @@ def main(all, major, symbol, freq, rebuild=False):
     contract_dict = getAllContractDict(debug=0)
     t = datetime.now().time()
     t_symbols = []
-    trading_symbols(DEBUG, t, t_symbols)
-    print(t_symbols)
 
     if t_symbols is None:
         return
@@ -100,6 +98,8 @@ def main(all, major, symbol, freq, rebuild=False):
     # print(all_symbols)
 
     if all:
+        trading_symbols(DEBUG, t, t_symbols, False)
+        print(t_symbols)
         smb_li = t_symbols
         # print(all_symbols)
         print(smb_li)
@@ -107,6 +107,8 @@ def main(all, major, symbol, freq, rebuild=False):
             print(s, '\t', c[s], '\n')
 
     elif major:
+        trading_symbols(DEBUG, t, t_symbols, True)
+        print(t_symbols)
         smb_li = list(set(watch_list) & set(t_symbols))
         # smb_li = ["NI"]
         # print(watch_list)
