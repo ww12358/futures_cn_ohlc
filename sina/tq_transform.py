@@ -121,17 +121,17 @@ def main(all, major, symbol, freq, rebuild=False):
 
     # schdlr.add_job(load_symbol, "interval", minutes=5, next_run_time=round_by_five(datetime.now()), args=[smb_li, c, '1min'], misfire_grace_time=120)
 
-    # schdlr.add_job(load_symbol, "cron",
-    #                hour='0-2,  9-11, 13-15, 21-23',
-    #                minute="0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55",
-    #                second="3",
-    #                args=[smb_li, c, '1min'], misfire_grace_time=120)
-
     schdlr.add_job(load_symbol, "cron",
                    hour='0-2,  9-11, 13-15, 21-23',
                    minute="0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55",
-                   second="35",
-                   args=[smb_li, c, '5min'], misfire_grace_time=270)
+                   second="3",
+                   args=[smb_li, c, '1min'], misfire_grace_time=120)
+
+    # schdlr.add_job(load_symbol, "cron",
+    #                hour='0-2,  9-11, 13-15, 21-23',
+    #                minute="0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55",
+    #                second="35",
+    #                args=[smb_li, c, '5min'], misfire_grace_time=270)
 
     schdlr.add_job(load_symbol, "cron",
                    hour='0-2,  9-11, 13-15, 21-23',
