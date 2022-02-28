@@ -27,7 +27,7 @@ watch_list = ["CU", "AL", "ZN", "NI", "RB", "RU",
               "SC"]
 
 if DEBUG == 0 or DEBUG == 2:
-    REDIS_SVR_ADDR = '192.168.3.11'
+    REDIS_SVR_ADDR = '192.168.3.15'
 else:
     REDIS_SVR_ADDR = '127.0.0.1'
 # redis_svr_addr = '127.0.0.1'
