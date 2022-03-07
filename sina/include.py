@@ -21,7 +21,7 @@ all_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols + cffex_sym
 com_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols
 watch_list = ["CU", "AL", "ZN", "NI", "RB", "RU",
               # "BU",
-              "I", "A", "B", "M", "Y", "P", "JM", "L",
+              "I", "A", "B", "M", "Y", "P", "JM", "L", "LH",
               "TA", "EG", "SR", "CF", "MA", "FG", "ZC", "OI",
               "AG", "AU",
               "SC"]
