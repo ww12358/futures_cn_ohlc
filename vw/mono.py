@@ -7,12 +7,13 @@ from vw.include import ex_config, idx_headers, idx_dtypes
 from cn.include import all_symbols, all_exchanges, symbol_exchange_map, exchange_symbols_map
 from cn.localData import localData
 # from sina.sina_M5_archive import sina_M5
-from sina.sina_H3 import sina_H3
-from sina.sina_H1 import sina_H1
-from sina.sina_M15 import sina_M15
-from sina.sina_M30 import sina_M30
-from sina.sina_M5 import sina_M5
-from sina.sina_M5_origin import sina_M5_origin
+# from sina.sina_H3 import sina_H3
+# from sina.sina_H1 import sina_H1
+# from sina.sina_M15 import sina_M15
+# from sina.sina_M30 import sina_M30
+# from sina.sina_M5 import sina_M5
+# from sina.sina_M5_origin import sina_M5_origin
+from sina.tq_mh import tq_mh
 from sina.include import watch_list
 import numpy as np
 
@@ -85,27 +86,30 @@ def genMonoIdx(symbol, freq="1d", f_rebuild=False, f_dry_run=False):
         with localData(symbol, "D") as data:
             # print(data.get_idx_data())
             data.generate_idx(f_rebuild, f_dry_run)
-    elif freq == "H3":
-        with sina_H3(symbol, "H3") as data:
-            data.generate_idx(f_rebuild, f_dry_run)
-    elif freq == "H1":
-        with sina_H1(symbol, "H1") as data:
-            data.generate_idx(f_rebuild, f_dry_run)
-    elif freq == "M15":
-        with sina_M15(symbol, "M15") as data:
-            data.generate_idx(f_rebuild, f_dry_run)
-    elif freq == "M30":
-        with sina_M30(symbol, "M30") as data:
-            data.generate_idx(f_rebuild, f_dry_run)
-    elif freq == "M5":
-        with sina_M5_origin(symbol, "M5") as data:
-            data.generate_idx(f_rebuild, f_dry_run)
-    elif freq == "M4":
-        with sina_M5(symbol, "M5") as data:
-            data.generate_idx(f_rebuild, f_dry_run)
-    elif freq == "M1":
-        with sina_M5(symbol, "M5") as data:
-            data.generate_idx(f_rebuild, f_dry_run)
+    # elif freq == "H3":
+    #     with sina_H3(symbol, "H3") as data:
+    #         data.generate_idx(f_rebuild, f_dry_run)
+    # elif freq == "H1":
+    #     with sina_H1(symbol, "H1") as data:
+    #         data.generate_idx(f_rebuild, f_dry_run)
+    # elif freq == "M15":
+    #     with sina_M15(symbol, "M15") as data:
+    #         data.generate_idx(f_rebuild, f_dry_run)
+    # elif freq == "M30":
+    #     with sina_M30(symbol, "M30") as data:
+    #         data.generate_idx(f_rebuild, f_dry_run)
+    # elif freq == "M5":
+    #     with sina_M5_origin(symbol, "M5") as data:
+    #         data.generate_idx(f_rebuild, f_dry_run)
+    # elif freq == "M4":
+    #     with sina_M5(symbol, "M5") as data:
+    #         data.generate_idx(f_rebuild, f_dry_run)
+    # elif freq == "M1":
+    #     with sina_M5(symbol, "M5") as data:
+    #         data.generate_idx(f_rebuild, f_dry_run)
+    elif freq in ["5min", "15min", "30min", "1h", "3h", "4h"]:
+        with tq_mh(symbol, freq) as data:
+            data.generate_idx((f_rebuild, f_dry_run))
     else:
         print("Unknow symbol {symbol} or freqency {freq}" )
         return

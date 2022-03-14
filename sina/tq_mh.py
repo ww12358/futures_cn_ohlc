@@ -1,17 +1,36 @@
-from sina.include import SINA_M30_PATH
+from sina.include import TQ_PATH
 from cn.h5_store import h5_store
-# from sina.sina_M5_origin import sina_M5_origin
 from cn.include import symbol_exchange_map
 import pandas as pd
 import numpy as np
 
-class sina_M30(h5_store):
+class tq_mh(h5_store):
     def __init__(self, symbol, freq):
         self.symbol = symbol.upper()
+        # self.exchange = exchange.upper()
         self.exchange = symbol_exchange_map[symbol]
-        self.h5_path = "".join([SINA_M30_PATH, self.exchange, "/", symbol, ".hdf5"])
+        self.h5_path = "".join([TQ_PATH, freq, "/", self.exchange, "/", symbol, ".hdf5"])
 
-        super(sina_M30, self).__init__(symbol, freq)
+        super(tq_mh, self).__init__(symbol, freq)
+
+    def get_data(self, year, month):
+        if not year is None:
+            #            print(year)
+            #            year_short = year[2:]
+            query_str = self.symbol + year + month
+            # print(query_str)
+
+        try:
+            df = self.df[month]
+            # print(df)
+            df = df.loc[df.contract == query_str]
+        #            df.reset_index(level="symbol", inplace=True)
+        except ValueError:
+            return None
+        except Exception as e:
+            print(str(e))
+
+        return df
 
     def aggr_contracts(self, dfs, start_date):
         # dfs = list(self.get_contract_data().values())

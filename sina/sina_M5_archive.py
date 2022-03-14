@@ -1,8 +1,8 @@
 import redis
 import pyarrow as pa
 import datetime
-from sina.include import trading_symbols, DEBUG
-from sina.sina_M5 import sina_M5
+from sina.include import trading_symbols, DEBUG, all_symbols
+from sina.tq_mh import tq_mh
 
 
 def archive_sina_M5(contract_dict):
@@ -22,7 +22,7 @@ def archive_sina_M5(contract_dict):
         contract_d = contract_dict[symbol]
         contract_d.update({"00":(symbol+"00")})     # append index as updating contract
         # print(contract_d)
-        with sina_M5(symbol, "M5") as local_5m_data:
+        with tq_mh(symbol, "5min") as local_5m_data:
             for month, contract in contract_d.items():
                 try:
                     # print("Saving : ", contract)

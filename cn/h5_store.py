@@ -90,11 +90,11 @@ class h5_store:
 #            print(year)
 #            year_short = year[2:]
             query_str = self.symbol + year + month
-#            print(query_str)
+            # print(query_str)
 
         try:
             df = self.df[month]
-#            print(df)
+            # print(df)
             df = df.loc[df.index.get_level_values('symbol') == query_str]
 #            df.reset_index(level="symbol", inplace=True)
         except ValueError:
@@ -134,17 +134,19 @@ class h5_store:
 
         return months
 
-    def append_data(self, df_append, month):
+    def append_data(self, df_append, month, debug=False):
         try:
             self.df[month]
             df_append = df_append.loc[df_append.index.get_level_values("date") > self.df[month].index.get_level_values("date")[-1]]
             # df_append = df_append.loc[df_append.index > self.df[month].iloc[-1].name]
             df_append.sort_index(ascending=True, inplace=True)
-            # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-            #     print(df_append.head(10))
-            #     print(df_append.tail(50))
-            df_append.to_hdf(self.h5Store, '/' + self.symbol + '/' + self.freq + '/_' + month, mode='a', format='table', append=True,
-                             data_columns=True, complevel=9, complib='blosc:snappy')
+            if debug:
+                with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+                    print(df_append.head(10))
+                    print(df_append.tail(50))
+            else:
+                df_append.to_hdf(self.h5Store, '/' + self.symbol + '/' + self.freq + '/_' + month, mode='a', format='table', append=True,
+                                 data_columns=True, complevel=9, complib='blosc:snappy')
         except KeyError:
             # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
             #     print(df_append.head(10))
@@ -153,7 +155,7 @@ class h5_store:
             df_append.to_hdf(self.h5Store, '/' + self.symbol + '/' + self.freq + '/_' + month, mode='a', format='table',
                              append=False, data_columns=True, complevel=9, complib='blosc:snappy')
         except Exception as e:
-            print(str(e))
+            print("Error while appending data...", str(e))
 
         self.df[month] = df_append
 
@@ -322,11 +324,11 @@ class h5_store:
     #         latest_local_date_dic[month] = self.get_contract_by_month(month).index.get_level_values("date").max()
     #
     #     return latest_local_date_dic
-    def freq_map(self):
-        freq_dic = {"M5": "5min", "M15": "15min", "M30": "30min", "H1":"1h", "H3":"3h", "D":"1d"}
-        print(freq_dic[self.freq])
-
-        return freq_dic[self.freq]
+    # def freq_map(self):
+    #     freq_dic = {"M5": "5min", "M15": "15min", "M30": "30min", "H1":"1h", "H3":"3h", "D":"1d"}
+    #     print(freq_dic[self.freq])
+    #
+    #     return freq_dic[self.freq]
 
     def aggr_contracts(self, dfs, start_date):
         # dfs = list(self.get_contract_data().values())

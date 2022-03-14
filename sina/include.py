@@ -14,6 +14,7 @@ SINA_M15_PATH = '/home/sean/sync/creek/M15/'
 SINA_M30_PATH = '/home/sean/sync/creek/M30/'
 SINA_H1_PATH = '/home/sean/sync/creek/H1/'
 SINA_H3_PATH = '/home/sean/sync/creek/H3/'
+TQ_PATH = '/home/sean/sync/creek/'
 CONTRACT_INFO_PATH = '/home/sean/code/utils/main_contracts.json'
 all_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols + cffex_symbols
 # exclude_li = ['LR', 'PM', 'RI', 'JR', 'WH', 'RS', 'PF', 'BB', 'FB', 'RR', 'WR']
@@ -21,10 +22,10 @@ all_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols + cffex_sym
 com_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols
 watch_list = ["CU", "AL", "ZN", "NI", "RB", "RU",
               # "BU",
-              "I", "A", "B", "M", "Y", "P", "JM", "L", "LH", "C",
+              "I", "A", "B", "M", "Y", "P", "JM", "L", "PP", "LH", "C",
               "TA", "EG", "SR", "CF", "MA", "FG", "ZC", "OI", "RM",
               "AG", "AU",
-              "SC"]
+              "SC", "FU"]
 
 if DEBUG == 0 or DEBUG == 2:
     REDIS_SVR_ADDR = '192.168.3.15'
