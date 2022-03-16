@@ -64,9 +64,14 @@ class h5_store:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.h5Store:
+        try:
+            if self.h5Store:
             #            self.__h5Store.flush()
-            self.h5Store.close()
+                self.h5Store.close()
+        except Exception as e:
+            print(self.symbol)
+            print(self.h5_path)
+            print("Error occured while closing h5_store object.", e)
 
     def close(self):
         if self.h5Store:

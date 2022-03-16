@@ -27,6 +27,8 @@ watch_list = ["CU", "AL", "ZN", "NI", "RB", "RU",
               "AG", "AU",
               "SC", "FU"]
 
+all_freq = ["1min", "15min", "30min", "1h", "4h", "1d"]
+
 if DEBUG == 0 or DEBUG == 2:
     REDIS_SVR_ADDR = '192.168.3.15'
 else:

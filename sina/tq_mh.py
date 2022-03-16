@@ -32,6 +32,33 @@ class tq_mh(h5_store):
 
         return df
 
+    def append_data(self, df_append, month, debug=False):
+        try:
+            self.df[month]
+            # df_append = df_append.loc[df_append.index.get_level_values("date") > self.df[month].index.get_level_values("date")[-1]]
+            df_append = df_append.loc[df_append.index > self.df[month].iloc[-1].name]
+            df_append.sort_index(ascending=True, inplace=True)
+            if debug:
+                with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+                    print(df_append.head(10))
+                    print(df_append.tail(50))
+            else:
+                df_append.to_hdf(self.h5Store, '/' + self.symbol + '/' + self.freq + '/_' + month, mode='a', format='table', append=True,
+                                 data_columns=True, complevel=9, complib='blosc:snappy')
+        except KeyError:
+            # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+            #     print(df_append.head(10))
+            #     print(df_append.tail(50))
+            df_append.sort_index(ascending=True, inplace=True)
+            df_append.to_hdf(self.h5Store, '/' + self.symbol + '/' + self.freq + '/_' + month, mode='a', format='table',
+                             append=False, data_columns=True, complevel=9, complib='blosc:snappy')
+        except Exception as e:
+            print("Error while appending data...", str(e))
+
+        self.df[month] = df_append
+
+        return
+
     def aggr_contracts(self, dfs, start_date):
         # dfs = list(self.get_contract_data().values())
         # print(dfs)
