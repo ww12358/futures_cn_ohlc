@@ -142,31 +142,31 @@ def main(all, major, symbol, freq, rebuild=False):
 
     schdlr.add_job(load_symbol, "cron",
                    hour='0-2,  9-11, 13-15, 21-23',
-                   minute="0, 15, 30, 45",
+                   minute="2, 17, 32, 47",
                    second="45",
                    args=[smb_li, c, '15min'], misfire_grace_time=480)
 
     schdlr.add_job(load_symbol, "cron",
                    hour='0-2,  9-11, 13-15, 21-23',
-                   minute="0, 30",
-                   second="50",
+                   minute="3, 33",
+                   second="0",
                    args=[smb_li, c, '30min'], misfire_grace_time=600)
 
     schdlr.add_job(load_symbol, "cron",
                    hour='0-2, 9-11, 13-15, 21-23',
-                   minute="1",
-                   second="55",
+                   minute="4, 34",
+                   second="30",
                    args=[smb_li, c, '1h'], misfire_grace_time=720)
 
     schdlr.add_job(load_symbol, "cron",
                    hour='0-2, 9-11, 13-15, 21-23',
-                   minute="4, 48",
+                   minute="6, 48",
                    second="15",
                    args=[smb_li, c, '1d'], misfire_grace_time=1200)
 
     schdlr.add_job(load_symbol, "cron",
                    hour='1, 9, 13, 17',
-                   minute="3, 47",
+                   minute="8, 49",
                    second="42",
                    args=[smb_li, c, '4h'], misfire_grace_time=900)
 

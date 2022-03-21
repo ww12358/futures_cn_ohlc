@@ -52,7 +52,7 @@ class tsData:
             df_ts.sort_index(ascending=True, inplace=True)
 
             df_ts.loc[df_ts["close"] == 0, "close"] = df_ts.loc[df_ts["close"] == 0, "pre_settlement"]
-            df_ts.loc[df_ts["volume"] == 0, ["open", "high", "low"]] = df_ts.loc[df_ts["volume"] == 0, "close"]
+            df_ts.loc[df_ts["volume"] == 0, ["open", "high", "low"]] = df_ts.loc[df_ts["volume"] == 0, ["close"]]
             df_ts.loc[df_ts["pre_close"] == 0, "pre_close"] = df_ts.loc[df_ts["pre_close"] == 0, "pre_settlement"]
 
 #            with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
