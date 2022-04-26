@@ -3,6 +3,7 @@ import asyncio
 import redis
 import pyarrow as pa
 import pandas as pd
+from sina.include import REDIS_SVR_ADDR, REDIS_DB, REDIS_PORT
 
 from sina.include import SINA_M5_PATH
 
@@ -58,9 +59,12 @@ async def update_redis(r, contract, df):
 
 async def store_redis(loop, results):
     try:
-        r = await aioredis.create_redis_pool(
-            "redis://localhost", minsize=5, maxsize=10, loop=loop, db=1
+        r = await aioredis.Redis.from_url(
+            "redis://" + REDIS_SVR_ADDR, max_connections=10 * len(results), db=REDIS_DB, decode_responses=False
         )
+        # r = await aioredis.create_redis_pool(
+        #     "redis://localhost", minsize=5, maxsize=10, loop=loop, db=1
+        # )
         return await asyncio.gather(*(update_redis(r, contract, df) for contract, df in results),  return_exceptions=True, )
 
     finally:
