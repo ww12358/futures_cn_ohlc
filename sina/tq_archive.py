@@ -65,8 +65,11 @@ async def archive_tq(watch_list):
     # print(dt_dict)
 
     loop = asyncio.get_event_loop()
-    r = await aioredis.create_redis_pool(
-        "redis://" + REDIS_SVR_ADDR, minsize=5, maxsize=20, loop=loop, db=REDIS_DB
+    # r = await aioredis.create_redis_pool(
+    #     "redis://" + REDIS_SVR_ADDR, minsize=5, maxsize=20, loop=loop, db=REDIS_DB
+    # )
+    r = await aioredis.Redis.from_url(
+        "redis://" + REDIS_SVR_ADDR, max_connections=10 * len(watch_list), db=REDIS_DB, decode_responses=False
     )
     for symbol in watch_list:
         print(symbol)
@@ -108,7 +111,7 @@ async def archive_tq(watch_list):
                 task3 = loop.create_task(update_redis(r, contract, df_buf))
                 await task3
 
-    r.close()
+    await r.close()
 
     # archive_tq()
 
