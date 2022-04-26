@@ -4,6 +4,7 @@ import functools
 import datetime
 from cn.include import symbol_exchange_map
 from sina.redis_buffer import store_redis_tq
+from sina.include import REDIS_SVR_ADDR, REDIS_DB, REDIS_PORT
 import nest_asyncio
 nest_asyncio.apply()
 # def exec_async(func, *args, **kwargs):
@@ -52,9 +53,12 @@ async def get_quote(api, smb_li, tq_contract_dict, contract_dict):
 
     try:
         loop = asyncio.get_event_loop()
-        r = await aioredis.create_redis_pool(
-            "redis://localhost", minsize=5, maxsize=10, loop=loop, db=1
+        r = await aioredis.Redis.from_url(
+            "redis://" + REDIS_SVR_ADDR, max_connections=10 * len(smb_li), db=REDIS_DB, decode_responses=False
         )
+        # r = await aioredis.create_redis_pool(
+        #     "redis://localhost", minsize=5, maxsize=10, loop=loop, db=1
+        # )
         # for symbol in t_symbols:
         #     contract_tq_d = tq_contract_dict[symbol]
         #     contract_d = contract_dict[symbol]

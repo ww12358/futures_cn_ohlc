@@ -58,9 +58,12 @@ async def load_symbol(symbols, contract_dict, freq):
     print(datetime.now())
     try:
         loop = asyncio.get_event_loop()
-        r = await aioredis.create_redis_pool(
-            "redis://" + REDIS_SVR_ADDR, minsize=5, maxsize=20, loop=loop, db=REDIS_DB
+        r = await aioredis.Redis.from_url(
+            "redis://" + REDIS_SVR_ADDR, max_connections=10 * len(symbols), db=REDIS_DB, decode_responses=False
         )
+        # r = await aioredis.create_redis_pool(
+        #     "redis://" + REDIS_SVR_ADDR, minsize=5, maxsize=20, loop=loop, db=REDIS_DB
+        # )
         group = asyncio.gather(*[gen_idx(sym, contract_dict[sym], freq, r, loop) for sym in symbols])
         results = loop.run_until_complete(group)
         # loop.close()
