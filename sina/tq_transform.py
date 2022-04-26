@@ -69,11 +69,9 @@ async def load_symbol(symbols, contract_dict, freq):
         # loop.close()
     except Exception as e:
         print(str(e))
-        r.close()
-        await r.wait_closed()
+        await r.close()
     finally:
-        r.close()
-        await r.wait_closed()
+        await r.close()
         # loop.close()
 
 @click.command()
