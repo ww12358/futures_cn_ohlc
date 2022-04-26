@@ -31,7 +31,8 @@ async def update_redis(r, contract, df):
             if df_origin is None:
                 df_latest = df
             else:
-                df_latest = df_origin.append(df)
+                # df_latest = df_origin.append(df)
+                df_latest = pd.concat([df_origin, df], axis=0)
                 df_latest.drop_duplicates(keep='first', inplace=True)
                 df_latest.sort_index(ascending=True, inplace=True)
                 df_latest = df_latest.groupby(df_latest.index).last()
