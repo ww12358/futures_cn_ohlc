@@ -32,11 +32,11 @@ async def get_redis_buffer(r, month, ptn, no_print=True):
     except Exception as e:
         print("Error while saving ".format(ptn), str(e))
         if month == '00':
-            df = pd.DataFrame(columns=['datetime', 'open', 'high', 'low', 'close', 'volume', 'oi'])
+            df = pd.DataFrame(columns=['date', 'open', 'high', 'low', 'close', 'volume', 'oi'])
         else:
-            df = pd.DataFrame(columns=['datetime', 'open', 'high', 'low', 'close', 'volume', 'oi', 'contract'])
+            df = pd.DataFrame(columns=['date', 'open', 'high', 'low', 'close', 'volume', 'oi', 'contract'])
 
-        df.set_index('datetime', inplace=True)
+        df.set_index('date', inplace=True)
 
     return (month, df, ptn)
 
