@@ -3,7 +3,7 @@ import nest_asyncio
 import aioredis
 import pyarrow as pa
 import datetime
-from sina.include import trading_symbols, watch_list, REDIS_SVR_ADDR, REDIS_DB, REDIS_PORT, all_freq
+from sina.include import watch_list, REDIS_SVR_ADDR, REDIS_DB, REDIS_PORT, all_freq
 from sina.tq_mh import tq_mh
 from cn.include import symbol_exchange_map, all_exchanges
 from cn.updateCN import get_last_trading_day
@@ -47,7 +47,7 @@ async def archive_tq(watch_list):
     if DEBUG:
         watch_list = ["CU"]
         # watch_list = ["CU", "FG", "SC", "B"]
-        REDIS_SVR_ADDR = "127.0.0.1"
+        # REDIS_SVR_ADDR = "127.0.0.1"
 
     contract_dict = getAllContractDict(debug=DEBUG)
     contract_dict = {key: contract_dict[key] for key in contract_dict.keys() & watch_list}
