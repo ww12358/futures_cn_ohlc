@@ -45,8 +45,9 @@ async def get_redis_buffer(r, month, ptn, no_print=True):
 async def archive_tq(watch_list):
 
     if DEBUG:
-        # watch_list = ["CU", "FG", "SC", "B"]
         watch_list = ["CU"]
+        # watch_list = ["CU", "FG", "SC", "B"]
+        REDIS_SVR_ADDR = "127.0.0.1"
 
     contract_dict = getAllContractDict(debug=DEBUG)
     contract_dict = {key: contract_dict[key] for key in contract_dict.keys() & watch_list}
@@ -77,6 +78,7 @@ async def archive_tq(watch_list):
         dt = dt_dict[ex]
         idx_ptn_li = []
         for freq in all_freq:
+            print(freq)
             with tq_mh(symbol, freq) as h5:
                 if freq == "1min":
                     contracts_d = contract_dict[symbol]
@@ -91,7 +93,7 @@ async def archive_tq(watch_list):
                         df_archive = df.loc[df.index <= dt]  # dataframe to save to local hdf5
                         # df_local = h5.get_contract_by_month(month)
                         #     print(month, '\n', 'local:', df_local.info(), '\n', 'append:', df.info(), '\n', df)
-                        h5.append_data(df_archive, month, debug=True)
+                        h5.append_data(df_archive, month, debug=DEBUG)
                         df_buf = df.loc[df.index > dt]  # dataframe shrinked to save to redis buffer
                         df_buf = df_buf.drop(['contract'], axis=1, inplace=False)
                         # print(df_buf)
