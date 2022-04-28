@@ -11,7 +11,37 @@ class tq_mh(h5_store):
         self.exchange = symbol_exchange_map[symbol]
         self.h5_path = "".join([TQ_PATH, freq, "/", self.exchange, "/", symbol, ".hdf5"])
 
-        super(tq_mh, self).__init__(symbol, freq)
+        # super(tq_mh, self).__init__(symbol, freq)
+        # self.symbol = symbol
+        self.freq = freq
+        # self.exchange = exchange
+        # self.exchange = symbol_exchange_map[symbol]
+        self.df = {}
+        self.__isempty = True
+        # print(self.h5_path)
+        try:
+            #            print(DATA_PATH_DICT[self.symbol])
+            self.h5Store = pd.HDFStore(self.h5_path)
+            #            print(DATA_PATH_DICT[self.symbol])
+            if not os.path.exists(self.h5_path):
+                print("file not exists, will create new file")
+
+            if not symbol in self.h5Store:
+                print("symbol not found in local file, will save new contracts to local.\n")
+                return
+
+            else:  # load local file storage to instance
+                self.months = self.get_symbol_months_with_idx()
+
+                for month in self.months:
+                    key = ''.join(["/", self.symbol, "/_", self.freq, "/_", month])
+                    #                print(key)
+                    if (d := pd.read_hdf(self.h5Store, key)) is not None:
+                        self.df[month] = d
+                self.set_notempty()
+        except Exception as e:
+            print("Some error occured during access data file:\t", str(e))
+            return
 
     def get_data(self, year, month):
         if not year is None:
