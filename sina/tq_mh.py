@@ -63,6 +63,18 @@ class tq_mh(h5_store):
 
         return df
 
+    def get_idx_data(self):
+        try:
+            key = ''.join(["/", self.symbol, "/_", self.freq, "/_", "00"])
+            # print(key)
+            df = pd.read_hdf(self.h5Store, key)
+        except KeyError:
+            raise KeyError("NO_INDEX_ERROR")
+        except Exception as e:
+            print(str(e))
+
+        return df
+
     def get_symbol_months(self):
         try:
             months = []
