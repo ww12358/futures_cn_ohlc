@@ -172,9 +172,9 @@ class kMem:
             with pd.option_context('display.max_rows', None, 'display.max_columns', None):
                 print(df_concat)
 
-            # df_concat.loc[df_concat['volume'] == 0, 'volume'] = 1
-            df_concat = df_concat[df_concat["volume"] > 0]      # avoid divide by 0 when wavg
-            print(self.symbol, df_concat)
+            df_concat.loc[df_concat['volume'] == 0, 'volume'] = 1
+            # df_concat = df_concat[df_concat["volume"] > 0]      # avoid divide by 0 when wavg
+            # print(self.symbol, df_concat)
             g = df_concat.groupby(df_concat.index, sort=True)
             # g.apply(print)
             # for date, group in g:
