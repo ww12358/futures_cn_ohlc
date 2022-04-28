@@ -23,6 +23,11 @@ async def get_redis_buffer(r, month, ptn, no_print=True):
     try:
         buf = await r.get(ptn)
         df = pa.deserialize(buf)
+        # print(df)
+        # df = df.rename(index={'datetime':'date'})
+        if df.index.name == 'datetime':
+            df = df.rename_axis(None, axis=1).rename_axis('date', axis=0)
+        # print(df)
         if month != '00':
             df['contract'] = ptn
 
@@ -30,7 +35,7 @@ async def get_redis_buffer(r, month, ptn, no_print=True):
         if not no_print:
             print(ptn, '\n', df)
     except Exception as e:
-        print("Error while saving ".format(ptn), str(e))
+        print("Error while saving {0}".format(ptn), str(e))
         if month == '00':
             df = pd.DataFrame(columns=['date', 'open', 'high', 'low', 'close', 'volume', 'oi'])
         else:

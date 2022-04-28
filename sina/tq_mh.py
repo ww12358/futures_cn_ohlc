@@ -32,6 +32,36 @@ class tq_mh(h5_store):
 
         return df
 
+    def get_symbol_months(self):
+        try:
+            months = []
+            # find months list from local hdf5
+            for item in self.h5Store.walk("/" + self.symbol + "/_" + self.freq + "/"):
+                #               print(item)
+                months_raw = list(item[2])
+                months = [(lambda x: x.strip('_'))(x) for x in months_raw]
+                if ("00" in months):  # do not update vw_idx
+                    months.remove("00")
+            return months
+
+        except Exception as e:
+            print(str(e))
+            return None
+
+    def get_symbol_months_with_idx(self):
+        try:
+            months = []
+            # find months list from local hdf5
+            for item in self.h5Store.walk("/" + self.symbol + "/_" + self.freq + "/"):
+                # print(item)
+                months_raw = list(item[2])
+                months = [(lambda x: x.strip('_'))(x) for x in months_raw]
+
+        except Exception as e:
+            print(str(e))
+
+        return months
+
     def append_data(self, df_append, month, debug=False):
         try:
             self.df[month]
@@ -43,14 +73,14 @@ class tq_mh(h5_store):
                     print(df_append.head(10))
                     print(df_append.tail(50))
             else:
-                df_append.to_hdf(self.h5Store, '/' + self.symbol + '/' + self.freq + '/_' + month, mode='a', format='table', append=True,
+                df_append.to_hdf(self.h5Store, '/' + self.symbol + '/_' + self.freq + '/_' + month, mode='a', format='table', append=True,
                                  data_columns=True, complevel=9, complib='blosc:snappy')
         except KeyError:
             # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
             #     print(df_append.head(10))
             #     print(df_append.tail(50))
             df_append.sort_index(ascending=True, inplace=True)
-            df_append.to_hdf(self.h5Store, '/' + self.symbol + '/' + self.freq + '/_' + month, mode='a', format='table',
+            df_append.to_hdf(self.h5Store, '/' + self.symbol + '/_' + self.freq + '/_' + month, mode='a', format='table',
                              append=False, data_columns=True, complevel=9, complib='blosc:snappy')
         except Exception as e:
             print("Error while appending data...", str(e))
@@ -58,6 +88,96 @@ class tq_mh(h5_store):
         self.df[month] = df_append
 
         return
+
+    def insert_data(self, df_insert, month, trustNew=True):
+        try:
+            self.df[month]
+            if trustNew:
+                print(self.df[month])
+                df_origin = self.df[month].loc[self.df[month].index.get_level_values("date") > df_insert.index.get_level_values("date")[-1]]
+                df_new = pd.concat([df_insert, df_origin], axis=0, join='inner')
+            else:
+                df_insert = df_insert.loc[df_insert.index.get_level_values("date") < self.df[month].index.get_level_values("date")[0]]
+                df_new = pd.concat([df_insert, self.df[month]], axis=0, join='inner')
+            # df_append = df_append.loc[df_append.index > self.df[month].iloc[-1].name]
+            df_new.sort_index(ascending=True, inplace=True)
+            # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+            #     print(df_new.head(10))
+            #     print(df_new.tail(100))
+            # print(df_new.info())
+            df_new.to_hdf(self.h5Store, '/' + self.symbol + '/_' + self.freq + '/_' + month, mode='a', format='table', append=False,
+                             data_columns=True, complevel=9, complib='blosc:snappy')
+            self.df[month] = df_new
+        except KeyError:
+            # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+            #     print(df_insert.head(10))
+            #     print(df_insert.tail(50))
+            df_insert.sort_index(ascending=True, inplace=True)
+            df_insert.to_hdf(self.h5Store, '/' + self.symbol + '/_' + self.freq + '/_' + month, mode='a', format='table',
+                             append=False, data_columns=True, complevel=9, complib='blosc:snappy')
+            self.df[month] = df_insert
+        except Exception as e:
+            print(self.symbol, self.freq, str(e))
+
+        return
+
+    def clease_data(self, month):
+        try:
+            self.df[month]
+            self.df[month].drop_duplicates(keep='first', inplace=True)
+            self.df[month].to_hdf(self.h5Store, '/' + self.symbol + '/_' + self.freq + '/_' + month, mode='a', format='table',
+                             append=False, data_columns=True, complevel=9, complib='blosc:snappy')
+        except KeyError:
+            print("Data does not exist. Quit...")
+        except Exception as e:
+            print(self.symbol, self.freq, str(e))
+
+    def save_contract(self, df_new, exchange, symbol, freq, month):
+        try:
+            self.df[month]
+            # print(self.df[month])
+            df_append = self.df[month].append(df_new, sort=False)
+            df_append.sort_index(ascending=True, inplace=True)
+            df_append.to_hdf(self.h5Store, '/' + symbol + '/_' + freq + '/_' + month, mode='a', format='table', append=False, data_columns=True, complevel=9, complib='blosc:snappy')
+            self.df[month] = df_append
+        except KeyError:
+            df_new.sort_index(ascending=True, inplace=True)
+            # print(df_new)
+            df_new.to_hdf(self.h5Store, '/' + symbol + '/_' + freq + '/_' + month, mode='a', format='table', append=False, data_columns=True, complevel=9, complib='blosc:snappy')
+            self.df[month] = df_new
+        except Exception as e:
+            print(str(e))
+
+        return
+
+    def overwrite(self, df_new, month):
+        # confirm =  input("Are your sure you want to overwrite contract data? (\"Y or Yes\" to confirm or \"N or No\" to quit:\t")
+        confirm = "y"
+
+        if confirm in ["Y", "Yes", "y", "yes"]:
+            print("Overwrite confirmed. Saving data...")
+            try:
+                df_new.to_hdf(self.h5Store, '/' + self.symbol + '/_' + self.freq + '/_' + month, mode='a', format='table', append=False, data_columns=True, complevel=9, complib='blosc:snappy')
+            except Exception as e:
+                print(str(e))
+            return
+
+        elif confirm in ["N", "No", "n", "no"]:
+            print("Quit saving data. Exit.")
+            return
+
+        else:
+            print("Command not accepted. Pass...")
+            return
+
+    def print_all(self):
+        months = self.get_symbol_months()
+        for month in months:
+            print(month)
+            print(self.df[month])
+
+        return
+
 
     def aggr_contracts(self, dfs, start_date):
         # dfs = list(self.get_contract_data().values())
