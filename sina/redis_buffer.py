@@ -75,12 +75,15 @@ async def store_redis(loop, results):
 async def store_redis_tq(r, contract, quote):
     try:
         if not quote.datetime.isnull().values.any():
-            # print(contract, quote)
+            print(contract, quote)
             quote.index = pd.to_datetime(quote.datetime)
+            print(quote)
             quote = quote.shift(8, freq="H")
+            print(quote)
+            quote.loc[quote.volume == 0, 'volume'] = 1
             quote = quote.loc[:, ['open', 'high', 'low', 'close', 'volume', 'close_oi']]
             quote.rename(columns={"close_oi": "oi"}, inplace=True)
-            # print(contract, quote.tail(10))
+            print(contract, quote.tail(10))
 
             return await update_redis(r, contract, quote)
 

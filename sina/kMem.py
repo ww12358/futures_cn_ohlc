@@ -173,7 +173,7 @@ class kMem:
             #     print(df_concat)
 
             # df_concat = df_concat.volume.replace(0, 1)
-            df_concat.loc[df_concat['volume'] == 0, 'volume'] = 1
+            # df_concat.loc[df_concat['volume'] == 0, 'volume'] = 1
             # df_concat = df_concat[df_concat["volume"] > 1]      # avoid divide by 0 when wavg
             # print(self.symbol, df_concat)
             g = df_concat.groupby(df_concat.index, sort=True)
