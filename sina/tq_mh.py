@@ -3,6 +3,7 @@ from cn.h5_store import h5_store
 from cn.include import symbol_exchange_map
 import pandas as pd
 import numpy as np
+import os
 
 class tq_mh(h5_store):
     def __init__(self, symbol, freq):
