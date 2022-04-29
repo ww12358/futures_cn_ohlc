@@ -115,7 +115,7 @@ async def archive_tq(watch_list):
                 h5.append_data(df_archive, '00', debug=DEBUG)
                 df_buf = df.loc[df.index > dt]
                 # print(contract, "archive:", df_archive, "buf", df_buf)
-                task3 = loop.create_task(update_redis(r, contract, df_buf))
+                task3 = loop.create_task(flush_redis(r, contract, df_buf))
                 await task3
 
     await r.close()
