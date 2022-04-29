@@ -37,12 +37,10 @@ async def update_redis(r, contract, df):
                 df_latest.sort_index(ascending=True, inplace=True)
                 df_latest = df_latest.groupby(df_latest.index).last()
                 # df_origin = df_origin.iloc[:-1, :]  # delete last row which is obviously not correct
-                # df_latest = df_origin.combine_first(df)
-                # print(df_latest.info())
-                mmu = df_latest.memory_usage(deep=True).sum()
-                if mmu > 1024000:
-                    print(contract, mmu)
-                    print(df_latest.info(), df_latest.tail(10))
+                # mmu = df_latest.memory_usage(deep=True).sum()
+                # if mmu > 1024000:
+                #     print(contract, mmu)
+                #     print(df_latest.info(), df_latest.tail(10))
                 # print("df_latest", df_latest)
             # print(df_latest)
             await r.set(contract, pa.serialize(df_latest).to_buffer().to_pybytes())
@@ -55,8 +53,6 @@ async def update_redis(r, contract, df):
         print(contract, "not exist", df.info(), df)
         # await r.set(contract, pa.serialize(df).to_buffer().to_pybytes())
         print(str(e))
-    # val = await r.get(key)
-    # print(f"Got {key} -> {val}")
 
 async def store_redis(loop, results):
     try:
@@ -69,8 +65,7 @@ async def store_redis(loop, results):
         return await asyncio.gather(*(update_redis(r, contract, df) for contract, df in results),  return_exceptions=True, )
 
     finally:
-        r.close()
-        await r.wait_closed()
+        await r.close()
 
 async def store_redis_tq(r, contract, quote):
     try:
