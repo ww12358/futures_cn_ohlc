@@ -7,7 +7,7 @@ from sina.include import watch_list, REDIS_SVR_ADDR, REDIS_DB, REDIS_PORT, all_f
 from sina.tq_mh import tq_mh
 from cn.include import symbol_exchange_map, all_exchanges
 from cn.updateCN import get_last_trading_day
-from sina.redis_buffer import update_redis
+from sina.redis_buffer import update_redis, flush_redis
 from sina.getContractDict import getContractDict, getAllContractDict
 import nest_asyncio
 import pandas as pd
@@ -102,7 +102,7 @@ async def archive_tq(watch_list):
                         df_buf = df.loc[df.index > dt]  # dataframe shrinked to save to redis buffer
                         df_buf = df_buf.drop(['contract'], axis=1, inplace=False)
                         # print(df_buf)
-                        task1 = loop.create_task(update_redis(r, contract, df_buf))
+                        task1 = loop.create_task(flush_redis(r, contract, df_buf))
                         await task1
 
                 # index_grp = await
@@ -114,7 +114,7 @@ async def archive_tq(watch_list):
                 df_archive = df.loc[df.index <= dt]
                 h5.append_data(df_archive, '00', debug=DEBUG)
                 df_buf = df.loc[df.index > dt]
-                print(contract, "archive:", df_archive, "buf", df_buf)
+                # print(contract, "archive:", df_archive, "buf", df_buf)
                 task3 = loop.create_task(update_redis(r, contract, df_buf))
                 await task3
 

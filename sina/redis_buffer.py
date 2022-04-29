@@ -14,11 +14,16 @@ from sina.include import SINA_M5_PATH
 #     size = len(ser)
 #     r.set(contract, comp)
 #     r.set(contract + "size", size)
+async def flush_redis(r, contract, df):
+    try:
+        await r.set(contract, pa.serialize(df).to_buffer().to_pybytes())
+    except:
+        print("Error ocurred while flushing {0} to redis.".format(contract))
 
 async def update_redis(r, contract, df):
     if df.empty:
         return
-    # print(contract, "idx", df)
+    print(contract, "idx", df)
     print("Buffering : ", contract, datetime.now())
     # df = df.dropna()
     try:
