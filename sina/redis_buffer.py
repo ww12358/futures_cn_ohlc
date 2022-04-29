@@ -17,6 +17,7 @@ from sina.include import SINA_M5_PATH
 async def flush_redis(r, contract, df):
     try:
         await r.set(contract, pa.serialize(df).to_buffer().to_pybytes())
+        print(contract , "set to ", df)
     except:
         print("Error ocurred while flushing {0} to redis.".format(contract))
 
