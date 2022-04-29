@@ -82,11 +82,11 @@ async def gen_idx(symbol, cInfo, freq, r, loop):
 async def load_1min(km, r):
    try:
        ptn = km.symbol + "00_1min"
-       k = await r.keys(ptn)
-       buf = await r.get(k[0])
+       # k = await r.keys(ptn)
+       buf = await r.get(ptn)
        km.kandles['1min'] = pa.deserialize(buf)
    except Exception as e:
-       print("Error occured while fetching {0} 1min".format(km.symbol), ptn, '\t', str(e))
+       print("Error occured while fetching {0} 1min ".format(km.symbol), ptn, '\t', str(e))
        return None
 
    return km.kandles['1min']
@@ -95,7 +95,7 @@ async def load_hfreq(km, r):
     try:
         # print(km.all_contracts)
         for ptn in km.all_contracts:
-            print(ptn)
+            # print(ptn)
             # k = await r.keys(ptn)
             # print(k)
             # if len(k) == 0:
@@ -111,7 +111,7 @@ async def load_hfreq(km, r):
         print("Data of {1} exist on redis. Pass...".format(ptn))
         pass
     except Exception as e:
-        print("Error occured while loading hfreq contracts from redis...\t", str(e))
+        print("Error occured while loading hfreq contracts from redis...\t{0}".format(ptn), str(e))
 
 async def clean_hfreq(km, r):
     try:
