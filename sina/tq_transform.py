@@ -64,7 +64,10 @@ async def load_symbol(symbols, contract_dict, freq):
         # r = await aioredis.create_redis_pool(
         #     "redis://" + REDIS_SVR_ADDR, minsize=5, maxsize=20, loop=loop, db=REDIS_DB
         # )
-        group = asyncio.gather(*[gen_idx(sym, contract_dict[sym], freq, r, loop) for sym in symbols])
+        with open("/home/sean/code/utils/main_contracts.json", "r") as f:
+            m_con = json.load(f)
+
+        group = asyncio.gather(*[gen_idx(sym, contract_dict[sym], freq, r, loop, m_con) for sym in symbols])
         results = loop.run_until_complete(group)
         # loop.close()
     except Exception as e:

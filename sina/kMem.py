@@ -34,10 +34,10 @@ def ohlcsum(data):
             'oi': data['oi'].iloc[-1]
         }, index=data.index)
 
-async def gen_idx(symbol, cInfo, freq, r, loop):
+async def gen_idx(symbol, cInfo, freq, r, loop, m_con):
     # print(cInfo)
     # print(symbol)
-    km = kMem(symbol, cInfo)
+    km = kMem(symbol, cInfo, m_con)
     try:
         if freq == '1min':
             await load_hfreq(km, r)
@@ -94,7 +94,7 @@ async def load_1min(km, r):
 async def load_hfreq(km, r):
     try:
         # print(km.all_contracts)
-        for ptn in km.all_contracts:
+        for ptn in km.mainContracts:
             # print(ptn)
             # k = await r.keys(ptn)
             # print(k)
@@ -135,11 +135,12 @@ class kMem:
     #         "redis://localhost", minsize=5, maxsize=10, db=1
     #     )
 
-    def __init__(self, symbol, cInfo):
+    def __init__(self, symbol, cInfo, m_con):
         self.symbol = symbol
         self.cInfo = cInfo
-        # self.loop = loop
+        self.mainContracts = []
         self.all_contracts = self.get_all_contracts()
+        self.mainContracts = self.getMainContracts(m_con)
         self.contract_1st = self.all_contracts[0]
         self.dfs = {}
         self.kandles = {}
@@ -201,10 +202,19 @@ class kMem:
             print("{1} contracts not loaded. Skip generating index.".format(self.symbol))
             return None
 
-    def getMainContract(self):
-        with open("/home/sean/code/utils/main_contracts.json", "r") as f:
-            m_con = json.load(f)
+    def getMainContracts(self, m_con):
 
-        self.mainContract = m_con[self.symbol]['1st']
 
-        return self.mainContract
+        m = m_con[self.symbol]['all']
+        l = int(len(m)/2) + 1
+        m = m[:l]
+        # print(m)
+
+        contracts = []
+        for c in self.all_contracts:
+            # print(c[-2:])
+            if c[-2:] in m:
+                contracts.append(c)
+
+        # print(contracts)
+        return contracts
