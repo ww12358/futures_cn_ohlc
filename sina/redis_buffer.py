@@ -4,7 +4,7 @@ import redis
 import pyarrow as pa
 import pandas as pd
 from sina.include import REDIS_SVR_ADDR, REDIS_DB, REDIS_PORT
-
+from datetime import datetime
 from sina.include import SINA_M5_PATH
 
 # def put(contract, df):
@@ -19,7 +19,7 @@ async def update_redis(r, contract, df):
     if df.empty:
         return
     # print(contract, "idx", df)
-    print("Buffering : ", contract)
+    print("Buffering : ", contract, datetime.now())
     # df = df.dropna()
     try:
         ser = await r.get(contract)
@@ -52,6 +52,8 @@ async def update_redis(r, contract, df):
         print(contract, "not exist", df.info(), df)
         # await r.set(contract, pa.serialize(df).to_buffer().to_pybytes())
         print(str(e))
+
+    print("end buffering {0}, at {1}".format(contract, datetime.now()))
 
 async def store_redis(loop, results):
     try:
