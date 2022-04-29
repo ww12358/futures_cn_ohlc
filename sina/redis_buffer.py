@@ -22,7 +22,6 @@ async def update_redis(r, contract, df):
     print("Buffering : ", contract)
     # df = df.dropna()
     try:
-        # df = trans_tq_quote(df)
         ser = await r.get(contract)
 
         if not ser is None:     #redis buffer exists, append data
@@ -57,7 +56,7 @@ async def update_redis(r, contract, df):
 async def store_redis(loop, results):
     try:
         r = await aioredis.Redis.from_url(
-            "redis://" + REDIS_SVR_ADDR, max_connections=10 * len(results), db=REDIS_DB, decode_responses=False
+            "redis://" + REDIS_SVR_ADDR, max_connections=len(results), db=REDIS_DB, decode_responses=False
         )
         # r = await aioredis.create_redis_pool(
         #     "redis://localhost", minsize=5, maxsize=10, loop=loop, db=1

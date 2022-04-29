@@ -75,7 +75,7 @@ async def archive_tq(watch_list):
     #     "redis://" + REDIS_SVR_ADDR, minsize=5, maxsize=20, loop=loop, db=REDIS_DB
     # )
     r = await aioredis.Redis.from_url(
-        "redis://" + REDIS_SVR_ADDR, max_connections=10 * len(watch_list), db=REDIS_DB, decode_responses=False
+        "redis://" + REDIS_SVR_ADDR, max_connections=len(watch_list), db=REDIS_DB, decode_responses=False
     )
     for symbol in watch_list:
         print(symbol)
