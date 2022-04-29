@@ -94,19 +94,18 @@ async def load_1min(km, r):
 async def load_hfreq(km, r):
     try:
         # print(km.all_contracts)
-        for c in km.all_contracts:
-            ptn = c
-            # print(ptn)
-            k = await r.keys(ptn)
+        for ptn in km.all_contracts:
+            print(ptn)
+            # k = await r.keys(ptn)
             # print(k)
-            if len(k) == 0:
-                return
+            # if len(k) == 0:
+            #     return
 
-            buf = await r.get(k[0])
+            buf = await r.get(ptn)
             raw_df = pa.deserialize(buf)
             # print(raw_df)
             # g = raw_df.groupby(raw_df.index, sort=True)
-            km.dfs[c] = raw_df.groupby(raw_df.index).apply(lambda g:g.iloc[-1])     #use only last row of each group
+            km.dfs[ptn] = raw_df.groupby(raw_df.index).apply(lambda g:g.iloc[-1])     #use only last row of each group
             # print(km.dfs[c])
     except IndexError:
         print("Data of {1} exist on redis. Pass...".format(ptn))
@@ -169,8 +168,8 @@ class kMem:
         if len(self.dfs) > 0:
             dfs = self.dfs.values()
             df_concat = pd.concat(dfs, axis=0)
-            with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-                print(df_concat)
+            # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+            #     print(df_concat)
 
             df_concat.loc[df_concat['volume'] == 0, 'volume'] = 1
             # df_concat = df_concat[df_concat["volume"] > 0]      # avoid divide by 0 when wavg
