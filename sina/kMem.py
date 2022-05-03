@@ -190,6 +190,7 @@ class kMem:
                                ],
                               axis=1, keys=['open', 'high', 'low', 'close', 'volume', 'oi'])
 
+            df_00 = df_00.dropna()
             # print(self.symbol, df_00)
             # if freq == "1min":
             # return df_00.iloc[:-1, :]

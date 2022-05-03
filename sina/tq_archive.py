@@ -94,6 +94,7 @@ async def archive_tq(watch_list):
                     result = loop.run_until_complete(grp)
 
                     for month, df, contract in result:
+                        df = df.dropna()
                         print(month)
                         df_archive = df.loc[df.index <= dt]  # dataframe to save to local hdf5
                         # df_local = h5.get_contract_by_month(month)
