@@ -126,7 +126,8 @@ def main(all, major, symbol, freq, rebuild=False):
 
     if RUN_NOW:
         freqs = ['30min', '1h']
-        smb_li = ['CU']
+        # smb_li = ['CU']
+        smb_li = t_symbols
         asyncio.run(load_symbol(smb_li, c, freqs))
 
     else:
