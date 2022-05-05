@@ -7,7 +7,7 @@ from ine.include import  ine_symbols, ine_symbols_2300pm, ine_symbols_0100am, in
 from cffex.include import cffex_symbols, cffex_symbols_equity, cffex_symbols_bond
 
 DEBUG = 0
-RUN_NOW = 1
+RUN_NOW = 0
 SINA_M5_PATH = '/home/sean/sync/creek/sina/'
 SINA_M5_ORIGIN_PATH = '/home/sean/sync/creek/sina_origin/'
 SINA_M15_PATH = '/home/sean/sync/creek/M15/'
