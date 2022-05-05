@@ -37,10 +37,9 @@ def ohlcsum(data):
 
 async def gen_freq(loop, km, freq, r, symbol, executor):
     try:
-            # await loop.run_in_executor(executor, functools.partial(load_hfreq, km=km, r=r))
         df = await loop.run_in_executor(executor, functools.partial(km.to_idx, freq))
-            # await update_redis(r, symbol + "00_" + freq, df)
-        print(symbol, freq, df)
+        await update_redis(r, symbol + "00_" + freq, df)
+        # print(symbol, freq, df)
 
     except Exception as e:
         print(str(e))
@@ -86,14 +85,14 @@ async def load_hfreq(km, r):
     try:
         # print(km.all_contracts)
         for ptn in km.all_contracts:
-            print(ptn)
+            # print(ptn)
             # k = await r.keys(ptn)
             # print(k)
             # if len(k) == 0:
             #     return
             buf = await r.get(ptn)
             raw_df = pa.deserialize(buf)
-            print(raw_df)
+            # print(raw_df)
             if raw_df.empty:
                 km.dfs[ptn] = raw_df
             else:
