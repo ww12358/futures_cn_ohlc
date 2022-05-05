@@ -51,7 +51,7 @@ async def gen_idx(symbol, cInfo, freqs, r, loop, m_con):
     # print(symbol)
     km = kMem(symbol, cInfo, m_con)
     try:
-        await load_hfreq(km, r)
+        await load_hfreq(loop, km, r)
         with futures.ThreadPoolExecutor(max_workers=len(freqs)) as executor:
             group = asyncio.gather(*[gen_freq(loop, km, freq, r, symbol, executor) for freq in freqs])
             results = loop.run_until_complete(group)
@@ -81,29 +81,27 @@ async def load_1min(km, r):
 
    return km.kandles['1min']
 
-async def load_hfreq(km, r):
+async def get_contract(r, ptn, km):
     try:
-        # print(km.all_contracts)
-        for ptn in km.all_contracts:
-            # print(ptn)
-            # k = await r.keys(ptn)
-            # print(k)
-            # if len(k) == 0:
-            #     return
-            buf = await r.get(ptn)
-            raw_df = pa.deserialize(buf)
-            # print(raw_df)
-            if raw_df.empty:
-                km.dfs[ptn] = raw_df
-            else:
+        buf = await r.get(ptn)
+        raw_df = pa.deserialize(buf)
+        # print(raw_df)
+        if (raw_df is None) or raw_df.empty:
+            km.dfs[ptn] = raw_df
+        else:
             # g = raw_df.groupby(raw_df.index, sort=True)
-                km.dfs[ptn] = raw_df.groupby(raw_df.index).apply(lambda g:g.iloc[-1])     #use only last row of each group
-            # print(km.dfs[c])
+            km.dfs[ptn] = raw_df.groupby(raw_df.index).apply(lambda g: g.iloc[-1])  # use only last row of each group
     except IndexError:
         print("{0} data exist on redis. Pass...".format(ptn))
         pass
     except Exception as e:
         print("Error occured while loading hfreq contracts from redis...\t{0}".format(ptn), str(e))
+
+
+async def load_hfreq(loop, km, r):
+        group = asyncio.gather(*[get_contract(r, ptn) for ptn in km.all_contracts])
+        result = loop.run_until_complete(group)
+        # print(km.all_contracts)
 
 async def clean_hfreq(km, r):
     try:

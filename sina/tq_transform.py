@@ -55,7 +55,8 @@ async def load_symbol(symbols, contract_dict, freqs):
     if len(symbols) == 0:
         return
 
-    print(datetime.now())
+    start_time = datetime.now()
+    print(start_time)
     try:
         loop = asyncio.get_event_loop()
         r = await aioredis.Redis.from_url(
@@ -75,6 +76,7 @@ async def load_symbol(symbols, contract_dict, freqs):
         await r.close()
     finally:
         await r.close()
+        print("Excecution starting at {0} finished.".format(start_time))
         # loop.close()
 
 @click.command()
