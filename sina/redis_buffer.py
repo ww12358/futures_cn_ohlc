@@ -21,11 +21,12 @@ async def flush_redis(r, contract, df):
     except:
         print("Error ocurred while flushing {0} to redis.".format(contract))
 
-async def update_redis(r, contract, df):
+async def update_redis(r, contract, df, quiet=False):
     if df.empty:
         return
     # print(contract, "idx", df)
-    print("Buffering : ", contract, datetime.now())
+    if not quiet:
+        print("Buffering : ", contract, datetime.now())
     # df = df.dropna()
     try:
         ser = await r.get(contract)
@@ -59,7 +60,8 @@ async def update_redis(r, contract, df):
         await r.set(contract, pa.serialize(df).to_buffer().to_pybytes())
         print(str(e))
 
-    print("end buffering {0}, at {1}".format(contract, datetime.now()))
+    if not quiet:
+        print("end buffering {0}, at {1}".format(contract, datetime.now()))
 
 async def store_redis(loop, results):
     try:
@@ -87,7 +89,7 @@ async def store_redis_tq(r, contract, quote):
             quote.rename(columns={"close_oi": "oi"}, inplace=True)
             # print(contract, quote.tail(10))
 
-            return await update_redis(r, contract, quote)
+            return await update_redis(r, contract, quote, quiet=True)
 
         else:
             return
