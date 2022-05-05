@@ -24,7 +24,7 @@ async def flush_redis(r, contract, df):
 async def update_redis(r, contract, df):
     if df.empty:
         return
-    print(contract, "idx", df)
+    # print(contract, "idx", df)
     print("Buffering : ", contract, datetime.now())
     # df = df.dropna()
     try:

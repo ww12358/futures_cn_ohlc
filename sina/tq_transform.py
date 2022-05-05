@@ -76,7 +76,7 @@ async def load_symbol(symbols, contract_dict, freqs):
         await r.close()
     finally:
         await r.close()
-        print("Excecution {0} starting at {1} finished.".format(freqs, start_time))
+        print("Excecution {0} starting at {1} finished at {2}".format(freqs, start_time, datetime.now()))
         # loop.close()
 
 @click.command()
