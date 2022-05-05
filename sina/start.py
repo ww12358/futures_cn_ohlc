@@ -105,24 +105,24 @@ def get_tq_data(contract_dict, loop):
 
 def main():
 
-    if not RUN_NOW:
-
-        sched_main = BackgroundScheduler()
-        # def enable_interval():
-        #     sched_main.add_job(job_function, 'cron', day_of_week='mon-fri', hour=9, minutes=0, second=2, id='SINA_RETRIEVE_JOB')
-
-        # # Runs from Monday to Friday at 5:30 (am) until
-        sched_main.add_job(job_function, 'cron', day_of_week='mon-fri', hour=9, minute=0, second=15, id='SINA_RETRIEVE_JOB')
-        sched_main.start()
-        # sched_main.add_job(disable_job_function, 'cron', day_of_week='tue-sat', hour=2, minute=35, second=0)
-
-        while True:
-            time.sleep(10)
-
-        sched.shutdown()
-
-    else:   #debug mode
-        job_function()
+    # if not RUN_NOW:
+    #
+    #     sched_main = BackgroundScheduler()
+    #     # def enable_interval():
+    #     #     sched_main.add_job(job_function, 'cron', day_of_week='mon-fri', hour=9, minutes=0, second=2, id='SINA_RETRIEVE_JOB')
+    #
+    #     # # Runs from Monday to Friday at 5:30 (am) until
+    #     sched_main.add_job(job_function, 'cron', day_of_week='mon-fri', hour=9, minute=0, second=15, id='SINA_RETRIEVE_JOB')
+    #     sched_main.start()
+    #     # sched_main.add_job(disable_job_function, 'cron', day_of_week='tue-sat', hour=2, minute=35, second=0)
+    #
+    #     while True:
+    #         time.sleep(10)
+    #
+    #     sched.shutdown()
+    #
+    # else:   #debug mode
+    job_function()
 
     return
 
