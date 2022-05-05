@@ -83,6 +83,7 @@ async def load_1min(km, r):
 
 async def get_contract(r, ptn, km):
     try:
+        # print(ptn)
         buf = await r.get(ptn)
         raw_df = pa.deserialize(buf)
         # print(raw_df)
@@ -99,8 +100,10 @@ async def get_contract(r, ptn, km):
 
 
 async def load_hfreq(loop, km, r):
-        group = asyncio.gather(*[get_contract(r, ptn, km) for ptn in km.all_contracts])
-        result = loop.run_until_complete(group)
+        # group = asyncio.gather(*[get_contract(r, ptn, km) for ptn in km.all_contracts])
+        # result = loop.run_until_complete(group)
+        for ptn in km.all_contracts:
+            await get_contract(r, ptn, km)
         # print(km.all_contracts)
 
 async def clean_hfreq(km, r):
