@@ -54,7 +54,7 @@ async def get_quote(api, smb_li, tq_contract_dict, contract_dict):
     try:
         loop = asyncio.get_event_loop()
         r = await aioredis.Redis.from_url(
-            "redis://" + REDIS_SVR_ADDR, max_connections=len(smb_li), db=REDIS_DB, decode_responses=False
+            "redis://" + REDIS_SVR_ADDR, max_connections=12*len(smb_li), db=REDIS_DB, decode_responses=False
         )
         # r = await aioredis.create_redis_pool(
         #     "redis://localhost", minsize=5, maxsize=10, loop=loop, db=1
