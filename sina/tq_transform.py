@@ -56,7 +56,7 @@ async def load_symbol(symbols, contract_dict, freqs):
         return
 
     start_time = datetime.now()
-    print(start_time)
+    print(start_time, freqs)
     try:
         loop = asyncio.get_event_loop()
         r = await aioredis.Redis.from_url(
@@ -76,7 +76,7 @@ async def load_symbol(symbols, contract_dict, freqs):
         await r.close()
     finally:
         await r.close()
-        print("Excecution starting at {0} finished.".format(start_time))
+        print("Excecution {0} starting at {1} finished.".format(freqs, start_time))
         # loop.close()
 
 @click.command()
@@ -152,31 +152,37 @@ def main(all, major, symbol, freq, rebuild=False):
 
         schdlr.add_job(load_symbol, "cron",
                        hour='0-2,  9-11, 13-15, 21-23',
-                       minute="2, 17, 32, 47",
+                       minute="1",
                        second="45",
                        args=[smb_li, c, ['15min', '30min', '1h', '1d']], misfire_grace_time=480)
 
         schdlr.add_job(load_symbol, "cron",
                        hour='0-2,  9-11, 13-15, 21-23',
-                       minute="3, 33",
+                       minute="16, 31, 46",
+                       second="25",
+                       args=[smb_li, c, ['15min']], misfire_grace_time=600)
+
+        schdlr.add_job(load_symbol, "cron",
+                       hour='0-2,  9-11, 13-15, 21-23',
+                       minute="33",
                        second="0",
                        args=[smb_li, c, ['30min']], misfire_grace_time=600)
 
         schdlr.add_job(load_symbol, "cron",
                        hour='0-2, 9-11, 13-15, 21-23',
-                       minute="4, 34",
+                       minute="34",
                        second="30",
                        args=[smb_li, c, ['1h']], misfire_grace_time=720)
 
         schdlr.add_job(load_symbol, "cron",
                        hour='0-2, 9-11, 13-15, 21-23',
-                       minute="6, 48",
+                       minute="48",
                        second="15",
                        args=[smb_li, c, ['1d']], misfire_grace_time=1200)
 
         schdlr.add_job(load_symbol, "cron",
                        hour='1, 9, 13, 17',
-                       minute="8, 49",
+                       minute="49",
                        second="42",
                        args=[smb_li, c, ['4h']], misfire_grace_time=900)
 
