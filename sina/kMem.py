@@ -95,11 +95,11 @@ async def get_contract(r, ptn, km):
         print("{0} data exist on redis. Pass...".format(ptn))
         pass
     except Exception as e:
-        print("Error occured while loading hfreq contracts from redis...\t{0}".format(ptn), str(e))
+        print("Error occured while loading hfreq contracts from redis...\t{0}, {1}".format(ptn), str(e))
 
 
 async def load_hfreq(loop, km, r):
-        group = asyncio.gather(*[get_contract(r, ptn) for ptn in km.all_contracts])
+        group = asyncio.gather(*[get_contract(r, ptn, km) for ptn in km.all_contracts])
         result = loop.run_until_complete(group)
         # print(km.all_contracts)
 
