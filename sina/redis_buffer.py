@@ -51,12 +51,12 @@ async def update_redis(r, contract, df):
             await r.set(contract, pa.serialize(df_latest).to_buffer().to_pybytes())
         else:       #initialize redis buffer
             print("Error ocurred while buffering {0} to redis.".format(contract))
-            print(contract, "is None", df)
+            # print(contract, "is None", df)
             await r.set(contract, pa.serialize(df).to_buffer().to_pybytes())
 
     except Exception as e:
         print(contract, "not exist", df.info(), df)
-        # await r.set(contract, pa.serialize(df).to_buffer().to_pybytes())
+        await r.set(contract, pa.serialize(df).to_buffer().to_pybytes())
         print(str(e))
 
     print("end buffering {0}, at {1}".format(contract, datetime.now()))

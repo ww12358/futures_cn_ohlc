@@ -100,7 +100,7 @@ async def get_contract(r, ptn, km):
 
 
 async def load_hfreq(loop, km, r):
-        # group = asyncio.gather(*[get_contract(r, ptn, km) for ptn in km.all_contracts])
+        # group = await asyncio.gather(*[get_contract(r, ptn, km) for ptn in km.all_contracts])
         # result = loop.run_until_complete(group)
         for ptn in km.all_contracts:
             await get_contract(r, ptn, km)
