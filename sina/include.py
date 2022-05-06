@@ -21,8 +21,9 @@ all_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols + cffex_sym
 # all_symbols = [e for e in all_symbols if e not in exclude_li]
 com_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols
 watch_list = ["CU", "AL", "ZN", "NI", "RB", "RU", "SN",
-              "BU",
-              "I", "A", "B", "M", "Y", "P", "JM", "L", "PP", "LH", "C",
+              "BU", "SP",
+              "I", "A", "B", "M", "Y", "P",
+              "J", "JM", "L", "PP", "LH", "C",
               "TA", "EG",  "SR", "CF", "MA", "FG", "ZC", "OI", "RM", "SA", "UR",
               "AG", "AU",
               "SC", "FU"]
