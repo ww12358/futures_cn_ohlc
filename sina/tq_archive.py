@@ -23,7 +23,7 @@ async def get_redis_buffer(r, month, ptn, no_print=True):
     try:
         buf = await r.get(ptn)
         df = pa.deserialize(buf)
-        # print(df)
+        print(df)
         # df = df.rename(index={'datetime':'date'})
         if df.index.name == 'datetime':
             df = df.rename_axis(None, axis=1).rename_axis('date', axis=0)

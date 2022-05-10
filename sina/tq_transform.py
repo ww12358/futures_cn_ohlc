@@ -153,7 +153,7 @@ def main(all, major, symbol, freq, rebuild=False):
 
         schdlr.add_job(load_symbol, "cron",
                        hour='0-2,  9-11, 13-15, 21-23',
-                       minute="1, 16, 31, 46",
+                       minute="1, 16, 32, 46",
                        second="45",
                        args=[smb_li, c, ['15min', '30min', '1h', '4h', '1d']], misfire_grace_time=480)
 

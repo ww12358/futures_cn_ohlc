@@ -22,7 +22,7 @@ async def flush_redis(r, contract, df):
         print("Error ocurred while flushing {0} to redis.".format(contract))
 
 async def update_redis(r, contract, df, quiet=False):
-    if df.empty:
+    if df is None or df.empty:
         return
     # print(contract, "idx", df)
     if not quiet:
