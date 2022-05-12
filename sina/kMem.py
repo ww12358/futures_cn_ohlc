@@ -159,6 +159,7 @@ class kMem:
     #     return self.contract_1st
 
     def to_idx(self, freq):
+        start_time = datetime.now()
         if len(self.dfs) > 0:
 
             if freq == '1min':
@@ -201,7 +202,7 @@ class kMem:
             # if freq == "1min":
             # return df_00.iloc[:-1, :]
             # if freq == '1min':
-            tm = round_by_five(datetime.now())
+            tm = round_by_five(start_time)
             # print(df_00.iloc[-1], tm)
             # print(df_00.tail(20))
             df_00 = df_00.loc[df_00.index <= tm]
