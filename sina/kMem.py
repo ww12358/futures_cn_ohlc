@@ -200,11 +200,11 @@ class kMem:
             # print(self.symbol, df_00)
             # if freq == "1min":
             # return df_00.iloc[:-1, :]
-            if freq == '1min':
-                tm = round_by_five(datetime.now())
-                # print(df_00.iloc[-1], tm)
-                # print(df_00.tail(20))
-                df_00 = df_00.loc[df_00.index <= tm]
+            # if freq == '1min':
+            tm = round_by_five(datetime.now())
+            # print(df_00.iloc[-1], tm)
+            # print(df_00.tail(20))
+            df_00 = df_00.loc[df_00.index <= tm]
 
                 # df_result = df_result.iloc[:-1, :]  # delete last row which is obviously not correct
                 # print(df_result)
