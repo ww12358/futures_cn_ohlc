@@ -22,11 +22,12 @@ all_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols + cffex_sym
 com_symbols = dce_symbols + cze_symbols + shfe_symbols + ine_symbols
 watch_list = ["CU", "AL", "ZN", "NI", "RB", "HC", "RU", "SN", "PB",
               "BU", "SP",
-              "I", "A", "B", "M", "Y", "P", "V",
-              "J", "JM", "L", "PP", "LH", "C", "JD",
-              "TA", "EG",  "SR", "CF", "MA", "FG", "ZC", "OI", "RM", "SA", "UR",
+              "A", "B", "M", "Y", "P", "LH", "C", "JD",
+              "I", "J", "JM", "L", "PP",  "V",
+              "TA", "EG",  "SR", "CF", "MA", "FG", "ZC", "SA", "UR",
+              "SR", "CF", "OI", "RM", "WH",
               "AG", "AU",
-              "SC", "FU"]
+              "SC", "FU", "LU"]
 
 all_freq = ["1min", "15min", "30min", "1h", "4h", "1d"]
 

@@ -44,6 +44,11 @@ class tq_mh(h5_store):
             print("Some error occured during access data file:\t", str(e))
             return
 
+    def close(self):
+        if self.h5Store:
+            #            self.__h5Store.flush()
+            self.h5Store.close()
+
     def get_data(self, year, month):
         if not year is None:
             #            print(year)
