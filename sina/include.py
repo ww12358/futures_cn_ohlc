@@ -27,7 +27,8 @@ watch_list = ["CU", "AL", "ZN", "NI", "RB", "HC", "RU", "SN", "PB",
               "TA", "EG",  "SR", "CF", "MA", "FG", "ZC", "SA", "UR",
               "SR", "CF", "OI", "RM",
               "AG", "AU",
-              "SC", "FU", "LU"]
+              "SC", "FU", "LU",
+              "IF"]
 
 all_freq = ["1min", "15min", "30min", "1h", "4h", "1d"]
 
