@@ -1,10 +1,10 @@
 # -*- coding:utf-8 -*-
 import os
 
-cffex_symbols = ["IF", "IH", "IC",  \
+cffex_symbols = ["IF", "IH", "IC",  "IM", \
                  "TF", "T", "TS"]   # 五债， 十债， 二债
 
-cffex_symbols_equity = ['IF', 'IC', 'IH']
+cffex_symbols_equity = ['IF', 'IC', 'IH', "IM"]
 cffex_symbols_bond = ['T', 'TF', 'TS']
 
 cffex_headers = ['symbol', 'date', 'pre_close', 'pre_settlement',  \
