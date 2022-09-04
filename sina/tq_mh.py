@@ -21,7 +21,7 @@ class tq_mh(h5_store):
         self.__isempty = True
         # print(self.h5_path)
         try:
-            #            print(DATA_PATH_DICT[self.symbol])
+            # print(self.h5_path)
             self.h5Store = pd.HDFStore(self.h5_path)
             #            print(DATA_PATH_DICT[self.symbol])
             if not os.path.exists(self.h5_path):
@@ -36,9 +36,10 @@ class tq_mh(h5_store):
 
                 for month in self.months:
                     key = ''.join(["/", self.symbol, "/_", self.freq, "/_", month])
-                    #                print(key)
+                    # print(key)
                     if (d := pd.read_hdf(self.h5Store, key)) is not None:
                         self.df[month] = d
+                        # print(self.df[month])
                 self.set_notempty()
         except Exception as e:
             print("Some error occured during access data file:\t", str(e))
