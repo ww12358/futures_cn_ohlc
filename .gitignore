@@ -7,6 +7,6 @@
 /script
 .idea/workspace.xml
 *.pyc
-.idea/*
+/.idea
 /cn/config.py
 
