@@ -1,29 +1,12 @@
-# from apscheduler.schedulers.blocking import BlockingScheduler
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import asyncio
-import aioredis
 import os
-import time
 import logging
-import pandas as pd
-import functools
-from concurrent.futures import ThreadPoolExecutor
-import concurrent
-from multiprocessing import Process
-import multiprocessing as mp
-import datetime
 from tqsdk import TqApi, TqAuth
-from sina.getContractDict import getContractDict, getAllContractDict
-from sina.redis_buffer import store_redis
-from sina.download_sina import download_sina_data, download_sina_data_hq
+from sina.getContractDict import getAllContractDict
 from sina.tq import get_quote
 import nest_asyncio
-import numpy as np
-from sina.include import trading_symbols, DEBUG, RUN_NOW, watch_list
-from sina.redis_buffer import store_redis
-from sina.sina_M5_archive import archive_sina_M5
-from cn.include import symbol_exchange_map, all_symbols
+from sina.include import DEBUG
+from cn.include import symbol_exchange_map
 from sina.include import watch_list
 from cn.config import TQ_USER, TQ_PASS
 
@@ -31,6 +14,7 @@ nest_asyncio.apply()
 
 logging.basicConfig()
 logging.getLogger('apscheduler').setLevel(logging.DEBUG)
+
 
 def job_function():
     # print("Hello World")
@@ -60,6 +44,7 @@ def job_function():
             new_loop.close()
     except (KeyboardInterrupt, SystemExit):
         pass
+
 
 def get_tq_data(contract_dict, loop):
     # t = datetime.datetime.now().time()
@@ -102,10 +87,8 @@ def get_tq_data(contract_dict, loop):
     while True:
         api.wait_update()
 
-    return
 
 def main():
-
     # if not RUN_NOW:
     #
     #     sched_main = BackgroundScheduler()
