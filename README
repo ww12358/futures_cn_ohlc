@@ -1,12 +1,9 @@
-checkout list:{
-	download_sina_data_hq:{
-		cn_ex_sync: tq,
-		qt_View: scatter
-	},
+### Features
 
-	download_sina_data:{
-		cn_ex_sync: sina_fix,
-		qt_View: sina_fix
-	}
-}
+- Collect China Commodity(SHFE, DCE, CZCE, INE) and Equity(CFFEX) Futures market data to local storage for analysis and study purpose
+- Two data sources are supported: tushare.pro(daily ohlc) and tqsdk (1 minute ohlc)
+- Written in Python and cross-platform (Linux tested)
+- Local data stored as HDF(.hdf5) format
+- Analysis tools are on the way...
+
 
