@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 from datetime import datetime
-from cn.include import symbol_exchange_map
+
 
 class h5_store:
     # h5_path = ""
@@ -16,22 +16,22 @@ class h5_store:
         self.__isempty = True
         # print(self.h5_path)
         try:
-#            print(DATA_PATH_DICT[self.symbol])
+            #            print(DATA_PATH_DICT[self.symbol])
             self.h5Store = pd.HDFStore(self.h5_path)
-#            print(DATA_PATH_DICT[self.symbol])
+            #            print(DATA_PATH_DICT[self.symbol])
             if not os.path.exists(self.h5_path):
                 print("file not exists, will create new file")
 
-            if not symbol in self.h5Store:
+            if symbol not in self.h5Store:
                 print("symbol not found in local file, will save new contracts to local.\n")
                 return
 
-            else:   #load local file storage to instance
+            else:  # load local file storage to instance
                 self.months = self.get_symbol_months_with_idx()
 
                 for month in self.months:
                     key = ''.join(["/", self.symbol, "/", self.freq, "/_", month])
-    #                print(key)
+                    #                print(key)
                     if (d := pd.read_hdf(self.h5Store, key)) is not None:
                         self.df[month] = d
                     # self.df[month] = d if (d:=pd.read_hdf(self.h5Store, key)) is not None
@@ -41,20 +41,20 @@ class h5_store:
                 # self.__isemtpy = False
                 self.set_notempty()
                 # print(self.__isempty)
-    #                if self.exchange == "DCE":
-    #                    self.__df[month].reset_index(inplace=True)
-    #                    self.__df[month].set_index(["date", "symbol"], inplace=True)
-    #                 if self.exchange == "CZCE":
-    #                     if "d_oi" in self.__df[month].columns:
-    #                         self.__df[month].drop(["d_oi", "EDSP"], axis=1, inplace=True)
-    #                         self.__df[month]["pre_close"] = 0
-    #                         self.__df[month].reset_index(inplace=True)
-    #                         self.__df[month].set_index(["date", "symbol"], inplace=True)
-    #                    if self.symbol == "TA":
-    #                        self.__df[month].reset_index(inplace=True)
-    #                        self.__df[month]["symbol"] = self.__df[month]["symbol"].str.replace("PTA", "TA")
-    #                        self.__df[month].set_index(["date", "symbol"], inplace=True)
-    #             print("Local Data loaded successfully! Continue...")
+        #                if self.exchange == "DCE":
+        #                    self.__df[month].reset_index(inplace=True)
+        #                    self.__df[month].set_index(["date", "symbol"], inplace=True)
+        #                 if self.exchange == "CZCE":
+        #                     if "d_oi" in self.__df[month].columns:
+        #                         self.__df[month].drop(["d_oi", "EDSP"], axis=1, inplace=True)
+        #                         self.__df[month]["pre_close"] = 0
+        #                         self.__df[month].reset_index(inplace=True)
+        #                         self.__df[month].set_index(["date", "symbol"], inplace=True)
+        #                    if self.symbol == "TA":
+        #                        self.__df[month].reset_index(inplace=True)
+        #                        self.__df[month]["symbol"] = self.__df[month]["symbol"].str.replace("PTA", "TA")
+        #                        self.__df[month].set_index(["date", "symbol"], inplace=True)
+        #             print("Local Data loaded successfully! Continue...")
 
         except Exception as e:
             print("Some error occured during access data file:\t", str(e))
@@ -66,7 +66,7 @@ class h5_store:
     def __exit__(self, exc_type, exc_val, exc_tb):
         try:
             if self.h5Store:
-            #            self.__h5Store.flush()
+                #            self.__h5Store.flush()
                 self.h5Store.close()
         except Exception as e:
             print(self.symbol)
@@ -91,17 +91,19 @@ class h5_store:
         return self.symbol
 
     def get_data(self, year, month):
-        if not year is None:
-#            print(year)
-#            year_short = year[2:]
+        if year is not None:
+            #            print(year)
+            #            year_short = year[2:]
             query_str = self.symbol + year + month
             # print(query_str)
+        else:
+            return None
 
         try:
             df = self.df[month]
             # print(df)
             df = df.loc[df.index.get_level_values('symbol') == query_str]
-#            df.reset_index(level="symbol", inplace=True)
+        #            df.reset_index(level="symbol", inplace=True)
         except ValueError:
             return None
         except Exception as e:
@@ -114,10 +116,10 @@ class h5_store:
             months = []
             # find months list from local hdf5
             for item in self.h5Store.walk("/" + self.symbol + "/" + self.freq + "/"):
-#               print(item)
+                #               print(item)
                 months_raw = list(item[2])
                 months = [(lambda x: x.strip('_'))(x) for x in months_raw]
-                if("00" in months):     #do not update vw_idx
+                if "00" in months:  # do not update vw_idx
                     months.remove("00")
             return months
 
@@ -142,7 +144,8 @@ class h5_store:
     def append_data(self, df_append, month, debug=False):
         try:
             self.df[month]
-            df_append = df_append.loc[df_append.index.get_level_values("date") > self.df[month].index.get_level_values("date")[-1]]
+            df_append = df_append.loc[
+                df_append.index.get_level_values("date") > self.df[month].index.get_level_values("date")[-1]]
             # df_append = df_append.loc[df_append.index > self.df[month].iloc[-1].name]
             df_append.sort_index(ascending=True, inplace=True)
             if debug:
@@ -150,7 +153,8 @@ class h5_store:
                     print(df_append.head(10))
                     print(df_append.tail(50))
             else:
-                df_append.to_hdf(self.h5Store, '/' + self.symbol + '/' + self.freq + '/_' + month, mode='a', format='table', append=True,
+                df_append.to_hdf(self.h5Store, '/' + self.symbol + '/' + self.freq + '/_' + month, mode='a',
+                                 format='table', append=True,
                                  data_columns=True, complevel=9, complib='blosc:snappy')
         except KeyError:
             # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
@@ -166,15 +170,17 @@ class h5_store:
 
         return
 
-    def insert_data(self, df_insert, month, trustNew=True):
+    def insert_data(self, df_insert, month, trus_new=True):
         try:
             self.df[month]
-            if trustNew:
+            if trus_new:
                 print(self.df[month])
-                df_origin = self.df[month].loc[self.df[month].index.get_level_values("date") > df_insert.index.get_level_values("date")[-1]]
+                df_origin = self.df[month].loc[
+                    self.df[month].index.get_level_values("date") > df_insert.index.get_level_values("date")[-1]]
                 df_new = pd.concat([df_insert, df_origin], axis=0, join='inner')
             else:
-                df_insert = df_insert.loc[df_insert.index.get_level_values("date") < self.df[month].index.get_level_values("date")[0]]
+                df_insert = df_insert.loc[
+                    df_insert.index.get_level_values("date") < self.df[month].index.get_level_values("date")[0]]
                 df_new = pd.concat([df_insert, self.df[month]], axis=0, join='inner')
             # df_append = df_append.loc[df_append.index > self.df[month].iloc[-1].name]
             df_new.sort_index(ascending=True, inplace=True)
@@ -182,8 +188,9 @@ class h5_store:
             #     print(df_new.head(10))
             #     print(df_new.tail(100))
             # print(df_new.info())
-            df_new.to_hdf(self.h5Store, '/' + self.symbol + '/' + self.freq + '/_' + month, mode='a', format='table', append=False,
-                             data_columns=True, complevel=9, complib='blosc:snappy')
+            df_new.to_hdf(self.h5Store, '/' + self.symbol + '/' + self.freq + '/_' + month, mode='a', format='table',
+                          append=False,
+                          data_columns=True, complevel=9, complib='blosc:snappy')
             self.df[month] = df_new
         except KeyError:
             # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
@@ -202,8 +209,9 @@ class h5_store:
         try:
             self.df[month]
             self.df[month].drop_duplicates(keep='first', inplace=True)
-            self.df[month].to_hdf(self.h5Store, '/' + self.symbol + '/' + self.freq + '/_' + month, mode='a', format='table',
-                             append=False, data_columns=True, complevel=9, complib='blosc:snappy')
+            self.df[month].to_hdf(self.h5Store, '/' + self.symbol + '/' + self.freq + '/_' + month, mode='a',
+                                  format='table',
+                                  append=False, data_columns=True, complevel=9, complib='blosc:snappy')
         except KeyError:
             print("Data does not exist. Quit...")
         except Exception as e:
@@ -215,12 +223,14 @@ class h5_store:
             # print(self.df[month])
             df_append = self.df[month].append(df_new, sort=False)
             df_append.sort_index(ascending=True, inplace=True)
-            df_append.to_hdf(self.h5Store, '/' + symbol + '/' + freq + '/_' + month, mode='a', format='table', append=False, data_columns=True, complevel=9, complib='blosc:snappy')
+            df_append.to_hdf(self.h5Store, '/' + symbol + '/' + freq + '/_' + month, mode='a', format='table',
+                             append=False, data_columns=True, complevel=9, complib='blosc:snappy')
             self.df[month] = df_append
         except KeyError:
             df_new.sort_index(ascending=True, inplace=True)
             # print(df_new)
-            df_new.to_hdf(self.h5Store, '/' + symbol + '/' + freq + '/_' + month, mode='a', format='table', append=False, data_columns=True, complevel=9, complib='blosc:snappy')
+            df_new.to_hdf(self.h5Store, '/' + symbol + '/' + freq + '/_' + month, mode='a', format='table',
+                          append=False, data_columns=True, complevel=9, complib='blosc:snappy')
             self.df[month] = df_new
         except Exception as e:
             print(str(e))
@@ -234,7 +244,8 @@ class h5_store:
         if confirm in ["Y", "Yes", "y", "yes"]:
             print("Overwrite confirmed. Saving data...")
             try:
-                df_new.to_hdf(self.h5Store, '/' + self.symbol + '/' + self.freq + '/_' + month, mode='a', format='table', append=False, data_columns=True, complevel=9, complib='blosc:snappy')
+                df_new.to_hdf(self.h5Store, '/' + self.symbol + '/' + self.freq + '/_' + month, mode='a',
+                              format='table', append=False, data_columns=True, complevel=9, complib='blosc:snappy')
             except Exception as e:
                 print(str(e))
             return
@@ -255,7 +266,6 @@ class h5_store:
 
         return
 
-
     def get_contract_by_month(self, month):
         if self.months is None:
             print("Data not loaded. Check data file.")
@@ -265,17 +275,17 @@ class h5_store:
             return self.df[month]
 
     def get_all_data(self):
-        if not self.df is None:
+        if self.df is not None:
             return self.df
         else:
             print("Data not loaded correctly, abort!")
             return
 
-    def get_contract_data(self):   # all data except "00" / index
+    def get_contract_data(self):  # all data except "00" / index
         # print(self.__df)
         dfs_copy = self.df.copy()
         # print(self.df)
-        if not dfs_copy is None:
+        if dfs_copy is not None:
             if "00" in dfs_copy.keys():
                 del dfs_copy["00"]
                 return dfs_copy
@@ -286,7 +296,7 @@ class h5_store:
             return
 
     def get_last_trade_data(self):
-        if not self.df is None:
+        if self.df is not None:
             for key in self.df.keys():
                 self.df[key] = self.df[key].iloc[-1]
             return self.df
@@ -314,7 +324,8 @@ class h5_store:
             latest_date = dates_set.pop()
             print("Finished checking contracts. All dates are same. Continue...")
         else:
-            print("Warning!!! Last dates not equal. \nPlease update contract data first. \nIgnore this if this is special contracts like \'AU\' or some contract is rolling over.")
+            print(
+                "Warning!!! Last dates not equal. \nPlease update contract data first. \nIgnore this if this is special contracts like \'AU\' or some contract is rolling over.")
             latest_date = max(dates)
         #        return
         # print("latest_date\t", latest_date)
@@ -403,7 +414,7 @@ class h5_store:
                 mono_idx_df = self.get_idx_data()
                 latest_idx_date = mono_idx_df.index.get_level_values("date").max()
                 # latest_idx_date = mono_idx_df.index.max()
-                print("latest index date",latest_idx_date)
+                print("latest index date", latest_idx_date)
                 print("Current price index latest date", latest_contract_date)
 
                 if mono_idx_df.empty:  # in case price index data is empty, set a very early date

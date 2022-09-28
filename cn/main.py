@@ -4,6 +4,7 @@ from cn.qlData import qlData
 from cn.tsData import tsData
 from cn.updateCN import update_cn_latest, update_cn, newContracts
 from cn.include import symbol_exchange_map, ex_symList_map, all_exchanges, all_symbols, exchange_symbols_map
+from cn.config import TUSHARE_TOKEN, QUANDL_TOKEN
 import click
 import tushare as ts
 import quandl
@@ -57,12 +58,12 @@ def main(symbol, exchange, year, month, latest, new, clean, source="T"):
     #configure data source
     if source in ["quandl", "Q"]:
         print("Using quandl as data source. Continue...")
-        quandl.ApiConfig.api_key = "zoFEDaUaEqsZdsajsp_o"
+        quandl.ApiConfig.api_key = QUANDL_TOKEN
         remote_data = qlData(quandl, exchange, symbol, "D")
 
     elif source in ["tushare", "T"]:
         print("Using tushare as data source. Continue...")
-        ts.set_token('d0d22ccf30dfceef565c7d36d8d6cefd43fe4f35200575a198124ba5')
+        ts.set_token(TUSHARE_TOKEN)
         pro = ts.pro_api()
     else:
         print("Not a valid data source, or data source not implemented yet. Abort...")

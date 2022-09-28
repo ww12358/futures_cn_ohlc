@@ -7,3 +7,5 @@
 .idea/workspace.xml
 *.pyc
 .idea/*
+/cn/config.py
+

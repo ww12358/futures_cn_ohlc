@@ -1,10 +1,6 @@
 # -*- coding:utf-8 -*-
-from shfe.include import SHFE_DATA_PATH, shfe_symbols
 from .include import local_ts_ex_map, symbol_exchange_map
 from .contracts import get_list_delist_dates
-# from cn.localData import localData
-# from cn.qlData import qlData
-# from cn.tsData import tsData
 from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np

@@ -138,10 +138,10 @@ class tq_mh(h5_store):
 
         return
 
-    def insert_data(self, df_insert, month, trustNew=True):
+    def insert_data(self, df_insert, month, trus_new=True):
         try:
             self.df[month]
-            if trustNew:
+            if trus_new:
                 print(self.df[month])
                 df_origin = self.df[month].loc[self.df[month].index.get_level_values("date") > df_insert.index.get_level_values("date")[-1]]
                 df_new = pd.concat([df_insert, df_origin], axis=0, join='inner')
