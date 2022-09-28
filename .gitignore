@@ -4,6 +4,7 @@
 /cffex/cffex_data
 /ine/ine_data
 /cn/cn_data
+/script
 .idea/workspace.xml
 *.pyc
 .idea/*
