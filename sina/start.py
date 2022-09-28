@@ -25,6 +25,7 @@ from sina.redis_buffer import store_redis
 from sina.sina_M5_archive import archive_sina_M5
 from cn.include import symbol_exchange_map, all_symbols
 from sina.include import watch_list
+from cn.config import TQ_USER, TQ_PASS
 
 nest_asyncio.apply()
 
@@ -93,7 +94,7 @@ def get_tq_data(contract_dict, loop):
     # print(tq_contract_dict)
 
     try:
-        api = TqApi(auth=TqAuth("15381188725", "mancan@07"))
+        api = TqApi(auth=TqAuth(TQ_USER, TQ_PASS))
         api.create_task(get_quote(api, t_symbols, tq_contract_dict, contract_dict))
     except Exception as e:
         print("Error in get_tq_data()", str(e))

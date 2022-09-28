@@ -11,9 +11,10 @@ from sina.redis_buffer import update_redis, flush_redis
 from sina.getContractDict import getContractDict, getAllContractDict
 import nest_asyncio
 import pandas as pd
+from cn.config import TUSHARE_TOKEN
 
 import tushare as ts
-ts.set_token('d0d22ccf30dfceef565c7d36d8d6cefd43fe4f35200575a198124ba5')
+ts.set_token(TUSHARE_TOKEN)
 pro = ts.pro_api()
 nest_asyncio.apply()
 
